@@ -1,0 +1,6 @@
+/JPEGImages/2008_000002.jpg /SegmentationClassAug/2008_000002.png  
+/JPEGImages/2008_000003.jpg /SegmentationClassAug/2008_000003.png  
+/JPEGImages/2008_000008.jpg /SegmentationClassAug/2008_000008.png
+/JPEGImages/2008_000009.jpg /SegmentationClassAug/2008_000009.png
+
+
