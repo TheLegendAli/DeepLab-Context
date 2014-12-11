@@ -49,6 +49,9 @@ class ConvolutionLayer : public Layer<Dtype> {
    *  convolution, given by pad for equal dimensions or pad_h and pad_w for
    *  different padding. Input padding is computed implicitly instead of
    *  actually padding.
+   *  - hole / hole_h / hole_w (\b optional, default 1). Stride
+   *  between consecutive filter taps before performing convolution.
+   *  This is aka atrous algorithm in the context of undecimated wavelet transform.
    *  - group (\b optional, default 1). The number of filter groups. Group
    *  convolution is a method for reducing parameterization by selectively
    *  connecting input and output channels. The input and output channel dimensions must be divisible
@@ -92,6 +95,7 @@ class ConvolutionLayer : public Layer<Dtype> {
   int num_;
   int channels_;
   int pad_h_, pad_w_;
+  int hole_h_, hole_w_;
   int height_, width_;
   int group_;
   int num_output_;
@@ -192,6 +196,7 @@ class Im2colLayer : public Layer<Dtype> {
   int channels_;
   int height_, width_;
   int pad_h_, pad_w_;
+  int hole_h_, hole_w_;
 };
 
 // Forward declare PoolingLayer and SplitLayer for use in LRNLayer.
