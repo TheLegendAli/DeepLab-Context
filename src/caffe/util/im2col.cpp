@@ -56,7 +56,7 @@ void col2im_cpu(const Dtype* data_col,
     const int kernel_h, const int kernel_w, const int pad_h, const int pad_w,
     const int stride_h, const int stride_w, const int hole_h, const int hole_w,
     Dtype* data_im) {
-  caffe_cpu_set(num * channels * height * width, Dtype(0), data_im);
+  caffe_set(num * channels * height * width, Dtype(0), data_im);
   const int kernel_h_eff = kernel_h + (kernel_h - 1) * (hole_h - 1);
   const int kernel_w_eff = kernel_w + (kernel_w - 1) * (hole_w - 1);
   int height_col = (height + 2 * pad_h - kernel_h_eff) / stride_h + 1;
