@@ -40,10 +40,10 @@ class Im2colKernelTest : public ::testing::Test {
     width_ = blob_bottom_->width();
     channels_ = blob_bottom_->channels();
     pad_ = 0;
-    hole_ = 0;
+    hole_ = 1;
     stride_ = 2;
     kernel_size_ = 3;
-    const int kernel_size_eff = kernel_size_ + (kernel_size_ - 1) * hole_;
+    const int kernel_size_eff = kernel_size_ + (kernel_size_ - 1) * (hole_ - 1);
     height_col_ = (height_ + 2 * pad_ - kernel_size_eff) / stride_ + 1;
     width_col_ = (width_ + 2 * pad_ - kernel_size_eff) / stride_ + 1;
   }
