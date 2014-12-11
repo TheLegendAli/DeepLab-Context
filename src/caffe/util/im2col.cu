@@ -6,6 +6,7 @@
 #include "caffe/common.hpp"
 #include "caffe/common.cuh"
 #include "caffe/util/im2col.hpp"
+#include "caffe/util/math_functions.hpp"
 
 namespace caffe {
 
