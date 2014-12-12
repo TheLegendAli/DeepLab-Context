@@ -761,6 +761,13 @@ class SoftmaxWithLossLayer : public LossLayer<Dtype> {
   vector<Blob<Dtype>*> softmax_bottom_vec_;
   /// top vector holder used in call to the underlying SoftmaxLayer::Forward
   vector<Blob<Dtype>*> softmax_top_vec_;
+
+
+  // jay add
+  // the weight for different object classes when computing loss
+  vector<Dtype> loss_weights_;
+  // end jay
+
 };
 
 /** Jay add

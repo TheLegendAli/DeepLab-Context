@@ -1,3 +1,4 @@
+#include <fstream>
 #include <algorithm>
 #include <cfloat>
 #include <vector>
@@ -17,6 +18,29 @@ void SoftmaxWithLossLayer<Dtype>::LayerSetUp(
   softmax_top_vec_.clear();
   softmax_top_vec_.push_back(&prob_);
   softmax_layer_->SetUp(softmax_bottom_vec_, softmax_top_vec_);
+
+  // read the weight for each class
+  if (this->layer_param_.softmaxloss_param().has_weight_source()) {
+    const string& weight_source = this->layer_param_.softmaxloss_param().weight_source();
+    LOG(INFO) << "Opening file " << weight_source;
+    std::fstream infile(weight_source.c_str(), std::fstream::in);
+    if (!infile.is_open()){
+      LOG(INFO) << "Fail to open " << weight_source << ". Assign all one to weight loss.";
+      loss_weights_.assign(prob_.channels(), 1.0);
+    }        
+
+    Dtype tmp_val;
+    while (infile >> tmp_val) {
+      loss_weights_.push_back(tmp_val);
+    }
+    infile.close();    
+
+    CHECK_EQ(loss_weights_.size(), prob_.channels());
+  } else {
+    LOG(INFO) << "Weight_Loss file is not provided. Assign all one to it.";
+    loss_weights_.assign(prob_.channels(), 1.0);
+  }
+
 }
 
 template <typename Dtype>
@@ -41,31 +65,28 @@ void SoftmaxWithLossLayer<Dtype>::Forward_cpu(
   int dim = prob_.count() / num;
   // jay add
   int channels = prob_.channels();
-  int valid_pixel_count;
+  int valid_pixel_count = 0;
   // end jay
   int spatial_dim = prob_.height() * prob_.width();
   Dtype loss = 0;
   for (int i = 0; i < num; ++i) {
-    valid_pixel_count = 0;
     for (int j = 0; j < spatial_dim; j++) {
-      const int label_value = static_cast<int>(label[i * spatial_dim + j]);
-      
-      // jay add
-      if (label_value >= channels) {
-	continue;
-      }
-      ++valid_pixel_count;
-      // end jay
+      const int gt_label = static_cast<int>(label[i * spatial_dim + j]);
 
-      CHECK_GT(dim, label_value * spatial_dim);
-      loss -= log(std::max(prob_data[i * dim +
-          label_value * spatial_dim + j],
-                           Dtype(FLT_MIN)));
+      if (gt_label < channels) {
+	++valid_pixel_count;
+
+	CHECK_GT(dim, gt_label * spatial_dim);
+
+	// weighted loss
+	loss -= loss_weights_[gt_label] * log(std::max(prob_data[i * dim +
+           gt_label * spatial_dim + j], Dtype(FLT_MIN)));
+      }
     }
   }
 
   // jay add
-  top[0]->mutable_cpu_data()[0] = loss / num / valid_pixel_count;
+  top[0]->mutable_cpu_data()[0] = loss / valid_pixel_count;
   // end jay
   //top[0]->mutable_cpu_data()[0] = loss / num / spatial_dim;
   if (top.size() == 2) {
@@ -90,7 +111,8 @@ void SoftmaxWithLossLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
     int dim = prob_.count() / num;
 
     // jay add
-    int channel = prob_.channels();
+    int channels = prob_.channels();
+    int valid_pixel_count = 0;
     // end jay
 
     int spatial_dim = prob_.height() * prob_.width();
@@ -98,9 +120,10 @@ void SoftmaxWithLossLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
       for (int j = 0; j < spatial_dim; ++j) {
 	// jay add
 	const int gt_label = static_cast<int>(label[i * spatial_dim + j]);
-	if (gt_label < channel) {
-	  bottom_diff[i * dim + static_cast<int>(label[i * spatial_dim + j])
-		      * spatial_dim + j] -= 1;
+	if (gt_label < channels) {
+	  bottom_diff[i * dim + gt_label * spatial_dim + j] -= 
+                                             loss_weights_[gt_label];
+	  ++valid_pixel_count;
 	}
 	// end jay
 
@@ -108,9 +131,13 @@ void SoftmaxWithLossLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
         //    * spatial_dim + j] -= 1;
       }
     }
+
     // Scale gradient
     const Dtype loss_weight = top[0]->cpu_diff()[0];
-    caffe_scal(prob_.count(), loss_weight / num / spatial_dim, bottom_diff);
+    // jay add
+    caffe_scal(prob_.count(), loss_weight / valid_pixel_count, bottom_diff);
+    //caffe_scal(prob_.count(), loss_weight / num / spatial_dim, bottom_diff);
+    // end jay
   }
 }
 

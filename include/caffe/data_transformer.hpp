@@ -69,7 +69,7 @@ class DataTransformer {
 
   // jay add
   void TransformImgAndSeg(const std::vector<cv::Mat>& cv_img_seg,
-		Blob<Dtype>* transformed_data_blob, Blob<Dtype>* transformed_label_blob) {
+			  Blob<Dtype>* transformed_data_blob, Blob<Dtype>* transformed_label_blob);
   //void TransformSegAndPad(const cv::Mat& cv_seg, Blob<Dtype>* transformed_blob);
   //void TransformAndPad(const cv::Mat& cv_img, Blob<Dtype>* transformed_blob);
   // end jay

@@ -33,7 +33,7 @@ void SegAccuracyLayer<Dtype>::Reshape(
 }
 
   /*
-   * TODO: IOU accuracy
+   * TODO: ClassAccuracy and PixelIOU
    *
    */
 template <typename Dtype>

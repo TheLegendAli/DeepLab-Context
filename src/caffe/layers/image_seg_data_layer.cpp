@@ -183,6 +183,20 @@ void ImageSegDataLayer<Dtype>::InternalThreadEntry() {
 					       &(this->transformed_label_));
     trans_time += timer.MicroSeconds();
 
+    /* debug
+    cv::namedWindow("img", cv::WINDOW_AUTOSIZE);
+    cv::imshow("img", cv_img_seg[0]);
+    cv::namedWindow("seg", cv::WINDOW_AUTOSIZE);
+    cv::imshow("seg", cv_img_seg[1]);
+
+    std::string fn;
+    fn = "img.bin";
+    this->transformed_data_.WriteToBinaryFile(fn);
+    fn = "seg.bin";
+    this->transformed_label_.WriteToBinaryFile(fn);
+    // */
+
+
     // go to the next std::vector<int>::iterator iter;
     lines_id_++;
     if (lines_id_ >= lines_size) {

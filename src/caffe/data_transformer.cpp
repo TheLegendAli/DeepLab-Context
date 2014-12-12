@@ -28,30 +28,6 @@ DataTransformer<Dtype>::DataTransformer(const TransformationParameter& param)
     data_mean_.FromProto(blob_proto);
   }
 
-  /* //jay debug
-  std::cout << "mean:" << data_mean_.channels() << "," << data_mean_.height() << "," << data_mean_.width() << std::endl;
-
-  Dtype* mean = NULL;
-  mean = data_mean_.mutable_cpu_data();
-  float tmp_mean[3] = {0, 0, 0};
-
-  for (int c = 0; c < data_mean_.channels(); ++c) {
-    for (int h = 0; h < data_mean_.height(); ++h) {
-      for (int w = 0; w < data_mean_.width(); ++w) {
-	int data_index = (c * data_mean_.height() + h) *  data_mean_.width() + w;
-
-	tmp_mean[c] += mean[data_index];
-      }
-    }
-  }
-
-  for (int c = 0; c < data_mean_.channels(); ++c){
-    std::cout << tmp_mean[c] / data_mean_.height() / data_mean_.width();
-  }
-  // */
-
-
-
   // check if we want to use mean_value
   if (param_.mean_value_size() > 0) {
     CHECK(param_.has_mean_file() == false) <<
@@ -363,11 +339,7 @@ void DataTransformer<Dtype>::TransformSegAndPad(const cv::Mat& cv_seg,
     }
     cv::Rect roi(w_off, h_off, crop_size, crop_size);
     cv_cropped_seg = cv_seg(roi);
-  } /* else {
-    CHECK_EQ(img_height, height);
-    CHECK_EQ(img_width, width);
-  }
-    */
+  } 
 
   CHECK(cv_cropped_seg.data);
 
@@ -470,11 +442,7 @@ void DataTransformer<Dtype>::TransformAndPad(const cv::Mat& cv_img,
     }
     cv::Rect roi(w_off, h_off, crop_size, crop_size);
     cv_cropped_img = cv_img(roi);
-  } /* else {
-    CHECK_EQ(img_height, height);
-    CHECK_EQ(img_width, width);
   }
-  */
 
   CHECK(cv_cropped_img.data);
 
@@ -544,10 +512,11 @@ void DataTransformer<Dtype>::TransformImgAndSeg(const std::vector<cv::Mat>& cv_i
   const int label_width    = transformed_label_blob->width();
 
   CHECK_EQ(seg_channels, 1);
+  CHECK_EQ(img_channels, data_channels);
   CHECK_EQ(img_height, seg_height);
   CHECK_EQ(img_width, seg_width);
 
-  CHECK_EQ(data_channels, label_channels);
+  CHECK_EQ(label_channels, 1);
   CHECK_EQ(data_height, label_height);
   CHECK_EQ(data_width, label_width);
 
@@ -633,9 +602,9 @@ void DataTransformer<Dtype>::TransformImgAndSeg(const std::vector<cv::Mat>& cv_i
       // do image transformation
       for (int c = 0; c < img_channels; ++c) {
 	if (do_mirror) {
-	  top_index = (c * height + h) * width + (width - 1 - w);
+	  top_index = (c * data_height + h) * data_width + (data_width - 1 - w);
 	} else {
-	  top_index = (c * height + h) * width + w;
+	  top_index = (c * data_height + h) * data_width + w;
 	}
 
 	if (w < img_width && data_ptr != NULL) {
@@ -661,9 +630,9 @@ void DataTransformer<Dtype>::TransformImgAndSeg(const std::vector<cv::Mat>& cv_i
 
       // do segmentation transformation
       if (do_mirror) {
-	top_index = h * width + (width - 1 - w);	
+	top_index = h * data_width + (data_width - 1 - w);	
       } else {
-	top_index = h * width + w;
+	top_index = h * data_width + w;
       }
       if (w < img_width && label_ptr != NULL) {
 	// in image domain

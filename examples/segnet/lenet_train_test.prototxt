@@ -164,4 +164,7 @@ layers {
   bottom: "ip2"
   bottom: "label"
   top: "loss"
+  softmaxloss_param {
+    weight_source: "examples/segnet/loss_weight_train_aug.txt"
+  }
 }
