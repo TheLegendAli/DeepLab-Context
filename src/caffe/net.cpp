@@ -707,6 +707,33 @@ void Net<Dtype>::CopyTrainedLayersFrom(const NetParameter& param) {
         layers_[target_layer_id]->blobs();
     CHECK_EQ(target_blobs.size(), source_layer.blobs_size())
         << "Incompatible number of blobs for layer " << source_layer_name;
+    const bool strict_dim = layers_[target_layer_id]->layer_param().strict_dim();
+    for (int j = 0; j < target_blobs.size(); ++j) {
+      if (strict_dim) {
+	CHECK_EQ(target_blobs[j]->num(), source_layer.blobs(j).num())
+	  << "Incompatible parameter size for layer " << source_layer_name;
+	CHECK_EQ(target_blobs[j]->channels(), source_layer.blobs(j).channels())
+	  << "Incompatible parameter size for layer " << source_layer_name;
+	CHECK_EQ(target_blobs[j]->height(), source_layer.blobs(j).height())
+	  << "Incompatible parameter size for layer " << source_layer_name;
+	CHECK_EQ(target_blobs[j]->width(), source_layer.blobs(j).width())
+	  << "Incompatible parameter size for layer " << source_layer_name;
+	target_blobs[j]->FromProto(source_layer.blobs(j));
+	continue;
+      }
+      else {
+	CHECK_EQ(target_blobs[j]->count(), source_layer.blobs(j).num() * source_layer.blobs(j).channels() *
+		 source_layer.blobs(j).height() * source_layer.blobs(j).width())
+	  << "Incompatible number of blobs for layer " << source_layer_name;
+	BlobProto blob_copy = source_layer.blobs(j);
+	blob_copy.set_num(target_blobs[j]->num());
+	blob_copy.set_channels(target_blobs[j]->channels());
+	blob_copy.set_height(target_blobs[j]->height());
+	blob_copy.set_width(target_blobs[j]->width());
+	target_blobs[j]->FromProto(blob_copy);
+      }
+    }
+    /*
     for (int j = 0; j < target_blobs.size(); ++j) {
       CHECK_EQ(target_blobs[j]->num(), source_layer.blobs(j).num());
       CHECK_EQ(target_blobs[j]->channels(), source_layer.blobs(j).channels());
@@ -714,6 +741,7 @@ void Net<Dtype>::CopyTrainedLayersFrom(const NetParameter& param) {
       CHECK_EQ(target_blobs[j]->width(), source_layer.blobs(j).width());
       target_blobs[j]->FromProto(source_layer.blobs(j));
     }
+    */
   }
 }
 

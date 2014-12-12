@@ -291,6 +291,8 @@ message LayerParameter {
     // PERMISSIVE requires only the count (num*channels*height*width) to match.
     PERMISSIVE = 1;
   }
+  // Same for when loading weights in Net<Dtype>::CopyTrainedLayersFrom()
+  optional bool strict_dim = 1003 [ default = true ];
   // The ratio that is multiplied on the global learning rate. If you want to
   // set the learning ratio for one blob, you need to set it for all blobs.
   repeated float blobs_lr = 7;
