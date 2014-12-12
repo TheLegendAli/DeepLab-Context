@@ -153,6 +153,9 @@ layers {
   bottom: "ip2"
   bottom: "label"
   top: "accuracy"
+  seg_accuracy_param {
+    metric: PixelAccuracy
+  }
   include: { phase: TEST }
 }
 layers {

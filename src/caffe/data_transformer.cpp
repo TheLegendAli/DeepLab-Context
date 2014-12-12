@@ -317,7 +317,7 @@ void DataTransformer<Dtype>::Transform(const cv::Mat& cv_img,
    */
 template<typename Dtype>
 void DataTransformer<Dtype>::TransformSegAndPad(const cv::Mat& cv_seg,
-                                       Blob<Dtype>* transformed_blob) {
+		Blob<Dtype>* transformed_blob) {
   const int img_channels = cv_seg.channels();
   const int img_height = cv_seg.rows;
   const int img_width = cv_seg.cols;
@@ -337,16 +337,17 @@ void DataTransformer<Dtype>::TransformSegAndPad(const cv::Mat& cv_seg,
   const int crop_size = param_.crop_size();  
   const bool do_mirror = param_.mirror() && Rand(2);
 
-  CHECK(crop_size == 0) << "NOT IMPLEMENT YET";
-
   CHECK_GT(img_channels, 0);
-  //CHECK_GE(img_height, crop_size);
-  //CHECK_GE(img_width, crop_size);
+  CHECK_GE(img_height, crop_size);
+  CHECK_GE(img_width, crop_size);
 
-  /*
+  CHECK_EQ(crop_size, 0) << 
+    "Not implement crop for seg yet. Note the crop position should be the same for both image and seg.";
+
   int h_off = 0;
   int w_off = 0;
-  cv::Mat cv_cropped_img = cv_seg;
+  cv::Mat cv_cropped_seg = cv_seg;
+
   if (crop_size) {
     CHECK_EQ(crop_size, height);
     CHECK_EQ(crop_size, width);
@@ -355,18 +356,19 @@ void DataTransformer<Dtype>::TransformSegAndPad(const cv::Mat& cv_seg,
       h_off = Rand(img_height - crop_size + 1);
       w_off = Rand(img_width - crop_size + 1);
     } else {
+      // TODO: use middle crop or top-left crop for test?
       h_off = (img_height - crop_size) / 2;
       w_off = (img_width - crop_size) / 2;
     }
     cv::Rect roi(w_off, h_off, crop_size, crop_size);
-    cv_cropped_img = cv_seg(roi);
-  } else {
+    cv_cropped_seg = cv_seg(roi);
+  } /* else {
     CHECK_EQ(img_height, height);
     CHECK_EQ(img_width, width);
   }
+    */
 
-  CHECK(cv_cropped_img.data);
-  */
+  CHECK(cv_cropped_seg.data);
 
   Dtype* transformed_data = transformed_blob->mutable_cpu_data();
   int top_index;
@@ -374,7 +376,7 @@ void DataTransformer<Dtype>::TransformSegAndPad(const cv::Mat& cv_seg,
 
   for (int h = 0; h < height; ++h) {
     if (h < img_height) {
-      ptr = cv_seg.ptr<uchar>(h);
+      ptr = cv_cropped_seg.ptr<uchar>(h);
     } else {
       ptr = NULL;
     }
@@ -401,7 +403,7 @@ void DataTransformer<Dtype>::TransformSegAndPad(const cv::Mat& cv_seg,
 
 template<typename Dtype>
 void DataTransformer<Dtype>::TransformAndPad(const cv::Mat& cv_img,
-                                       Blob<Dtype>* transformed_blob) {
+			     Blob<Dtype>* transformed_blob) {
   const int img_channels = cv_img.channels();
   const int img_height = cv_img.rows;
   const int img_width = cv_img.cols;
@@ -424,11 +426,9 @@ void DataTransformer<Dtype>::TransformAndPad(const cv::Mat& cv_img,
   const bool has_mean_file = param_.has_mean_file();
   const bool has_mean_values = mean_values_.size() > 0;
 
-  CHECK(crop_size == 0) << "NOT IMPLEMENT YET";
-
   CHECK_GT(img_channels, 0);
-  //CHECK_GE(img_height, crop_size);
-  //CHECK_GE(img_width, crop_size);
+  CHECK_GE(img_height, crop_size);
+  CHECK_GE(img_width, crop_size);
 
   Dtype* mean = NULL;
   if (has_mean_file) {
@@ -448,15 +448,13 @@ void DataTransformer<Dtype>::TransformAndPad(const cv::Mat& cv_img,
     }
   }
 
-
+  CHECK_EQ(crop_size, 0) << 
+    "Not implement crop for seg yet. Note the crop position should be the same for both image and seg.";
   
   int h_off = 0;
   int w_off = 0;
-  /*
-  cv::Mat cv_cropped_img = cv_img;
-  */
-
-  /*
+  cv::Mat cv_cropped_img = cv_img;  
+  
   if (crop_size) {
     CHECK_EQ(crop_size, height);
     CHECK_EQ(crop_size, width);
@@ -465,18 +463,19 @@ void DataTransformer<Dtype>::TransformAndPad(const cv::Mat& cv_img,
       h_off = Rand(img_height - crop_size + 1);
       w_off = Rand(img_width - crop_size + 1);
     } else {
+      // TODO: use middle crop or top-left crop for test?
       h_off = (img_height - crop_size) / 2;
       w_off = (img_width - crop_size) / 2;
     }
     cv::Rect roi(w_off, h_off, crop_size, crop_size);
     cv_cropped_img = cv_img(roi);
-  } else {
+  } /* else {
     CHECK_EQ(img_height, height);
     CHECK_EQ(img_width, width);
   }
+  */
 
   CHECK(cv_cropped_img.data);
-  */
 
   Dtype* transformed_data = transformed_blob->mutable_cpu_data();
   int top_index;
@@ -484,7 +483,7 @@ void DataTransformer<Dtype>::TransformAndPad(const cv::Mat& cv_img,
 
   for (int h = 0; h < height; ++h) {
     if (h < img_height) {
-      ptr = cv_img.ptr<uchar>(h);
+      ptr = cv_cropped_img.ptr<uchar>(h);
     } else {
       ptr = NULL;
     }

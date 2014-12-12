@@ -196,10 +196,11 @@ void Solver<Dtype>::Solve(const char* resume_file) {
     const bool display = param_.display() && iter_ % param_.display() == 0;
     net_->set_debug_info(display && param_.debug_info());
 
-    //
-    net_->Forward(bottom_vec, NULL);
     // jay debug
-    /*
+    //net_->Forward(bottom_vec, NULL);
+    // end jay
+
+    ///* jay debug
     Dtype loss = net_->ForwardBackward(bottom_vec);
     if (losses.size() < average_loss) {
       losses.push_back(loss);

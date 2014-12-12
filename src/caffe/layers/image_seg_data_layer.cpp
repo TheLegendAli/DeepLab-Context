@@ -31,6 +31,10 @@ void ImageSegDataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom
   const bool is_color  = this->layer_param_.image_data_param().is_color();
   string root_folder = this->layer_param_.image_data_param().root_folder();
 
+  TransformationParameter transform_param = this->layer_param_.transform_param();
+  CHECK(transform_param.has_mean_file() == false) << 
+         "ImageSegDataLayer does not support mean file";
+
   const int max_expected_channel = this->layer_param_.image_data_param().max_expected_channel();
   const int max_expected_height = this->layer_param_.image_data_param().max_expected_height();
   const int max_expected_width = this->layer_param_.image_data_param().max_expected_width();
@@ -90,9 +94,6 @@ void ImageSegDataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom
   const int crop_size = this->layer_param_.transform_param().crop_size();
   const int batch_size = this->layer_param_.image_data_param().batch_size();
 
-  CHECK(batch_size == 1) << "Current implementation requires "
-    "batch_size to be 1.";
-
   if (crop_size > 0) {
     top[0]->Reshape(batch_size, channels, crop_size, crop_size);
     this->prefetch_data_.Reshape(batch_size, channels, crop_size, crop_size);
@@ -116,9 +117,9 @@ void ImageSegDataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom
       << top[0]->channels() << "," << top[0]->height() << ","
       << top[0]->width();
   // label
-  //top[1]->Reshape(batch_size, 1, 1, 1);
-  //this->prefetch_label_.Reshape(batch_size, 1, 1, 1);
-
+  LOG(INFO) << "output label size: " << top[1]->num() << ","
+      << top[1]->channels() << "," << top[1]->height() << ","
+      << top[1]->width();
 }
 
 template <typename Dtype>
@@ -161,9 +162,9 @@ void ImageSegDataLayer<Dtype>::InternalThreadEntry() {
     }
 
     // check input dimensions
-    int channels = cv_img.channels();
-    int height = cv_img.rows;
-    int width = cv_img.cols;
+    //int channels = cv_img.channels();
+    //int height = cv_img.rows;
+    //int width = cv_img.cols;
 
     /*
     int pad_height = this->prefetch_data_.height() - height;
@@ -235,7 +236,7 @@ void ImageSegDataLayer<Dtype>::InternalThreadEntry() {
     // */
 
     read_time += timer.MicroSeconds();
-
+ 
     timer.Start();
     offset = this->prefetch_label_.offset(item_id);
     this->transformed_label_.set_cpu_data(top_label + offset);

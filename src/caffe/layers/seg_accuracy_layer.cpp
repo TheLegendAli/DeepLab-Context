@@ -13,7 +13,7 @@ namespace caffe {
 template <typename Dtype>
 void SegAccuracyLayer<Dtype>::LayerSetUp(
   const vector<Blob<Dtype>*>& bottom, const vector<Blob<Dtype>*>& top) {
-  top_k_ = this->layer_param_.accuracy_param().top_k();
+  top_k_ = this->layer_param_.accuracy_param().top_k();  
 }
 
 template <typename Dtype>
@@ -43,7 +43,7 @@ void SegAccuracyLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
   const Dtype* bottom_data = bottom[0]->cpu_data();
   const Dtype* bottom_label = bottom[1]->cpu_data();
   int num = bottom[0]->num();
-  int dim = bottom[0]->count() / bottom[0]->num();
+  //int dim = bottom[0]->count() / bottom[0]->num();
   int channels = bottom[0]->channels();
   int height = bottom[0]->height();
   int width = bottom[0]->width();
@@ -53,40 +53,55 @@ void SegAccuracyLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
   int data_index, label_index;
   int valid_pixel_count = 0;
 
-  for (int i = 0; i < num; ++i) {
-    for (int h = 0; h < height; ++h) {
-      for (int w = 0; w < width; ++w) {
-	//Top-k accuracy
-	std::vector<std::pair<Dtype, int> > bottom_data_vector;
+  switch (this->layer_param_.seg_accuracy_param().metric()) {
+  case SegAccuracyParameter_AccuracyMetric_PixelAccuracy:
+    for (int i = 0; i < num; ++i) {
+      for (int h = 0; h < height; ++h) {
+	for (int w = 0; w < width; ++w) {
+	  //Top-k accuracy
+	  std::vector<std::pair<Dtype, int> > bottom_data_vector;
+	  
+	  for (int c = 0; c < channels; ++c) {
+	    data_index = (c * height + h) * width + w;	    
+	    bottom_data_vector.push_back(std::make_pair(bottom_data[data_index], c));
+	  }
+	  std::partial_sort(
+	    bottom_data_vector.begin(), bottom_data_vector.begin() + top_k_,
+	    bottom_data_vector.end(), std::greater<std::pair<Dtype, int> >());
+
+	  // check if true label is in top k predictions
+
+	  label_index = h * width + w;
+	  const int gt_label = static_cast<int>(bottom_label[label_index]);
       
-	for (int c = 0; c < channels; ++c) {
-	  data_index = (c * height + h) * width + w;
+	  if (gt_label < channels) {
+	    // current position is not "255", indicating ambiguous position
+	    ++valid_pixel_count;
 
-	  bottom_data_vector.push_back(std::make_pair(bottom_data[data_index], c));
-	}
-	std::partial_sort(
-	      bottom_data_vector.begin(), bottom_data_vector.begin() + top_k_,
-	      bottom_data_vector.end(), std::greater<std::pair<Dtype, int> >());
-
-	// check if true label is in top k predictions
-	label_index = h * width + w;
-	const int gt_label = static_cast<int>(bottom_label[label_index]);
-      
-	if (gt_label < channels) {
-	  // current position is not "255", indicating ambiguous position
-	  ++valid_pixel_count;
-
-	  for (int k = 0; k < top_k_; k++) {
-	    if (bottom_data_vector[k].second == gt_label) {
-	      ++accuracy;
-	      break;
+	    for (int k = 0; k < top_k_; k++) {
+	      if (bottom_data_vector[k].second == gt_label) {
+		++accuracy;
+		break;
+	      }
 	    }
 	  }
 	}
       }
-    }
-  }
 
+      bottom_data += bottom[0]->offset(1);
+      bottom_label += bottom[1]->offset(1);
+    }
+    break;
+  case SegAccuracyParameter_AccuracyMetric_ClassAccuracy:
+    NOT_IMPLEMENTED;
+    break;
+  case SegAccuracyParameter_AccuracyMetric_PixelIOU:
+    NOT_IMPLEMENTED;
+    break;
+  default:
+    LOG(FATAL) << "Unknown Segment accuracy metric.";
+  }
+    
   // LOG(INFO) << "Accuracy: " << accuracy;
   top[0]->mutable_cpu_data()[0] = accuracy / valid_pixel_count;
   // Accuracy layer should not be used as a loss function.

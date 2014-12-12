@@ -830,6 +830,7 @@ class SegAccuracyLayer : public Layer<Dtype> {
   }
 
   int top_k_;
+  
 };
 
 
