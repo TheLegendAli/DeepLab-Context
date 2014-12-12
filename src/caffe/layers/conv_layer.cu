@@ -27,8 +27,10 @@ void ConvolutionLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
       // im2col transformation: unroll input regions for filtering
       // into column matrix for multplication.
       if (!is_1x1_) {
-        im2col_gpu(bottom_data + bottom[i]->offset(n), channels_, height_,
-            width_, kernel_h_, kernel_w_, pad_h_, pad_w_, stride_h_, stride_w_,
+        im2col_gpu(bottom_data + bottom[i]->offset(n),
+	    1, channels_, height_, width_,
+	    kernel_h_, kernel_w_, pad_h_, pad_w_,
+	    stride_h_, stride_w_, hole_h_, hole_w_,
             col_buff);
       } else {
         col_buff = bottom[i]->mutable_gpu_data() + bottom[i]->offset(n);
@@ -95,9 +97,11 @@ void ConvolutionLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
         // Since we saved memory in the forward pass by not storing all col
         // data, we will need to recompute them.
         if (!is_1x1_) {
-          im2col_gpu(bottom_data + bottom[i]->offset(n), channels_, height_,
-                    width_, kernel_h_, kernel_w_, pad_h_, pad_w_,
-                    stride_h_, stride_w_, col_buff);
+          im2col_gpu(bottom_data + bottom[i]->offset(n),
+		    1, channels_, height_, width_,
+		    kernel_h_, kernel_w_, pad_h_, pad_w_,
+		    stride_h_, stride_w_, hole_h_, hole_w_,
+		    col_buff);
         } else {
           col_buff = bottom[i]->mutable_gpu_data() + bottom[i]->offset(n);
         }
@@ -126,8 +130,10 @@ void ConvolutionLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
           }
           // col2im back to the data
           if (!is_1x1_) {
-            col2im_gpu(col_buff, channels_, height_, width_,
-                kernel_h_, kernel_w_, pad_h_, pad_w_, stride_h_, stride_w_,
+            col2im_gpu(col_buff,
+	        1, channels_, height_, width_,
+                kernel_h_, kernel_w_, pad_h_, pad_w_,
+		stride_h_, stride_w_, hole_h_, hole_w_,
                 bottom_diff + bottom[i]->offset(n));
           }
         }

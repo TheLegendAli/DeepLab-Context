@@ -421,6 +421,9 @@ message ConvolutionParameter {
   optional uint32 stride = 6 [default = 1]; // The stride (equal in Y, X)
   optional uint32 stride_h = 13; // The stride height
   optional uint32 stride_w = 14; // The stride width
+  optional uint32 hole = 17 [default = 1]; // The filter stride (equal in Y, X)
+  optional uint32 hole_h = 18 [default = 1]; // The filter stride height
+  optional uint32 hole_w = 19 [default = 1]; // The filter stride width
   optional FillerParameter weight_filler = 7; // The filler for the weight
   optional FillerParameter bias_filler = 8; // The filler for the bias
   enum Engine {
