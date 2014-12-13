@@ -13,7 +13,7 @@ layers {
     mean_value: 104.008
     mean_value: 116.669
     mean_value: 122.675
-    crop_size: 351
+    crop_size: 500
     mirror: true
   }
   include: { phase: TRAIN }
@@ -28,15 +28,13 @@ layers {
     root_folder: "/home/lcchen/dataset/PASCAL/VOCdevkit/VOC2012"
     source: "examples/segnet/train_file_list.txt"
     batch_size: 1
-    max_expected_channel: 3
-    max_expected_height: 500
-    max_expected_width: 500
   }
   transform_param {
     mean_value: 104.008
     mean_value: 116.669
     mean_value: 122.675
-    mirror: false
+    crop_size: 500
+    mirror: true
   }
   include: { phase: TEST }
 }

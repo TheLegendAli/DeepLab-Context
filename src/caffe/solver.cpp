@@ -197,7 +197,7 @@ void Solver<Dtype>::Solve(const char* resume_file) {
     net_->set_debug_info(display && param_.debug_info());
 
     // jay debug
-    //net_->Forward(bottom_vec, NULL);
+    // net_->Forward(bottom_vec, NULL);
     // end jay
 
     ///* jay debug

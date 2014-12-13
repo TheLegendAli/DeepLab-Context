@@ -34,11 +34,6 @@ void ImageSegDataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom
   TransformationParameter transform_param = this->layer_param_.transform_param();
   CHECK(transform_param.has_mean_file() == false) << 
          "ImageSegDataLayer does not support mean file";
-
-  const int max_expected_channel = this->layer_param_.image_data_param().max_expected_channel();
-  const int max_expected_height = this->layer_param_.image_data_param().max_expected_height();
-  const int max_expected_width = this->layer_param_.image_data_param().max_expected_width();
-
   CHECK((new_height == 0 && new_width == 0) ||
       (new_height > 0 && new_width > 0)) << "Current implementation requires "
       "new_height and new_width to be set at the same time.";
@@ -72,23 +67,13 @@ void ImageSegDataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom
     lines_id_ = skip;
   }
 
-  int channels;
-  int height;
-  int width;
+  // Read an image, and use it to initialize the top blob.
+  cv::Mat cv_img = ReadImageToCVMat(root_folder + lines_[lines_id_].first,
+				    new_height, new_width, is_color);
 
-  if (max_expected_height == 0 && max_expected_width == 0) {
-    // Read an image, and use it to initialize the top blob.
-    cv::Mat cv_img = ReadImageToCVMat(root_folder + lines_[lines_id_].first,
-                                    new_height, new_width, is_color);
-
-    channels = cv_img.channels();
-    height = cv_img.rows;
-    width = cv_img.cols;
-  } else {
-    channels = max_expected_channel;
-    height = max_expected_height;
-    width  = max_expected_width;
-  }
+  const int channels = cv_img.channels();
+  const int height = cv_img.rows;
+  const int width = cv_img.cols;
 
   // image
   const int crop_size = this->layer_param_.transform_param().crop_size();

@@ -573,11 +573,6 @@ message ImageDataParameter {
   // data.
   optional bool mirror = 6 [default = false];
   optional string root_folder = 12 [default = ""];
-
-  // Jay add: max expected image row and col
-  optional uint32 max_expected_channel = 13 [default = 3];
-  optional uint32 max_expected_height = 14 [default = 0];
-  optional uint32 max_expected_width = 15 [default = 0];
 }
 
 // Message that stores parameters InfogainLossLayer

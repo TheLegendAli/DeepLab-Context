@@ -19,6 +19,7 @@ void SegAccuracyLayer<Dtype>::LayerSetUp(
 template <typename Dtype>
 void SegAccuracyLayer<Dtype>::Reshape(
   const vector<Blob<Dtype>*>& bottom, const vector<Blob<Dtype>*>& top) {
+  ///* for debug
   CHECK_LE(top_k_, bottom[0]->channels())
       << "top_k must be less than or equal to the number of channels (classes).";
   CHECK_EQ(bottom[0]->num(), bottom[1]->num())
@@ -29,6 +30,7 @@ void SegAccuracyLayer<Dtype>::Reshape(
     << "The data should have the same height as label.";
   CHECK_EQ(bottom[0]->width(), bottom[1]->width())
     << "The data should have the same width as label.";
+  //*/
   top[0]->Reshape(1, 1, 1, 1);
 }
 
@@ -70,7 +72,6 @@ void SegAccuracyLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
 	    bottom_data_vector.end(), std::greater<std::pair<Dtype, int> >());
 
 	  // check if true label is in top k predictions
-
 	  label_index = h * width + w;
 	  const int gt_label = static_cast<int>(bottom_label[label_index]);
       
@@ -88,7 +89,7 @@ void SegAccuracyLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
 	}
       }
 
-      bottom_data += bottom[0]->offset(1);
+      bottom_data  += bottom[0]->offset(1);
       bottom_label += bottom[1]->offset(1);
     }
     break;

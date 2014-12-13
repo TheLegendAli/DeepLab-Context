@@ -13,4 +13,4 @@ seg = uint8(LoadBinFile(fn, 'single'));
 figure(1)
 subplot(121), imshow(data);
 subplot(122), imshow(seg, colormap);
-
+    
