@@ -491,8 +491,7 @@ void DataTransformer<Dtype>::TransformAndPad(const cv::Mat& cv_img,
   //*/
 
 template<typename Dtype>
-void DataTransformer<Dtype>::TransformImgAndSeg(const std::vector<cv::Mat>& cv_img_seg,
-		Blob<Dtype>* transformed_data_blob, Blob<Dtype>* transformed_label_blob) {
+void DataTransformer<Dtype>::TransformImgAndSeg(const std::vector<cv::Mat>& cv_img_seg, Blob<Dtype>* transformed_data_blob, Blob<Dtype>* transformed_label_blob) {
   CHECK(cv_img_seg.size() == 2) << "Input must contain image and seg.";
 
   const int img_channels = cv_img_seg[0].channels();
@@ -587,7 +586,7 @@ void DataTransformer<Dtype>::TransformImgAndSeg(const std::vector<cv::Mat>& cv_i
   const uchar* label_ptr;
 
   for (int h = 0; h < data_height; ++h) {
-    if (h < img_height) {
+    if (h < cv_cropped_img.rows) {
       data_ptr  = cv_cropped_img.ptr<uchar>(h);
       label_ptr = cv_cropped_seg.ptr<uchar>(h);
     } else {
@@ -607,7 +606,7 @@ void DataTransformer<Dtype>::TransformImgAndSeg(const std::vector<cv::Mat>& cv_i
 	  top_index = (c * data_height + h) * data_width + w;
 	}
 
-	if (w < img_width && data_ptr != NULL) {
+	if (w < cv_cropped_img.cols && data_ptr != NULL) {
 	  // in image domain
 	  Dtype pixel = static_cast<Dtype>(data_ptr[data_index++]);
 	  if (has_mean_file) {

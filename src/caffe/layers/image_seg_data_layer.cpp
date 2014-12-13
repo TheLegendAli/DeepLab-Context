@@ -179,8 +179,8 @@ void ImageSegDataLayer<Dtype>::InternalThreadEntry() {
     offset = this->prefetch_label_.offset(item_id);
     this->transformed_label_.set_cpu_data(top_label + offset);
 
-    this->data_transformer_.TransformImgAndSeg(cv_img_seg, &(this->transformed_data_),
-					       &(this->transformed_label_));
+    this->data_transformer_.TransformImgAndSeg(cv_img_seg, 
+       &(this->transformed_data_), &(this->transformed_label_));
     trans_time += timer.MicroSeconds();
 
     /* debug
