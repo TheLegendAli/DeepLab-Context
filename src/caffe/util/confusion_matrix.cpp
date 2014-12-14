@@ -43,9 +43,8 @@ void ConfusionMatrix::clear() {
 }
 
 void ConfusionMatrix::accumulate(const int actual, const int predicted) {
-  CHECK_GT(actual, 0) << "gt label should not be less than zero.";
-  CHECK_GT(predicted, 0) << "prediction label should not be less than zero.";
-
+  CHECK_GE(actual, 0) << "gt label should not be less than zero.";
+  CHECK_GE(predicted, 0) << "prediction label should not be less than zero.";
   _matrix[actual][predicted] += 1;
 }
 
@@ -274,7 +273,7 @@ double ConfusionMatrix::avgPrecision() const {
   return totalPrecision /= (double)_matrix.size();
 }
 
-double ConfusionMatrix::avgRecall() const {
+double ConfusionMatrix::avgRecall(const bool strict) const {
   double totalRecall = 0.0;
   int numClasses = 0;
   for (size_t i = 0; i < _matrix.size(); i++) {
@@ -286,8 +285,8 @@ double ConfusionMatrix::avgRecall() const {
       }
     }
   }
-
-  if (numClasses != (int)_matrix.size()) {
+  
+  if (strict && numClasses != (int)_matrix.size()) {
     LOG(FATAL) << "not all classes represented in avgRecall()";
   }
 

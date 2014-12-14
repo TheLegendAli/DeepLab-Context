@@ -86,7 +86,7 @@ void SegAccuracyLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
 
   // we report all the resuls
   top[0]->mutable_cpu_data()[0] = (Dtype)confusion_matrix_.accuracy();
-  top[0]->mutable_cpu_data()[1] = (Dtype)confusion_matrix_.avgRecall();
+  top[0]->mutable_cpu_data()[1] = (Dtype)confusion_matrix_.avgRecall(false);
   top[0]->mutable_cpu_data()[2] = (Dtype)confusion_matrix_.avgJaccard();
 
   /*
