@@ -587,6 +587,7 @@ message InfogainLossParameter {
 message InterpParameter {
   optional int32 height = 1 [default = 0]; // Height of output
   optional int32 width = 2 [default = 0]; // Width of output
+  optional int32 zoom_factor = 3 [default = 1]; // zoom factor
 }
 
 // Message that stores parameters used by InnerProductLayer

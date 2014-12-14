@@ -11,10 +11,9 @@ template <typename Dtype>
 void InterpLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top) {
   InterpParameter interp_param = this->layer_param_.interp_param();
-  height_out_ = interp_param.height();
-  width_out_  = interp_param.width();
-  CHECK_GT(height_out_, 0) << "Need to specify height and this should be positive";
-  CHECK_GT(width_out_, 0) << "Need to specify width and this should be positive";
+  CHECK(interp_param.has_zoom_factor() != 
+	(interp_param.has_height() && interp_param.has_width()))
+    << "Output dimension specified either by zoom factor or explicitly";
 }
 
 template <typename Dtype>
@@ -24,6 +23,22 @@ void InterpLayer<Dtype>::Reshape(const vector<Blob<Dtype>*>& bottom,
   channels_ = bottom[0]->channels();
   height_in_ = bottom[0]->height();
   width_in_ = bottom[0]->width();
+  InterpParameter interp_param = this->layer_param_.interp_param();
+  if (interp_param.has_zoom_factor()) {
+    const int zoom_factor = interp_param.zoom_factor();
+    CHECK_GE(zoom_factor, 1) << "Zoom factor must be positive";
+    height_out_ = height_in_ + (height_in_ - 1) * (zoom_factor - 1);
+    width_out_ = width_in_ + (width_in_ - 1) * (zoom_factor - 1);
+  }
+  else if (interp_param.has_height() && interp_param.has_width()) {
+    height_out_  = interp_param.height();
+    width_out_  = interp_param.width();
+  }
+  else {
+    LOG(FATAL); // we have already checked for that
+  }
+  CHECK_GT(height_out_, 0) << "Need to specify height and this should be positive";
+  CHECK_GT(width_out_, 0) << "Need to specify width and this should be positive";
   top[0]->Reshape(num_, channels_, height_out_, width_out_);
 }
 
