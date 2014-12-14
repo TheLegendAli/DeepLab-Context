@@ -31,6 +31,24 @@ class Net {
   void Init(const NetParameter& param);
 
   /**
+   * @brief Calls ResetState for each of the layers.
+   */
+  void LayersResetState() const {
+    for (int i = 0; i < layers_.size(); ++i) {
+      layers_[i]->ResetState();
+    }
+  }
+
+  /**
+   * @brief Calls ReportState for each of the layers.
+   */
+  void LayersReportState() const {
+    for (int i = 0; i < layers_.size(); ++i) {
+      layers_[i]->ReportState();
+    }
+  }
+
+  /**
    * @brief Run Forward with the input Blob%s already fed separately.
    *
    * You can get the input blobs using input_blobs().

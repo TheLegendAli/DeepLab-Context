@@ -100,6 +100,20 @@ class Layer {
       const vector<Blob<Dtype>*>& top) = 0;
 
   /**
+   * @brief Reset internal counters and start fresh, useful when the layer stores some state.
+   *
+   * Do nothing by default, override if a particular layer needs it.
+   */
+  virtual void ResetState() {}
+
+  /**
+   * @brief Reports the status of a layer that carries some state.
+   *
+   * Do nothing by default, override if a particular layer needs it.
+   */
+  virtual void ReportState() const {}
+
+  /**
    * @brief Given the bottom blobs, compute the top blobs and the loss.
    *
    * @param bottom
