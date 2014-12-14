@@ -10,6 +10,7 @@
 #include "caffe/layer.hpp"
 #include "caffe/neuron_layers.hpp"
 #include "caffe/proto/caffe.pb.h"
+#include "caffe/util/confusion_matrix.hpp"
 
 namespace caffe {
 
@@ -836,8 +837,7 @@ class SegAccuracyLayer : public Layer<Dtype> {
     }
   }
 
-  int top_k_;
-  
+  ConfusionMatrix confusion_matrix_;
 };
 
 
