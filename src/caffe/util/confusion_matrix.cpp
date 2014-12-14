@@ -38,7 +38,7 @@ void ConfusionMatrix::resize(const int m) {
 
 void ConfusionMatrix::clear() {
   for(size_t i = 0; i < _matrix.size(); ++i){
-    fill(_matrix[i].begin(), _matrix[i].end(), 0);
+    std::fill(_matrix[i].begin(), _matrix[i].end(), 0);
   }
 }
 
@@ -71,7 +71,7 @@ void ConfusionMatrix::printCounts(const char *header) const {
   }
   for (size_t i = 0; i < _matrix.size(); i++) {
     LOG(INFO) << ROW_BEGIN;
-    for (size_t j = 0; j < (int)_matrix[i].size(); j++) {
+    for (size_t j = 0; j < _matrix[i].size(); j++) {
       if (j > 0) {
 	LOG(INFO) << COL_SEP;
       }
@@ -79,27 +79,25 @@ void ConfusionMatrix::printCounts(const char *header) const {
     }
     LOG(INFO) << ROW_END;
   }
-  LOG(INFO) << "\n";
 }
 
 void ConfusionMatrix::printRowNormalized(const char *header) const {
-    if (header == NULL) {
-      LOG(INFO) << "--- confusion matrix: (actual, predicted) ---";
-    } else {
-      LOG(INFO) << header;
-    }
-    for (size_t i = 0; i < _matrix.size(); i++) {
-      double total = rowSum(i);
-      LOG(INFO) << ROW_BEGIN;
-      for (size_t j = 0; j < _matrix[i].size(); j++) {
-	if (j > 0) {
-	  LOG(INFO) << COL_SEP;
-	}
-	LOG(INFO) << ((double)_matrix[i][j] / total);
+  if (header == NULL) {
+    LOG(INFO) << "--- confusion matrix: (actual, predicted) ---";
+  } else {
+    LOG(INFO) << header;
+  }
+  for (size_t i = 0; i < _matrix.size(); i++) {
+    double total = rowSum(i);
+    LOG(INFO) << ROW_BEGIN;
+    for (size_t j = 0; j < _matrix[i].size(); j++) {
+      if (j > 0) {
+	LOG(INFO) << COL_SEP;
       }
-      LOG(INFO) << ROW_END;
+      LOG(INFO) << ((double)_matrix[i][j] / total);
     }
-    LOG(INFO) << "\n";
+    LOG(INFO) << ROW_END;
+  }
 }
 
 void ConfusionMatrix::printColNormalized(const char *header) const {
@@ -123,7 +121,6 @@ void ConfusionMatrix::printColNormalized(const char *header) const {
     }
     LOG(INFO) << ROW_END;
   }
-  LOG(INFO) << "\n";
 }
 
 void ConfusionMatrix::printNormalized(const char *header) const {
@@ -142,7 +139,6 @@ void ConfusionMatrix::printNormalized(const char *header) const {
     }
     LOG(INFO) << ROW_END;
   }
-  LOG(INFO) << "\n";
 }
 
 void ConfusionMatrix::printPrecisionRecall(const char *header) const {
@@ -175,7 +171,6 @@ void ConfusionMatrix::printPrecisionRecall(const char *header) const {
     LOG(INFO) << p;
   }
   LOG(INFO) << ROW_END;
-  LOG(INFO) << "\n";
 }
 
 void ConfusionMatrix::printF1Score(const char *header) const {
@@ -199,7 +194,6 @@ void ConfusionMatrix::printF1Score(const char *header) const {
     LOG(INFO) << ((2.0 * p * r) / (p + r));
   }
   LOG(INFO) << ROW_END;
-  LOG(INFO) << "\n";
 }
 
 
@@ -220,7 +214,6 @@ void ConfusionMatrix::printJaccard(const char *header) const {
     LOG(INFO) << p;
   }
   LOG(INFO) << ROW_END;
-  LOG(INFO) << "\n";
 }
 
 double ConfusionMatrix::rowSum(int n) const {
