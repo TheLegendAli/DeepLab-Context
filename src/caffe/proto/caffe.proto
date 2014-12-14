@@ -206,7 +206,7 @@ message NetStateRule {
 // NOTE
 // Update the next available ID when you add a new LayerParameter field.
 //
-// LayerParameter next available ID: 46 (last added: interp_param)
+// LayerParameter next available ID: 47 (last added: mat_write_param)
 message LayerParameter {
   repeated string bottom = 2; // the name of the bottom blobs
   repeated string top = 3; // the name of the top blobs
@@ -227,7 +227,7 @@ message LayerParameter {
   // line above the enum. Update the next available ID when you add a new
   // LayerType.
   //
-  // LayerType next available ID: 43 (last added: PADDING)
+  // LayerType next available ID: 43 (last added: MAT_WRITE)
   enum LayerType {
     // "NONE" layer type is 0th enum element so that we don't cause confusion
     // by defaulting to an existent LayerType (instead, should usually error if
@@ -257,6 +257,7 @@ message LayerParameter {
     INNER_PRODUCT = 14;
     INTERP = 41;
     LRN = 15;
+    MAT_WRITE = 42;
     MEMORY_DATA = 29;
     MULTINOMIAL_LOGISTIC_LOSS = 16;
     MVN = 34;
@@ -323,6 +324,7 @@ message LayerParameter {
   optional InnerProductParameter inner_product_param = 17;
   optional InterpParameter interp_param = 43;
   optional LRNParameter lrn_param = 18;
+  optional MatWriteParameter mat_write_param = 46;
   optional MemoryDataParameter memory_data_param = 22;
   optional MVNParameter mvn_param = 34;
   optional PaddingParameter padding_param = 45;
@@ -608,6 +610,14 @@ message LRNParameter {
   }
   optional NormRegion norm_region = 4 [default = ACROSS_CHANNELS];
   optional float k = 5 [default = 1.];
+}
+
+// Message that stores parameters used by MatWriteLayer
+message MatWriteParameter {
+  required string prefix = 1;
+  optional string source = 2 [default = ""];
+  optional int32 strip = 3 [default = 0];
+  optional int32 period = 4 [default = 1];
 }
 
 // Message that stores parameters used by MemoryDataLayer
