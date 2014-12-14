@@ -151,8 +151,7 @@ int feature_extraction_pipeline(int argc, char** argv) {
         datum.set_channels(1);
         datum.clear_data();
         datum.clear_float_data();
-        feature_blob_data = feature_blob->cpu_data() +
-            feature_blob->offset(n);
+        feature_blob_data = feature_blob->cpu_data(n);
         for (int d = 0; d < dim_features; ++d) {
           datum.add_float_data(feature_blob_data[d]);
         }

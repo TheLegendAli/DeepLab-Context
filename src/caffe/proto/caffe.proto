@@ -206,7 +206,7 @@ message NetStateRule {
 // NOTE
 // Update the next available ID when you add a new LayerParameter field.
 //
-// LayerParameter next available ID: 45 (last added: softmaxloss_param)
+// LayerParameter next available ID: 46 (last added: interp_param)
 message LayerParameter {
   repeated string bottom = 2; // the name of the bottom blobs
   repeated string top = 3; // the name of the top blobs
@@ -227,7 +227,7 @@ message LayerParameter {
   // line above the enum. Update the next available ID when you add a new
   // LayerType.
   //
-  // LayerType next available ID: 42 (last added: INTERP)
+  // LayerType next available ID: 43 (last added: PADDING)
   enum LayerType {
     // "NONE" layer type is 0th enum element so that we don't cause confusion
     // by defaulting to an existent LayerType (instead, should usually error if
@@ -260,6 +260,7 @@ message LayerParameter {
     MEMORY_DATA = 29;
     MULTINOMIAL_LOGISTIC_LOSS = 16;
     MVN = 34;
+    PADDING = 42;
     POOLING = 17;
     POWER = 26;
     RELU = 18;
@@ -324,6 +325,7 @@ message LayerParameter {
   optional LRNParameter lrn_param = 18;
   optional MemoryDataParameter memory_data_param = 22;
   optional MVNParameter mvn_param = 34;
+  optional PaddingParameter padding_param = 45;
   optional PoolingParameter pooling_param = 19;
   optional PowerParameter power_param = 21;
   optional ReLUParameter relu_param = 30;
@@ -623,6 +625,12 @@ message MVNParameter {
 
   // This parameter can be set to true to perform DNN-like MVN
   optional bool across_channels = 2 [default = false];
+}
+
+// Message that stores parameters used by PaddingLayer
+message PaddingParameter {
+  optional int32 pad_beg = 1 [default = 0]; // Padding at the beginning
+  optional int32 pad_end = 2 [default = 0]; // Padding at the end
 }
 
 // Message that stores parameters used by PoolingLayer
