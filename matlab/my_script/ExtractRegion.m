@@ -1,0 +1,3 @@
+function out = ExtractRegion(in, kernel, stride)
+out = in( ceil(kernel/2) : stride : size(in,1) - floor(kernel/2), ...
+                 ceil(kernel/2) : stride : size(in,2) - floor(kernel/2) );
