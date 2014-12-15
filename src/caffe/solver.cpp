@@ -195,11 +195,6 @@ void Solver<Dtype>::Solve(const char* resume_file) {
 
     const bool display = param_.display() && iter_ % param_.display() == 0;
     net_->set_debug_info(display && param_.debug_info());
-
-    //
-    net_->Forward(bottom_vec, NULL);
-    // jay debug
-    /*
     Dtype loss = net_->ForwardBackward(bottom_vec);
     if (losses.size() < average_loss) {
       losses.push_back(loss);
@@ -235,8 +230,6 @@ void Solver<Dtype>::Solve(const char* resume_file) {
 
     ComputeUpdateValue();
     net_->Update();
-
-    // end jay */
   }
   // Always save a snapshot after optimization, unless overridden by setting
   // snapshot_after_train := false.
@@ -278,6 +271,7 @@ void Solver<Dtype>::Test(const int test_net_id) {
   vector<int> test_score_output_id;
   vector<Blob<Dtype>*> bottom_vec;
   const shared_ptr<Net<Dtype> >& test_net = test_nets_[test_net_id];
+  test_net->LayersResetState();
   Dtype loss = 0;
   for (int i = 0; i < param_.test_iter(test_net_id); ++i) {
     Dtype iter_loss;
@@ -322,6 +316,7 @@ void Solver<Dtype>::Test(const int test_net_id) {
     LOG(INFO) << "    Test net output #" << i << ": " << output_name << " = "
         << mean_score << loss_msg_stream.str();
   }
+  test_net->LayersReportState();
   Caffe::set_phase(Caffe::TRAIN);
 }
 

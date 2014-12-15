@@ -75,7 +75,7 @@ class Blob {
 
   inline Dtype data_at(const int n, const int c, const int h,
       const int w) const {
-    return *(cpu_data() + offset(n, c, h, w));
+    return *cpu_data(n, c, h, w);
   }
 
   inline Dtype diff_at(const int n, const int c, const int h,
@@ -93,18 +93,21 @@ class Blob {
     return diff_;
   }
 
-  const Dtype* cpu_data() const;
+  const Dtype* cpu_data(const int n = 0, const int c = 0, const int h = 0, const int w = 0) const;
   void set_cpu_data(Dtype* data);
-  const Dtype* gpu_data() const;
-  const Dtype* cpu_diff() const;
-  const Dtype* gpu_diff() const;
-  Dtype* mutable_cpu_data();
-  Dtype* mutable_gpu_data();
-  Dtype* mutable_cpu_diff();
-  Dtype* mutable_gpu_diff();
+  const Dtype* gpu_data(const int n = 0, const int c = 0, const int h = 0, const int w = 0) const;
+  const Dtype* cpu_diff(const int n = 0, const int c = 0, const int h = 0, const int w = 0) const;
+  const Dtype* gpu_diff(const int n = 0, const int c = 0, const int h = 0, const int w = 0) const;
+  Dtype* mutable_cpu_data(const int n = 0, const int c = 0, const int h = 0, const int w = 0);
+  Dtype* mutable_gpu_data(const int n = 0, const int c = 0, const int h = 0, const int w = 0);
+  Dtype* mutable_cpu_diff(const int n = 0, const int c = 0, const int h = 0, const int w = 0);
+  Dtype* mutable_gpu_diff(const int n = 0, const int c = 0, const int h = 0, const int w = 0);
   void Update();
   void FromProto(const BlobProto& proto);
   void ToProto(BlobProto* proto, bool write_diff = false) const;
+
+  void FromMat(const char *fname);
+  void ToMat(const char *fname, bool write_diff = false);
 
   /// @brief Compute the sum of absolute values (L1 norm) of the data.
   Dtype asum_data() const;

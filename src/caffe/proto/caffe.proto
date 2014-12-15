@@ -206,7 +206,7 @@ message NetStateRule {
 // NOTE
 // Update the next available ID when you add a new LayerParameter field.
 //
-// LayerParameter next available ID: 42 (last added: exp_param)
+// LayerParameter next available ID: 47 (last added: mat_write_param)
 message LayerParameter {
   repeated string bottom = 2; // the name of the bottom blobs
   repeated string top = 3; // the name of the top blobs
@@ -227,7 +227,7 @@ message LayerParameter {
   // line above the enum. Update the next available ID when you add a new
   // LayerType.
   //
-  // LayerType next available ID: 42 (last added: DECONVOLUTION)
+  // LayerType next available ID: 43 (last added: MAT_WRITE)
   enum LayerType {
     // "NONE" layer type is 0th enum element so that we don't cause confusion
     // by defaulting to an existent LayerType (instead, should usually error if
@@ -241,7 +241,6 @@ message LayerParameter {
     CONTRASTIVE_LOSS = 37;
     CONVOLUTION = 4;
     DATA = 5;
-    DECONVOLUTION = 41;
     DROPOUT = 6;
     DUMMY_DATA = 32;
     EUCLIDEAN_LOSS = 7;
@@ -256,10 +255,13 @@ message LayerParameter {
     IMAGE_SEG_DATA = 39;
     INFOGAIN_LOSS = 13;
     INNER_PRODUCT = 14;
+    INTERP = 41;
     LRN = 15;
+    MAT_WRITE = 42;
     MEMORY_DATA = 29;
     MULTINOMIAL_LOGISTIC_LOSS = 16;
     MVN = 34;
+    PADDING = 42;
     POOLING = 17;
     POWER = 26;
     RELU = 18;
@@ -291,6 +293,8 @@ message LayerParameter {
     // PERMISSIVE requires only the count (num*channels*height*width) to match.
     PERMISSIVE = 1;
   }
+  // Same for when loading weights in Net<Dtype>::CopyTrainedLayersFrom()
+  optional bool strict_dim = 1003 [ default = true ];
   // The ratio that is multiplied on the global learning rate. If you want to
   // set the learning ratio for one blob, you need to set it for all blobs.
   repeated float blobs_lr = 7;
@@ -318,14 +322,19 @@ message LayerParameter {
   optional ImageDataParameter image_data_param = 15;
   optional InfogainLossParameter infogain_loss_param = 16;
   optional InnerProductParameter inner_product_param = 17;
+  optional InterpParameter interp_param = 43;
   optional LRNParameter lrn_param = 18;
+  optional MatWriteParameter mat_write_param = 46;
   optional MemoryDataParameter memory_data_param = 22;
   optional MVNParameter mvn_param = 34;
+  optional PaddingParameter padding_param = 45;
   optional PoolingParameter pooling_param = 19;
   optional PowerParameter power_param = 21;
   optional ReLUParameter relu_param = 30;
+  optional SegAccuracyParameter seg_accuracy_param = 42;
   optional SigmoidParameter sigmoid_param = 38;
   optional SoftmaxParameter softmax_param = 39;
+  optional SoftmaxLossParameter softmaxloss_param = 44;
   optional SliceParameter slice_param = 31;
   optional TanHParameter tanh_param = 37;
   optional ThresholdParameter threshold_param = 25;
@@ -363,6 +372,23 @@ message TransformationParameter {
   // (would subtract them from the corresponding channel)
   repeated float mean_value = 5;
 }
+
+// jay add
+// Message that stores parametres used by SegAccuracyLayer
+message SegAccuracyParameter {
+  enum AccuracyMetric {
+    PixelAccuracy = 0;
+    ClassAccuracy = 1;
+    PixelIOU = 2;
+  }
+  optional AccuracyMetric metric = 1 [default = PixelAccuracy];
+}
+// Message that stores parametres used by SoftmaxWithLossLayer
+message SoftmaxLossParameter {
+  // specify the data source for loss_weights_
+  optional string weight_source = 16;
+}
+// end jay
 
 // Message that stores parameters used by AccuracyLayer
 message AccuracyParameter {
@@ -551,17 +577,19 @@ message ImageDataParameter {
   // data.
   optional bool mirror = 6 [default = false];
   optional string root_folder = 12 [default = ""];
-
-  // Jay add: max expected image row and col
-  optional uint32 max_expected_channel = 13 [default = 3];
-  optional uint32 max_expected_height = 14 [default = 0];
-  optional uint32 max_expected_width = 15 [default = 0];
 }
 
 // Message that stores parameters InfogainLossLayer
 message InfogainLossParameter {
   // Specify the infogain matrix source.
   optional string source = 1;
+}
+
+// Message that stores parameters used by InterpLayer
+message InterpParameter {
+  optional int32 height = 1 [default = 0]; // Height of output
+  optional int32 width = 2 [default = 0]; // Width of output
+  optional int32 zoom_factor = 3 [default = 1]; // zoom factor
 }
 
 // Message that stores parameters used by InnerProductLayer
@@ -585,6 +613,14 @@ message LRNParameter {
   optional float k = 5 [default = 1.];
 }
 
+// Message that stores parameters used by MatWriteLayer
+message MatWriteParameter {
+  required string prefix = 1;
+  optional string source = 2 [default = ""];
+  optional int32 strip = 3 [default = 0];
+  optional int32 period = 4 [default = 1];
+}
+
 // Message that stores parameters used by MemoryDataLayer
 message MemoryDataParameter {
   optional uint32 batch_size = 1;
@@ -600,6 +636,12 @@ message MVNParameter {
 
   // This parameter can be set to true to perform DNN-like MVN
   optional bool across_channels = 2 [default = false];
+}
+
+// Message that stores parameters used by PaddingLayer
+message PaddingParameter {
+  optional int32 pad_beg = 1 [default = 0]; // Padding at the beginning
+  optional int32 pad_end = 2 [default = 0]; // Padding at the end
 }
 
 // Message that stores parameters used by PoolingLayer

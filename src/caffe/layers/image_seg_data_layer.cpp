@@ -31,10 +31,9 @@ void ImageSegDataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom
   const bool is_color  = this->layer_param_.image_data_param().is_color();
   string root_folder = this->layer_param_.image_data_param().root_folder();
 
-  const int max_expected_channel = this->layer_param_.image_data_param().max_expected_channel();
-  const int max_expected_height = this->layer_param_.image_data_param().max_expected_height();
-  const int max_expected_width = this->layer_param_.image_data_param().max_expected_width();
-
+  TransformationParameter transform_param = this->layer_param_.transform_param();
+  CHECK(transform_param.has_mean_file() == false) << 
+         "ImageSegDataLayer does not support mean file";
   CHECK((new_height == 0 && new_width == 0) ||
       (new_height > 0 && new_width > 0)) << "Current implementation requires "
       "new_height and new_width to be set at the same time.";
@@ -68,30 +67,17 @@ void ImageSegDataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom
     lines_id_ = skip;
   }
 
-  int channels;
-  int height;
-  int width;
+  // Read an image, and use it to initialize the top blob.
+  cv::Mat cv_img = ReadImageToCVMat(root_folder + lines_[lines_id_].first,
+				    new_height, new_width, is_color);
 
-  if (max_expected_height == 0 && max_expected_width == 0) {
-    // Read an image, and use it to initialize the top blob.
-    cv::Mat cv_img = ReadImageToCVMat(root_folder + lines_[lines_id_].first,
-                                    new_height, new_width, is_color);
-
-    channels = cv_img.channels();
-    height = cv_img.rows;
-    width = cv_img.cols;
-  } else {
-    channels = max_expected_channel;
-    height = max_expected_height;
-    width  = max_expected_width;
-  }
+  const int channels = cv_img.channels();
+  const int height = cv_img.rows;
+  const int width = cv_img.cols;
 
   // image
   const int crop_size = this->layer_param_.transform_param().crop_size();
   const int batch_size = this->layer_param_.image_data_param().batch_size();
-
-  CHECK(batch_size == 1) << "Current implementation requires "
-    "batch_size to be 1.";
 
   if (crop_size > 0) {
     top[0]->Reshape(batch_size, channels, crop_size, crop_size);
@@ -116,9 +102,9 @@ void ImageSegDataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom
       << top[0]->channels() << "," << top[0]->height() << ","
       << top[0]->width();
   // label
-  //top[1]->Reshape(batch_size, 1, 1, 1);
-  //this->prefetch_label_.Reshape(batch_size, 1, 1, 1);
-
+  LOG(INFO) << "output label size: " << top[1]->num() << ","
+      << top[1]->channels() << "," << top[1]->height() << ","
+      << top[1]->width();
 }
 
 template <typename Dtype>
@@ -151,100 +137,48 @@ void ImageSegDataLayer<Dtype>::InternalThreadEntry() {
   const int lines_size = lines_.size();
 
   for (int item_id = 0; item_id < batch_size; ++item_id) {
+    std::vector<cv::Mat> cv_img_seg;
+
     // get a blob
     timer.Start();
     CHECK_GT(lines_size, lines_id_);
-    cv::Mat cv_img = ReadImageToCVMat(root_folder + lines_[lines_id_].first,
-				      new_height, new_width, is_color);
-    if (!cv_img.data) {
+    cv_img_seg.push_back(ReadImageToCVMat(root_folder + lines_[lines_id_].first,
+					  new_height, new_width, is_color));
+    cv_img_seg.push_back(ReadImageToCVMat(root_folder + lines_[lines_id_].second,
+					  new_height, new_width, false));
+    if (!cv_img_seg[0].data) {
       DLOG(INFO) << "Fail to load img: " << root_folder + lines_[lines_id_].first;
     }
-
-    // check input dimensions
-    int channels = cv_img.channels();
-    int height = cv_img.rows;
-    int width = cv_img.cols;
-
-    /*
-    int pad_height = this->prefetch_data_.height() - height;
-    int pad_width  = this->prefetch_data_.width() - width;
-    
-    if (pad_height > 0 || pad_width > 0) {
-      Dtype b_val = transorm_param.mean_value(0);
-      Dtype g_val = transorm_param.mean_value(1);
-      Dtype r_val = transorm_param.mean_value(2);
-
-      cv::copyMakeBorder(cv_img, cv_img, 0, pad_height, 0, pad_width, cv::BORDER_CONSTANT, cv::Scalar(b_val, g_val, r_val));
-      
-      cv::namedWindow("img", cv::WINDOW_AUTOSIZE);
-      cv::imshow("img", cv_img);
-      cv::waitKey(0);
-      
+    if (!cv_img_seg[1].data) {
+      DLOG(INFO) << "Fail to load seg: " << root_folder + lines_[lines_id_].second;
     }
-    */
-    /*
-      this->prefetch_data_.Reshape(1, channels, height, width);
-      this->transformed_data_.Reshape(1, channels, height, width);
-      this->prefetch_label_.Reshape(1, 1, height, width);
-      this->transformed_label_.Reshape(1, 1, height, width); 
-    */
 
     read_time += timer.MicroSeconds();
     timer.Start();
     // Apply transformations (mirror, crop...) to the image
     int offset;
+
     offset = this->prefetch_data_.offset(item_id);
     this->transformed_data_.set_cpu_data(top_data + offset);
-    this->data_transformer_.TransformAndPad(cv_img, &(this->transformed_data_));
-    trans_time += timer.MicroSeconds();
 
-
-    /* // debug
-    std::string save_fn;
-    save_fn = "img.bin";
-    this->transformed_data_.WriteToBinaryFile(save_fn);
-    // */
-
-    timer.Start();
-    cv::Mat cv_seg = ReadImageToCVMat(root_folder + lines_[lines_id_].second,
-				      new_height, new_width, false);
-    if (!cv_seg.data) {
-      DLOG(INFO) << "Fail to load img: " << root_folder + lines_[lines_id_].second;
-    }
-  
-    /*
-    if (pad_height > 0 || pad_width > 0) {
-      Dtype mask_val = 255;
-
-      cv::copyMakeBorder(cv_seg, cv_seg, 0, pad_height, 0, pad_width, cv::BORDER_CONSTANT, cv::Scalar(mask_val));
-      
-      cv::namedWindow("seg", cv::WINDOW_AUTOSIZE);
-      cv::imshow("seg", cv_seg);
-      cv::waitKey(0);      
-    }
-    */
-
-    /* //jay debug
-    for(int m = 0; m < cv_seg.rows; ++m) {
-       for(int n = 0; n < cv_seg.cols; ++n) {
-	 std::cout << (double)cv_seg.at<uchar>(m,n) << ' ';
-       }
-       std::cout << std::endl;
-    }
-    std::cout << std::endl;
-    // */
-
-    read_time += timer.MicroSeconds();
-
-    timer.Start();
     offset = this->prefetch_label_.offset(item_id);
     this->transformed_label_.set_cpu_data(top_label + offset);
-    this->data_transformer_.TransformSegAndPad(cv_seg, &(this->transformed_label_));
+
+    this->data_transformer_.TransformImgAndSeg(cv_img_seg, 
+       &(this->transformed_data_), &(this->transformed_label_));
     trans_time += timer.MicroSeconds();
 
-    /* // debug
-    save_fn = "seg.bin";
-    this->transformed_label_.WriteToBinaryFile(save_fn);
+    /* debug
+    cv::namedWindow("img", cv::WINDOW_AUTOSIZE);
+    cv::imshow("img", cv_img_seg[0]);
+    cv::namedWindow("seg", cv::WINDOW_AUTOSIZE);
+    cv::imshow("seg", cv_img_seg[1]);
+
+    std::string fn;
+    fn = "img.bin";
+    this->transformed_data_.WriteToBinaryFile(fn);
+    fn = "seg.bin";
+    this->transformed_label_.WriteToBinaryFile(fn);
     // */
 
 
