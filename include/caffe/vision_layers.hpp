@@ -234,6 +234,8 @@ class InterpLayer : public Layer<Dtype> {
   int num_, channels_;
   int height_in_, width_in_;
   int height_out_, width_out_;
+  int pad_beg_, pad_end_;
+  int height_in_eff_, width_in_eff_;
 };
 
 /**

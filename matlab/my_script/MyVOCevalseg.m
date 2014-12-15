@@ -43,7 +43,7 @@ for i=1:length(gtids)
     % Check validity of results image
     maxlabel = max(resim(:));
     if (maxlabel>VOCopts.nclasses), 
-        %error('Results image ''%s'' has out of range value %d (the value should be <= %d)',imname,maxlabel,VOCopts.nclasses);
+        error('Results image ''%s'' has out of range value %d (the value should be <= %d)',imname,maxlabel,VOCopts.nclasses);
     end
 
     szgtim = size(gtim); szresim = size(resim);
@@ -73,6 +73,7 @@ fprintf('Percentage of pixels correctly labelled overall: %6.3f%%\n',overall_acc
 % Class Accuracy
 class_acc = zeros(1, num);
 class_count = 0;
+fprintf('Accuracy for each class (pixel accuracy)\n');
 for i = 1 : num
     denom = sum(confcounts(i, :));
     if (denom == 0)
@@ -81,7 +82,14 @@ for i = 1 : num
         class_count = class_count + 1;
     end
     class_acc(i) = 100 * confcounts(i, i) / denom; 
+    if i == 1
+      clname = 'background';
+    else
+      clname = VOCopts.classes{i-1};
+    end
+    fprintf('  %14s: %6.3f%%\n', clname, class_acc(i));
 end
+fprintf('-------------------------\n');
 avg_class_acc = sum(class_acc) / class_count;
 fprintf('Mean Class Accuracy: %6.3f%%\n', avg_class_acc);
 

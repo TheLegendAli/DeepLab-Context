@@ -1,4 +1,4 @@
-function VOCopts = GetVOCopts(trainset, testset)
+function VOCopts = GetVOCopts(seg_root, seg_res_dir, trainset, testset)
 %clear VOCopts
 
 % dataset
@@ -16,7 +16,8 @@ devkitroot=strrep(fileparts(fileparts(mfilename('fullpath'))),'\','/');
 VOCopts.datadir=[devkitroot '/'];
 
 % change this path to a writable directory for your results
-VOCopts.resdir=[devkitroot '/results/' VOCopts.dataset '/'];
+%VOCopts.resdir=[devkitroot '/results/' VOCopts.dataset '/'];
+VOCopts.resdir = seg_res_dir;
 
 % change this path to a writable local directory for the example code
 VOCopts.localdir=[devkitroot '/local/' VOCopts.dataset '/'];
@@ -44,10 +45,14 @@ VOCopts.detrespath=[VOCopts.resdir 'Main/%s_det_' VOCopts.testset '_%s.txt'];
 
 % initialize segmentation task paths
 
-VOCopts.seg.clsimgpath=[VOCopts.datadir VOCopts.dataset '/SegmentationClass/%s.png'];
-VOCopts.seg.instimgpath=[VOCopts.datadir VOCopts.dataset '/SegmentationObject/%s.png'];
+VOCopts.seg.clsimgpath=[seg_root '/SegmentationClassAug/%s.png'];
+VOCopts.seg.instimgpath=[seg_root '/SegmentationObject/%s.png'];
+VOCopts.seg.imgsetpath=[seg_root '/ImageSets/Segmentation/%s.txt'];
 
-VOCopts.seg.imgsetpath=[VOCopts.datadir VOCopts.dataset '/ImageSets/Segmentation/%s.txt'];
+%VOCopts.seg.clsimgpath=[VOCopts.datadir VOCopts.dataset '/SegmentationClass/%s.png'];
+%VOCopts.seg.instimgpath=[VOCopts.datadir VOCopts.dataset '/SegmentationObject/%s.png'];
+%VOCopts.seg.imgsetpath=[VOCopts.dataset '/ImageSets/Segmentation/%s.txt'];
+
 
 VOCopts.seg.clsresdir=[VOCopts.resdir 'Segmentation/%s_%s_cls'];
 VOCopts.seg.instresdir=[VOCopts.resdir 'Segmentation/%s_%s_inst'];

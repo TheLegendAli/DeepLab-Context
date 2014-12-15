@@ -11,9 +11,16 @@ template <typename Dtype>
 void InterpLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top) {
   InterpParameter interp_param = this->layer_param_.interp_param();
-  CHECK(interp_param.has_zoom_factor() != 
-	(interp_param.has_height() && interp_param.has_width()))
-    << "Output dimension specified either by zoom factor or explicitly";
+  int num_specs = 0;
+  num_specs += interp_param.has_zoom_factor();
+  num_specs += interp_param.has_shrink_factor();
+  num_specs += interp_param.has_height() && interp_param.has_width();
+  CHECK_EQ(num_specs, 1) << "Output dimension specified either by "
+			 << "zoom factor or shrink factor or explicitly";
+  pad_beg_ = interp_param.pad_beg();
+  pad_end_ = interp_param.pad_end();
+  CHECK_LE(pad_beg_, 0) << "Only supports non-pos padding (cropping) for now";
+  CHECK_LE(pad_end_, 0) << "Only supports non-pos padding (cropping) for now";
 }
 
 template <typename Dtype>
@@ -23,12 +30,20 @@ void InterpLayer<Dtype>::Reshape(const vector<Blob<Dtype>*>& bottom,
   channels_ = bottom[0]->channels();
   height_in_ = bottom[0]->height();
   width_in_ = bottom[0]->width();
+  height_in_eff_ = height_in_ + pad_beg_ + pad_end_;
+  width_in_eff_ = width_in_ + pad_beg_ + pad_end_;
   InterpParameter interp_param = this->layer_param_.interp_param();
   if (interp_param.has_zoom_factor()) {
     const int zoom_factor = interp_param.zoom_factor();
     CHECK_GE(zoom_factor, 1) << "Zoom factor must be positive";
-    height_out_ = height_in_ + (height_in_ - 1) * (zoom_factor - 1);
-    width_out_ = width_in_ + (width_in_ - 1) * (zoom_factor - 1);
+    height_out_ = height_in_eff_ + (height_in_eff_ - 1) * (zoom_factor - 1);
+    width_out_ = width_in_eff_ + (width_in_eff_ - 1) * (zoom_factor - 1);
+  }
+  else if (interp_param.has_shrink_factor()) {
+    const int shrink_factor = interp_param.shrink_factor();
+    CHECK_GE(shrink_factor, 1) << "Shrink factor must be positive";
+    height_out_ = (height_in_eff_ - 1) / shrink_factor + 1;
+    width_out_ = (width_in_eff_ - 1) / shrink_factor + 1;
   }
   else if (interp_param.has_height() && interp_param.has_width()) {
     height_out_  = interp_param.height();
@@ -37,8 +52,10 @@ void InterpLayer<Dtype>::Reshape(const vector<Blob<Dtype>*>& bottom,
   else {
     LOG(FATAL); // we have already checked for that
   }
-  CHECK_GT(height_out_, 0) << "Need to specify height and this should be positive";
-  CHECK_GT(width_out_, 0) << "Need to specify width and this should be positive";
+  CHECK_GT(height_in_eff_, 0) << "height should be positive";
+  CHECK_GT(width_in_eff_, 0) << "width should be positive";
+  CHECK_GT(height_out_, 0) << "height should be positive";
+  CHECK_GT(width_out_, 0) << "width should be positive";
   top[0]->Reshape(num_, channels_, height_out_, width_out_);
 }
 
@@ -46,7 +63,7 @@ template <typename Dtype>
 void InterpLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top) {
   caffe_cpu_interp2<Dtype,false>(num_ * channels_,
-    bottom[0]->cpu_data(), 0, 0, height_in_, width_in_, height_in_, width_in_,
+    bottom[0]->cpu_data(), - pad_beg_, - pad_beg_, height_in_eff_, width_in_eff_, height_in_, width_in_,
     top[0]->mutable_cpu_data(), 0, 0, height_out_, width_out_, height_out_, width_out_);
 }
 
@@ -56,7 +73,7 @@ void InterpLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
   if (!propagate_down[0]) { return; }
   caffe_set(bottom[0]->count(), Dtype(0), bottom[0]->mutable_cpu_diff());
   caffe_cpu_interp2_backward<Dtype,false>(num_ * channels_,
-    bottom[0]->mutable_cpu_diff(), 0, 0, height_in_, width_in_, height_in_, width_in_,
+    bottom[0]->mutable_cpu_diff(), - pad_beg_, - pad_beg_, height_in_eff_, width_in_eff_, height_in_, width_in_,
     top[0]->cpu_diff(), 0, 0, height_out_, width_out_, height_out_, width_out_);
 }
 
@@ -64,7 +81,7 @@ template <typename Dtype>
 void InterpLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top) {
   caffe_gpu_interp2<Dtype,false>(num_ * channels_,
-    bottom[0]->gpu_data(), 0, 0, height_in_, width_in_, height_in_, width_in_,
+    bottom[0]->gpu_data(), - pad_beg_, - pad_beg_, height_in_eff_, width_in_eff_, height_in_, width_in_,
     top[0]->mutable_gpu_data(), 0, 0, height_out_, width_out_, height_out_, width_out_);
 }
 
@@ -74,7 +91,7 @@ void InterpLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
   if (!propagate_down[0]) { return; }
   caffe_gpu_set(bottom[0]->count(), Dtype(0), bottom[0]->mutable_gpu_diff());
   caffe_gpu_interp2_backward<Dtype,false>(num_ * channels_,
-    bottom[0]->mutable_gpu_diff(), 0, 0, height_in_, width_in_, height_in_, width_in_,
+    bottom[0]->mutable_gpu_diff(), - pad_beg_, - pad_beg_, height_in_eff_, width_in_eff_, height_in_, width_in_,
     top[0]->gpu_diff(), 0, 0, height_out_, width_out_, height_out_, width_out_);
 }
 
