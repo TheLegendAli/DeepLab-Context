@@ -287,8 +287,7 @@ class MatWriteLayer : public Layer<Dtype> {
   virtual inline LayerParameter_LayerType type() const {
     return LayerParameter_LayerType_MAT_WRITE;
   }
- virtual inline int ExactNumBottomBlobs() const { return 1; }
- virtual inline int ExactNumTopBlobs() const { return 0; }
+  virtual inline int ExactNumTopBlobs() const { return 0; }
 
  protected:
   virtual void Forward_cpu(const vector<Blob<Dtype>*>& bottom,

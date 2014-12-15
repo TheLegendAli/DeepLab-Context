@@ -20,7 +20,7 @@ void MatWriteLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
     CHECK(infile.good()) << "Failed to open source file "
 			 << this->layer_param_.mat_write_param().source();
     const int strip = this->layer_param_.mat_write_param().strip();
-    CHECK_GT(strip, 0) << "Strip cannot be negative";
+    CHECK_GE(strip, 0) << "Strip cannot be negative";
     string linestr;
     while (std::getline(infile, linestr)) {
       std::istringstream iss(linestr);
@@ -68,5 +68,6 @@ void MatWriteLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
 
 
 INSTANTIATE_CLASS(MatWriteLayer);
+REGISTER_LAYER_CLASS(MAT_WRITE, MatWriteLayer);
 
 }  // namespace caffe
