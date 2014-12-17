@@ -240,6 +240,7 @@ class ImageDataLayer : public BasePrefetchingDataLayer<Dtype> {
   }
   virtual inline int ExactNumBottomBlobs() const { return 0; }
   virtual inline int ExactNumTopBlobs() const { return 2; }
+  virtual inline bool AutoTopBlobs() const { return true; }
 
  protected:
   shared_ptr<Caffe::RNG> prefetch_rng_;

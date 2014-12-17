@@ -1,5 +1,6 @@
 #include <fstream>  // NOLINT(readability/streams)
 #include <iostream>  // NOLINT(readability/streams)
+#include <sstream>
 #include <string>
 #include <utility>
 #include <vector>
@@ -24,18 +25,26 @@ void ImageDataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom,
   const int new_height = this->layer_param_.image_data_param().new_height();
   const int new_width  = this->layer_param_.image_data_param().new_width();
   const bool is_color  = this->layer_param_.image_data_param().is_color();
+  const bool has_label = this->layer_param_.image_data_param().has_label();
   string root_folder = this->layer_param_.image_data_param().root_folder();
 
   CHECK((new_height == 0 && new_width == 0) ||
       (new_height > 0 && new_width > 0)) << "Current implementation requires "
       "new_height and new_width to be set at the same time.";
+
   // Read the file with filenames and labels
   const string& source = this->layer_param_.image_data_param().source();
   LOG(INFO) << "Opening file " << source;
   std::ifstream infile(source.c_str());
-  string filename;
-  int label;
-  while (infile >> filename >> label) {
+  string linestr;
+  while (std::getline(infile, linestr)) {
+    std::istringstream iss(linestr);
+    string filename;
+    iss >> filename;
+    int label = 0;
+    if (has_label) {
+      iss >> label;
+    }
     lines_.push_back(std::make_pair(filename, label));
   }
 
@@ -106,6 +115,7 @@ void ImageDataLayer<Dtype>::InternalThreadEntry() {
   const int batch_size = image_data_param.batch_size();
   const int new_height = image_data_param.new_height();
   const int new_width = image_data_param.new_width();
+  const bool has_label = image_data_param.has_label();
   const bool is_color = image_data_param.is_color();
   string root_folder = image_data_param.root_folder();
 
@@ -127,8 +137,10 @@ void ImageDataLayer<Dtype>::InternalThreadEntry() {
     this->transformed_data_.set_cpu_data(top_data + offset);
     this->data_transformer_.Transform(cv_img, &(this->transformed_data_));
     trans_time += timer.MicroSeconds();
-
-    top_label[item_id] = lines_[lines_id_].second;
+    // Set the label
+    if (has_label) {
+      top_label[item_id] = lines_[lines_id_].second;
+    }
     // go to the next iter
     lines_id_++;
     if (lines_id_ >= lines_size) {
