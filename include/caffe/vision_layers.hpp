@@ -290,6 +290,7 @@ class MatReadLayer : public Layer<Dtype> {
     return LayerParameter_LayerType_MAT_READ;
   }
   virtual inline int ExactNumBottomBlobs() const { return 0; }
+  virtual inline int ExactNumTopBlobs() const { return 1; }
 
  protected:
   virtual void Forward_cpu(const vector<Blob<Dtype>*>& bottom,
@@ -297,8 +298,9 @@ class MatReadLayer : public Layer<Dtype> {
   virtual void Backward_cpu(const vector<Blob<Dtype>*>& top,
       const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom);
 
+  bool reshape_;
+  int batch_size_;
   int iter_;
-  int period_;
   string prefix_;
   vector<string> fnames_;
 };

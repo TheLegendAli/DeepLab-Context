@@ -11,10 +11,11 @@ namespace caffe {
 template <typename Dtype>
 void MatReadLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
 				      const vector<Blob<Dtype>*>& top) {
-  iter_ = 0;
   prefix_ = this->layer_param_.mat_read_param().prefix();
-  period_ = this->layer_param_.mat_read_param().period();
-  CHECK_GT(period_, 0) << "period must be positive";
+  batch_size_ = this->layer_param_.mat_read_param().batch_size();
+  CHECK_GT(batch_size_, 0) << "batch_size must be positive";
+  reshape_ = false;
+  iter_ = 0;
   if (this->layer_param_.mat_read_param().has_source()) {
     std::ifstream infile(this->layer_param_.mat_read_param().source().c_str());
     CHECK(infile.good()) << "Failed to open source file "
@@ -36,13 +37,16 @@ void MatReadLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
 template <typename Dtype>
 void MatReadLayer<Dtype>::Reshape(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top) {
+  reshape_ = true;   iter_ = 0;
+  Forward_cpu(bottom, top);
+  reshape_ = false;  iter_ = 0;
 }
 
 template <typename Dtype>
 void MatReadLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
     const vector<Blob<Dtype>*>& top) {
-  if (iter_ % period_ == 0) {
-    for (int i = 0; i < bottom.size(); ++i) {
+  for (int n = 0; n < batch_size_; ++n) {
+    for (int i = 0; i < top.size(); ++i) {
       std::ostringstream oss;
       oss << prefix_;
       if (this->layer_param_.mat_read_param().has_source()) {
@@ -53,10 +57,20 @@ void MatReadLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
 	oss << "iter_" << iter_;
       }
       oss << "_blob_" << i << ".mat";
-      top[i]->FromMat(oss.str().c_str());
+      Blob<Dtype> blob;
+      blob.FromMat(oss.str().c_str());
+      CHECK_EQ(blob.num(), 1);
+      if (reshape_) {
+	top[i]->Reshape(batch_size, blob.channels(), blob.height(), blob.width());
+      }
+      else {
+	CHECK(blob.channels()  == top[i]->channels()
+	      && blob.height() == top[i]->height() 
+	      && blob.width()  == top[i]->width());
+      }
     }
+    ++iter_;
   }
-  ++iter_;
 }
 
 template <typename Dtype>

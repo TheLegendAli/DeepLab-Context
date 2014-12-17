@@ -624,7 +624,7 @@ message MatReadParameter {
   required string prefix = 1;
   optional string source = 2 [default = ""];
   optional int32 strip = 3 [default = 0];
-  optional int32 period = 4 [default = 1];
+  optional int32 batch_size = 4 [default = 1];
 }
 
 // Message that stores parameters used by MatWriteLayer
