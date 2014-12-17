@@ -30,7 +30,8 @@ void MatReadLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
       CHECK_GT(filename.size(), strip) << "Too much stripping";
       fnames_.push_back(filename.substr(0, filename.size() - strip));
     }
-    LOG(INFO) << "MatRead will load a maximum of " << fnames_.size() << " files.";
+    LOG(INFO) << "MatRead will load from a set of " << fnames_.size() << " files.";
+    CHECK_GT(fnames_.size(), 0);
   }
 }
 
@@ -50,7 +51,9 @@ void MatReadLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
       std::ostringstream oss;
       oss << prefix_;
       if (this->layer_param_.mat_read_param().has_source()) {
-	CHECK_LT(iter_, fnames_.size()) << "Test has run for more iterations than it was supposed to";
+	if (iter_ >= fnames_.size()) {
+	  iter_ = 0;
+	}
 	oss << fnames_[iter_];
       }
       else {
@@ -61,7 +64,7 @@ void MatReadLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
       blob.FromMat(oss.str().c_str());
       CHECK_EQ(blob.num(), 1);
       if (reshape_) {
-	top[i]->Reshape(batch_size, blob.channels(), blob.height(), blob.width());
+	top[i]->Reshape(batch_size_, blob.channels(), blob.height(), blob.width());
       }
       else {
 	CHECK(blob.channels()  == top[i]->channels()
