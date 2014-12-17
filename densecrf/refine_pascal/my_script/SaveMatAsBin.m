@@ -1,10 +1,21 @@
 % save mat score maps as bin file for cpp
 % 
+clear all; 
 
-mat_folder = '../feature';
-img_folder = '../img';
+is_server = 1;
 
-save_folder = '../feature_bin';
+testset = 'val';
+model_name = 'vgg128_ms';
+
+if is_server
+  mat_folder  = fullfile('/rmt/work/deeplabel/exper/voc12/features', model_name, testset, 'fc8');
+  img_folder  = '/rmt/data/pascal/VOCdevkit/VOC2012/JPEGImages';
+  save_folder = fullfile(mat_folder, 'bin');
+else
+  mat_folder  = '../feature';
+  img_folder  = '../img';
+  save_folder = '../feature_bin';
+end
 
 if ~exist(save_folder, 'dir')
     mkdir(save_folder);
@@ -13,6 +24,7 @@ end
 mat_dir = dir(fullfile(mat_folder, '*.mat'));
 
 for i = 1 : numel(mat_dir)
+    fprintf(1, 'processing %d (%d)...\n', i, numel(mat_dir));
     data = load(fullfile(mat_folder, mat_dir(i).name));
     data = data.data;
     data = permute(data, [2 1 3]);    

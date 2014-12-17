@@ -1,10 +1,8 @@
 # update the path variables 
 
 CC	= g++
-#CFLAGS	= -W -Wall -O3
-CFLAGS	= -W -Wall -g
-
-INCLUDE	= -I/include
+CFLAGS	= -W -Wall -O2
+#CFLAGS	= -W -Wall -g
 
 all:
 	make clean
@@ -14,6 +12,7 @@ clean:
 	rm -f *.a
 	rm -f *.o
 	rm -f prog_test_densecrf
+	rm -f prog_refine_pascal
 
 libDenseCRF.a: libDenseCRF/bipartitedensecrf.cpp libDenseCRF/densecrf.cpp libDenseCRF/filter.cpp libDenseCRF/permutohedral.cpp libDenseCRF/util.cpp libDenseCRF/densecrf.h libDenseCRF/fastmath.h libDenseCRF/permutohedral.h libDenseCRF/sse_defs.h libDenseCRF/util.h
 	$(CC) libDenseCRF/bipartitedensecrf.cpp libDenseCRF/densecrf.cpp libDenseCRF/filter.cpp libDenseCRF/permutohedral.cpp libDenseCRF/util.cpp -c $(CFLAGS)

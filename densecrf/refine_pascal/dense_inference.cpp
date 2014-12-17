@@ -291,7 +291,22 @@ void ComputeUnaryForCRF(float*& unary, float* feat, int feat_row, int feat_col, 
   }
 }
 
-
+void OutputSetting(const InputData& inp) {
+  std::cout << "Input Parameters: " << std::endl;
+  std::cout << "ImgDir: "        << inp.ImgDir << std::endl;
+  std::cout << "FeatureDir: "    << inp.FeatureDir << std::endl;
+  std::cout << "SaveDir: "       << inp.SaveDir << std::endl;
+  std::cout << "MaxIterations: " << inp.MaxIterations << std::endl;
+  std::cout << "PosXStd: "  << inp.PosXStd << std::endl;
+  std::cout << "PosYStd: "  << inp.PosYStd << std::endl;
+  std::cout << "PosW: "     << inp.PosW    << std::endl;
+  std::cout << "Bi_X_Std: " << inp.BilateralXStd << std::endl;
+  std::cout << "Bi_Y_Std: " << inp.BilateralYStd << std::endl;
+  std::cout << "Bi_R_Std: " << inp.BilateralRStd << std::endl;
+  std::cout << "Bi_G_Std: " << inp.BilateralGStd << std::endl;
+  std::cout << "Bi_B_Std: " << inp.BilateralBStd << std::endl;
+  std::cout << "Bi_W: "     << inp.BilateralW    << std::endl;
+}
 
 int main( int argc, char* argv[]){
   InputData inp;
@@ -310,6 +325,7 @@ int main( int argc, char* argv[]){
   inp.BilateralW    = 10;
 
   ParseInput(argc, argv, inp);
+  OutputSetting(inp);
 
   assert(inp.ImgDir != NULL && inp.FeatureDir != NULL && inp.SaveDir != NULL);
 
@@ -326,6 +342,8 @@ int main( int argc, char* argv[]){
   int feat_row, feat_col, feat_channel;
 
   for (size_t i = 0; i < feat_file_names.size(); ++i) {
+    std::cout << "processing " << i << " (" << feat_file_names.size() << ")..." << std::endl;
+
     fn = std::string(inp.ImgDir) + "/" + feat_file_names[i] + ".ppm";
     img = readPPM(fn.c_str(), img_col, img_row);
     //LoadBinFile(fn, img, &img_row, &img_col, &img_channel);

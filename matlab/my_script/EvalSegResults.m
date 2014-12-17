@@ -1,28 +1,40 @@
 clear all; close all;
 
 % change values here
-is_server = 1;
+is_server      = 1;
+is_mat         = 0;   % the results are save as mat or png
+do_postprocess = 1;   % do densecrf post processing or not
+
+id         = 'comp6';
+%trainset  = 'trainval_aug';
+trainset   = 'train_aug';
+
+%testset   = 'trainval_aug';
+testset    = 'val';
+
+model_name = 'vgg128_ms';   %'vgg128_noup' or 'vgg128_ms'
+
+
 if is_server
     VOC_root_folder = '/rmt/data/pascal/VOCdevkit';
 else
     VOC_root_folder = '~/dataset/PASCAL/VOCdevkit';
 end
 
-%output_mat_folder = '/rmt/work/deeplabel/exper/voc12/features/vgg128/trainval_aug/fc8_crop';
-output_mat_folder = '/rmt/work/deeplabel/exper/voc12/features/vgg128_noup/val/fc8';
-
-id = 'comp6';
-
-%trainset = 'trainval_aug';
-trainset = 'train_aug';
-
-%testset = 'trainval_aug';
-testset = 'val';
-
-save_root_folder = output_mat_folder;
+if do_postprocess
+  post_folder = 'post_densecrf';
+else
+  post_folder = 'post_none';
+end
 
 
+output_mat_folder = fullfile('/rmt/work/deeplabel/exper/voc12/features', model_name, testset, 'fc8');
+
+save_root_folder = fullfile('/rmt/work/deeplabel/exper/voc12/res', model_name, testset, 'fc8', post_folder);
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % You do not need to chage values below
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 seg_res_dir = [save_root_folder '/results/VOC2012/'];
 save_result_folder = fullfile(seg_res_dir, 'Segmentation', [id '_' testset '_cls']);
 
@@ -34,14 +46,15 @@ end
 
 VOCopts = GetVOCopts(seg_root, seg_res_dir, trainset, testset);
 
-% crop the results
-load('pascal_seg_colormap.mat');
+if is_mat
+  % crop the results
+  load('pascal_seg_colormap.mat');
 
-output_dir = dir(fullfile(output_mat_folder, '*.mat'));
+  output_dir = dir(fullfile(output_mat_folder, '*.mat'));
 
-matlabpool('4');
-parfor i = 1 : numel(output_dir)
-%for i = 1 : numel(output_dir)
+  matlabpool('4');
+  parfor i = 1 : numel(output_dir)
+  %for i = 1 : numel(output_dir)
     fprintf(1, 'processing %d (%d)...\n', i, numel(output_dir));
     
     data = load(fullfile(output_mat_folder, output_dir(i).name));
@@ -59,8 +72,9 @@ parfor i = 1 : numel(output_dir)
     [~, result] = max(result, [], 3);
     result = uint8(result) - 1;
     imwrite(result, colormap, fullfile(save_result_folder, [img_fn, '.png']));
+  end
+  matlabpool('close');
 end
-matlabpool('close');
 
 % get iou score
 [accuracies, avacc, conf, rawcounts] = MyVOCevalseg(VOCopts, id);
