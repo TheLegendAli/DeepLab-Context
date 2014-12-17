@@ -577,6 +577,7 @@ message ImageDataParameter {
   // data.
   optional bool mirror = 6 [default = false];
   optional string root_folder = 12 [default = ""];
+  optional bool has_label = 13 [default = true];
 }
 
 // Message that stores parameters InfogainLossLayer

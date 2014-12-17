@@ -37,7 +37,13 @@ for i=1:length(gtids)
     
     % results file
     resfile = sprintf(VOCopts.seg.clsrespath,id,VOCopts.testset,imname);
-    [resim,map] = imread(resfile);
+    try
+      [resim,map] = imread(resfile);
+    catch err
+      fprintf(1, 'Fail to read %s\n', resfile);
+      continue;
+    end
+
     resim = double(resim);
     
     % Check validity of results image
