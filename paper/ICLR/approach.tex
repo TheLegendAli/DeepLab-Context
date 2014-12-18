@@ -30,7 +30,7 @@ Initialize $b_i(x_i) \leftarrow \frac{1}{Z_i} \exp \Big(-\theta_i(x)i \Big)$
 
 \begin{enumerate}[labelindent=0pt,labelwidth=\widthof{\ref{last-item}},label=\arabic*.,itemindent=2em,leftmargin=0pt]
 \item $\tilde{b_i}^m(l) \leftarrow \sum_{j \neq i}k^m(\boldsymbol{f}_i,\boldsymbol{f}_j) \cdot b_j(l), \ \forall m$
-\item $\hat{b_i}(x_i) \leftarrow \sum_{l} \sum_m w^m \cdot \tilde{b_i}(l)$
+\item $\hat{b_i}(x_i) \leftarrow \sum_{l} \sum_m w^m \cdot \tilde{b_i}^m(l)$
 \item $b_i(x_i) \propto \exp \Big(-\theta_i(x_i) - \hat{b_i}(x_i) \Big)$
 \end{enumerate}
 
