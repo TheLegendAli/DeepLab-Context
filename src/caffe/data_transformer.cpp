@@ -190,8 +190,8 @@ template<typename Dtype>
 void DataTransformer<Dtype>::Transform(const cv::Mat& cv_img,
                                        Blob<Dtype>* transformed_blob) {
   const int img_channels = cv_img.channels();
-  const int img_height = cv_img.rows;
-  const int img_width = cv_img.cols;
+  int img_height = cv_img.rows;
+  int img_width = cv_img.cols;
 
   const int channels = transformed_blob->channels();
   const int height = transformed_blob->height();
@@ -199,8 +199,8 @@ void DataTransformer<Dtype>::Transform(const cv::Mat& cv_img,
   const int num = transformed_blob->num();
 
   CHECK_EQ(channels, img_channels);
-  CHECK_LE(height, img_height);
-  CHECK_LE(width, img_width);
+  //CHECK_LE(height, img_height);
+  //CHECK_LE(width, img_width);
   CHECK_GE(num, 1);
 
   CHECK(cv_img.depth() == CV_8U) << "Image data type must be unsigned byte";
@@ -212,8 +212,8 @@ void DataTransformer<Dtype>::Transform(const cv::Mat& cv_img,
   const bool has_mean_values = mean_values_.size() > 0;
 
   CHECK_GT(img_channels, 0);
-  CHECK_GE(img_height, crop_size);
-  CHECK_GE(img_width, crop_size);
+  //CHECK_GE(img_height, crop_size);
+  //CHECK_GE(img_width, crop_size);
 
   Dtype* mean = NULL;
   if (has_mean_file) {
@@ -237,6 +237,23 @@ void DataTransformer<Dtype>::Transform(const cv::Mat& cv_img,
   int h_off = 0;
   int w_off = 0;
   cv::Mat cv_cropped_img = cv_img;
+
+  // transform to double, since we will pad mean pixel values
+  cv_cropped_img.convertTo(cv_cropped_img, CV_64F);
+
+  // Check if we need to pad img to fit for crop_size
+  // copymakeborder
+  int pad_height = std::max(crop_size - img_height, 0);
+  int pad_width  = std::max(crop_size - img_width, 0);
+  if (pad_height > 0 || pad_width > 0) {
+    cv::copyMakeBorder(cv_cropped_img, cv_cropped_img, 0, pad_height, 
+          0, pad_width, cv::BORDER_CONSTANT, 
+          cv::Scalar(mean_values_[0], mean_values_[1], mean_values_[2]));
+    // update height/width
+    img_height   = cv_cropped_img.rows;
+    img_width    = cv_cropped_img.cols;
+  }
+
   if (crop_size) {
     CHECK_EQ(crop_size, height);
     CHECK_EQ(crop_size, width);
@@ -249,7 +266,7 @@ void DataTransformer<Dtype>::Transform(const cv::Mat& cv_img,
       w_off = (img_width - crop_size) / 2;
     }
     cv::Rect roi(w_off, h_off, crop_size, crop_size);
-    cv_cropped_img = cv_img(roi);
+    cv_cropped_img = cv_cropped_img(roi);
   } else {
     CHECK_EQ(img_height, height);
     CHECK_EQ(img_width, width);

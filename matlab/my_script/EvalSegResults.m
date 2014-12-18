@@ -2,8 +2,12 @@ clear all; close all;
 
 % change values here
 is_server      = 1;
-is_mat         = 0;   % the results are save as mat or png
-do_postprocess = 1;   % do densecrf post processing or not
+is_mat         = 0;    % the results are save as mat or png
+has_postprocess = 1;   % has done densecrf post processing or not
+
+bi_w           = 5;
+bi_x_std       = 50;
+bi_r_std       = 10;
 
 id         = 'comp6';
 %trainset  = 'trainval_aug';
@@ -12,7 +16,7 @@ trainset   = 'train_aug';
 %testset   = 'trainval_aug';
 testset    = 'val';
 
-model_name = 'vgg128_ms';   %'vgg128_noup' or 'vgg128_ms'
+model_name = 'vgg128_noup_glob';   %'vgg128_noup', 'vgg128_noup_glob', 'vgg128_ms'
 
 
 if is_server
@@ -21,8 +25,8 @@ else
     VOC_root_folder = '~/dataset/PASCAL/VOCdevkit';
 end
 
-if do_postprocess
-  post_folder = 'post_densecrf';
+if has_postprocess
+  post_folder = sprintf('post_densecrf_W%d_XStd%d_RStd%d', bi_w, bi_x_std, bi_r_std); 
 else
   post_folder = 'post_none';
 end
