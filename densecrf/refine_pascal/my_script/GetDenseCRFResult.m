@@ -4,8 +4,8 @@ load('pascal_seg_colormap');
 
 is_server = 1;
 
-pos_w     = 4;
-pos_x_std = 2;
+pos_w     = 3;
+pos_x_std = 3;
 
 bi_w      = 5;
 bi_x_std  = 50;
@@ -16,9 +16,11 @@ trainset = 'train_aug';
 testset  = 'val';
 
 model_name = 'vgg128_noup'; %vgg128_noup, vgg128_noup_glob, vgg128_ms
+feature_name = 'features4'; %'', 'features4'
 
 if is_server
-  map_folder = fullfile('/rmt/work/deeplabel/exper/voc12/res', model_name, testset, 'fc8', sprintf('post_densecrf_W%d_XStd%d_RStd%d_PosW%d_PosXStd%d', bi_w, bi_x_std, bi_r_std, pos_w, pos_x_std)); 
+  %map_folder = fullfile('/rmt/work/deeplabel/exper/voc12/res', model_name, testset, 'fc8', sprintf('post_densecrf_W%d_XStd%d_RStd%d_PosW%d_PosXStd%d', bi_w, bi_x_std, bi_r_std, pos_w, pos_x_std)); 
+  map_folder = fullfile('/rmt/work/deeplabel/exper/voc12/res', feature_name, model_name, testset, 'fc8', sprintf('post_densecrf_W%d_XStd%d_RStd%d_PosW%d_PosXStd%d', bi_w, bi_x_std, bi_r_std, pos_w, pos_x_std)); 
 else 
   map_folder = '../result';
 end

@@ -353,6 +353,7 @@ class ImageSegDataLayer : public BasePrefetchingDataLayer<Dtype> {
   }
   virtual inline int ExactNumBottomBlobs() const { return 0; }
   virtual inline int ExactNumTopBlobs() const { return 2; }
+  virtual inline bool AutoTopBlobs() const { return true; }
 
  protected:
   Blob<Dtype> transformed_label_;

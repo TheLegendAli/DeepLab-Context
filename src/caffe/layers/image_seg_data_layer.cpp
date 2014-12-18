@@ -29,6 +29,7 @@ void ImageSegDataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom
   const int new_height = this->layer_param_.image_data_param().new_height();
   const int new_width  = this->layer_param_.image_data_param().new_width();
   const bool is_color  = this->layer_param_.image_data_param().is_color();
+  const bool has_label = this->layer_param_.image_data_param().has_label();
   string root_folder = this->layer_param_.image_data_param().root_folder();
 
   TransformationParameter transform_param = this->layer_param_.transform_param();
@@ -48,8 +49,10 @@ void ImageSegDataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom
     std::istringstream iss(linestr);
     string imgfn;
     iss >> imgfn;
-    string segfn;
-    iss >> segfn;
+    string segfn = "";
+    if (has_label) {
+      iss >> segfn;
+    }
     lines_.push_back(std::make_pair(imgfn, segfn));
   }
 
@@ -133,6 +136,7 @@ void ImageSegDataLayer<Dtype>::InternalThreadEntry() {
   const int batch_size = image_data_param.batch_size();
   const int new_height = image_data_param.new_height();
   const int new_width = image_data_param.new_width();
+  const bool has_label = image_data_param.has_label();
   const bool is_color = image_data_param.is_color();
   string root_folder = image_data_param.root_folder();
 
@@ -146,13 +150,20 @@ void ImageSegDataLayer<Dtype>::InternalThreadEntry() {
     CHECK_GT(lines_size, lines_id_);
     cv_img_seg.push_back(ReadImageToCVMat(root_folder + lines_[lines_id_].first,
 					  new_height, new_width, is_color));
-    cv_img_seg.push_back(ReadImageToCVMat(root_folder + lines_[lines_id_].second,
-					  new_height, new_width, false));
     if (!cv_img_seg[0].data) {
       DLOG(INFO) << "Fail to load img: " << root_folder + lines_[lines_id_].first;
     }
-    if (!cv_img_seg[1].data) {
-      DLOG(INFO) << "Fail to load seg: " << root_folder + lines_[lines_id_].second;
+    if (has_label) {
+      cv_img_seg.push_back(ReadImageToCVMat(root_folder + lines_[lines_id_].second,
+					    new_height, new_width, false));
+      if (!cv_img_seg[1].data) {
+	DLOG(INFO) << "Fail to load seg: " << root_folder + lines_[lines_id_].second;
+      }
+    }
+    else {
+      cv::Mat seg(cv_img_seg[0].rows, cv_img_seg[0].cols, 
+		  CV_8UC1, cv::Scalar(255));
+      cv_img_seg.push_back(seg);
     }
 
     read_time += timer.MicroSeconds();
@@ -169,20 +180,6 @@ void ImageSegDataLayer<Dtype>::InternalThreadEntry() {
     this->data_transformer_.TransformImgAndSeg(cv_img_seg, 
        &(this->transformed_data_), &(this->transformed_label_));
     trans_time += timer.MicroSeconds();
-
-    /* debug
-    cv::namedWindow("img", cv::WINDOW_AUTOSIZE);
-    cv::imshow("img", cv_img_seg[0]);
-    cv::namedWindow("seg", cv::WINDOW_AUTOSIZE);
-    cv::imshow("seg", cv_img_seg[1]);
-
-    std::string fn;
-    fn = "img.bin";
-    this->transformed_data_.WriteToBinaryFile(fn);
-    fn = "seg.bin";
-    this->transformed_label_.WriteToBinaryFile(fn);
-    // */
-
 
     // go to the next std::vector<int>::iterator iter;
     lines_id_++;
