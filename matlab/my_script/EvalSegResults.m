@@ -5,6 +5,9 @@ is_server      = 1;
 is_mat         = 0;    % the results are save as mat or png
 has_postprocess = 1;   % has done densecrf post processing or not
 
+pos_w          = 4;
+pos_x_std      = 2;
+
 bi_w           = 5;
 bi_x_std       = 50;
 bi_r_std       = 10;
@@ -16,7 +19,7 @@ trainset   = 'train_aug';
 %testset   = 'trainval_aug';
 testset    = 'val';
 
-model_name = 'vgg128_noup_glob';   %'vgg128_noup', 'vgg128_noup_glob', 'vgg128_ms'
+model_name = 'vgg128_noup';   %'vgg128_noup', 'vgg128_noup_glob', 'vgg128_ms'
 
 
 if is_server
@@ -26,7 +29,7 @@ else
 end
 
 if has_postprocess
-  post_folder = sprintf('post_densecrf_W%d_XStd%d_RStd%d', bi_w, bi_x_std, bi_r_std); 
+post_folder = sprintf('post_densecrf_W%d_XStd%d_RStd%d_PosW%d_PosXStd%d', bi_w, bi_x_std, bi_r_std, pos_w, pos_x_std); 
 else
   post_folder = 'post_none';
 end
