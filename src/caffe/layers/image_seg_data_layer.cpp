@@ -37,17 +37,22 @@ void ImageSegDataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom
   CHECK((new_height == 0 && new_width == 0) ||
       (new_height > 0 && new_width > 0)) << "Current implementation requires "
       "new_height and new_width to be set at the same time.";
+
   // Read the file with filenames and labels
   const string& source = this->layer_param_.image_data_param().source();
   LOG(INFO) << "Opening file " << source;
   std::ifstream infile(source.c_str());
-  string imgfn;
-  string segfn;
-  while (infile >> imgfn >> segfn) {
+
+  string linestr;
+  while (std::getline(infile, linestr)) {
+    std::istringstream iss(linestr);
+    string imgfn;
+    iss >> imgfn;
+    string segfn;
+    iss >> segfn;
     lines_.push_back(std::make_pair(imgfn, segfn));
   }
 
-  // TODO: check this
   if (this->layer_param_.image_data_param().shuffle()) {
     // randomly shuffle data
     LOG(INFO) << "Shuffling data";
@@ -58,7 +63,7 @@ void ImageSegDataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom
   LOG(INFO) << "A total of " << lines_.size() << " images.";
 
   lines_id_ = 0;
-  // TODO: check this. Check if we would need to randomly skip a few data points
+  // Check if we would need to randomly skip a few data points
   if (this->layer_param_.image_data_param().rand_skip()) {
     unsigned int skip = caffe_rng_rand() %
         this->layer_param_.image_data_param().rand_skip();
@@ -69,16 +74,13 @@ void ImageSegDataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom
 
   // Read an image, and use it to initialize the top blob.
   cv::Mat cv_img = ReadImageToCVMat(root_folder + lines_[lines_id_].first,
-				    new_height, new_width, is_color);
-
+                                    new_height, new_width, is_color);
   const int channels = cv_img.channels();
   const int height = cv_img.rows;
   const int width = cv_img.cols;
-
   // image
   const int crop_size = this->layer_param_.transform_param().crop_size();
   const int batch_size = this->layer_param_.image_data_param().batch_size();
-
   if (crop_size > 0) {
     top[0]->Reshape(batch_size, channels, crop_size, crop_size);
     this->prefetch_data_.Reshape(batch_size, channels, crop_size, crop_size);

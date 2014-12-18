@@ -5,7 +5,7 @@ clear all;
 is_server = 1;
 
 testset = 'val';
-model_name = 'vgg128_ms';
+model_name = 'vgg128_noup_glob';   %vgg128_ms, vgg128_noup, vgg128_noup_glob
 
 if is_server
   mat_folder  = fullfile('/rmt/work/deeplabel/exper/voc12/features', model_name, testset, 'fc8');
@@ -17,6 +17,9 @@ else
   save_folder = '../feature_bin';
 end
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% You do not need to chage values below
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if ~exist(save_folder, 'dir')
     mkdir(save_folder);
 end

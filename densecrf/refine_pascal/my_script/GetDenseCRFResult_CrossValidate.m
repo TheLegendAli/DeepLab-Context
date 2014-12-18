@@ -9,7 +9,7 @@ id = 'comp6';
 trainset = 'train_aug';
 testset  = 'val';
 
-model_name = 'vgg128_ms'; %vgg128_noup
+model_name = 'vgg128_noup'; %vgg128_noup, vgg128_ms
 
 for w = [1 5 10 15 20]
   for x_std = [10 20 30 40 50]
