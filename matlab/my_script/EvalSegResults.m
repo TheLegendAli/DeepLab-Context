@@ -1,9 +1,9 @@
 clear all; close all;
 
 % change values here
-is_server      = 1;
-is_mat         = 0;    % the results are save as mat or png
-has_postprocess = 1;   % has done densecrf post processing or not
+is_server       = 1;
+is_mat          = 1;    % the results are save as mat or png
+has_postprocess = 0;   % has done densecrf post processing or not
 
 pos_w          = 3;
 pos_x_std      = 3;
@@ -35,7 +35,8 @@ else
 end
 
 
-output_mat_folder = fullfile('/rmt/work/deeplabel/exper/voc12/features', model_name, testset, 'fc8');
+%output_mat_folder = fullfile('/rmt/work/deeplabel/exper/voc12/features', model_name, testset, 'fc8');
+output_mat_folder = fullfile('/rmt/work/deeplabel/exper/voc12', feature_name, model_name, testset, 'fc8');
 
 %save_root_folder = fullfile('/rmt/work/deeplabel/exper/voc12/res', model_name, testset, 'fc8', post_folder);
 save_root_folder = fullfile('/rmt/work/deeplabel/exper/voc12/res', feature_name, model_name, testset, 'fc8', post_folder);

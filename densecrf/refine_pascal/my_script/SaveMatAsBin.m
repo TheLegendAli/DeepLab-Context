@@ -10,17 +10,12 @@ feature_name = 'features4';      %'features', 'features4'
 
 if is_server
   mat_folder  = fullfile('/rmt/work/deeplabel/exper/voc12', feature_name, model_name, testset, 'fc8');
-  %mat_folder  = fullfile('/rmt/work/deeplabel/exper/voc12/features4', model_name, testset, 'fc8');
-
   img_folder  = '/rmt/data/pascal/VOCdevkit/VOC2012/JPEGImages';
   save_folder = fullfile(mat_folder, 'bin');
 else
   mat_folder  = fullfile('~/workspace/deeplabeling/exper/voc12/features4', model_name, testset, 'fc8');
   img_folder  = '~/dataset/PASCAL/VOCdevkit/VOC2012/JPEGImages';
   save_folder = fullfile(mat_folder, 'bin');
-  %mat_folder  = '../feature';
-  %img_folder  = '../img';
-  %save_folder = '../feature_bin';
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
