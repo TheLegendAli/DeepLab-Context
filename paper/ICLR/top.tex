@@ -15,6 +15,7 @@
 \usepackage{enumitem}
 \usepackage{calc}
 \usepackage{multirow}
+\usepackage{xspace}
 
 \newcommand{\figref}[1]{Fig\onedot~\ref{#1}}
 \newcommand{\equref}[1]{Eq\onedot~\eqref{#1}}
@@ -27,6 +28,9 @@
 \newcommand{\lemref}[1]{Lemma~\ref{#1}}
 \newcommand{\ptyref}[1]{Property\onedot~\ref{#1}}
 
+\makeatletter 
+\DeclareRobustCommand\onedot{\futurelet\@let@token\@onedot}
+\def\@onedot{\ifx\@let@token.\else.\null\fi\xspace}
 \def\eg{\emph{e.g}\onedot} \def\Eg{\emph{E.g}\onedot}
 \def\ie{\emph{i.e}\onedot} \def\Ie{\emph{I.e}\onedot}
 \def\cf{\emph{cf}\onedot} \def\Cf{\emph{Cf}\onedot}
@@ -35,16 +39,21 @@
 \def\etal{\emph{et al}\onedot}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\title{Paper for ICLR}
+\title{Semantic Image Labeling with Deep Convolutional Networks and Fully Connected CRFs}
 
 \author{
-George Papandreou \\
-Google Inc. \\
-\texttt{gpapan@google.com} \\
-\AND
-Liang-Chieh Chen \& Alan L. Yuille \\
-University of California- Los Angeles \\
-\texttt{\{lcchen@cs, alan@stat\}.ucla.edu}
+Liang-Chieh Chen\\
+Univ\onedot of California, Los Angeles\\
+\texttt{lcchen@cs.ucla.edu}
+\And
+George Papandreou \thanks{Work performed while the author was with the Toyota
+  Technological Institute at Chicago.}\\
+Google Inc.\\
+\texttt{gpapan@google.com}\\
+\And
+Alan L. Yuille\\
+Univ\onedot of California, Los Angeles\\
+\texttt{yuille@stat.ucla.edu}
 }
 
 % The \author macro works with any number of authors. There are two commands
