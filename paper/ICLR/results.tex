@@ -1,13 +1,13 @@
 \section{Experimental Evaluation}
-{\bf{Dataset: }} Our model is tested on the PASCAL VOC 2012 segmentation benchmark, which includes 20 foreground object classes and one background class \citep{everingham2014pascal}. The original dataset contains $1,464$, $1,449$, and $1,456$ images for training, validation, and test, respectively. The dataset is augmented by the extra annotations provided by \citep{hariharan2011semantic}, resulting in $10,582$ training images.
+{\bf{Dataset: }} Our model is tested on the PASCAL VOC 2012 segmentation benchmark, which includes 20 foreground object classes and one background class \citep{everingham2014pascal}. The original dataset contains $1,464$, $1,449$, and $1,456$ images for training, validation, and test, respectively. The dataset is augmented by the extra annotations provided by \citep{hariharan2011semantic}, resulting in $10,582$ training images. The performance is measured in terms of pixel intersection-over-union (IOU) averaged across the 21 classes. 
 
 We employ VGG-16 \citep{simonyan2014very} as our DCNN, which is pre-trained on ImageNet \citep{deng2009imagenet}.
 
 
-{\bf{Weighted loss: }} On the validation set. Without weighted loss: Pixelwise accuracy $90.13\%$, Classwise accuracy $73.68\%$, PixelIOU $59.80\%$. With weighted loss: Pixelwise accuracy $66.82\%$, Classwise accuracy $88.81\%$, PixelIOU $41.77\%$.
+{\bf{Weighted loss: }} On the validation set. Without weighted loss: pixel accuracy $90.13\%$, mean class accuracy $73.68\%$, mean Pixel IOU $59.80\%$. With weighted loss: pixel accuracy $66.82\%$, mean class accuracy $88.81\%$, mean pixel IOU $41.77\%$.
 
 {\bf{Incorporate Multi-Scale Features}}
-PixelIOU $60.25\%$, after crf $64.14\%$.
+mean PixelIOU $60.25\%$, after crf $64.14\%$.
 \begin{figure}[ht]
   \centering
   \begin{tabular}{c c | c c | c c}
@@ -24,7 +24,7 @@ PixelIOU $60.25\%$, after crf $64.14\%$.
 \end{figure}
 
 {\bf{Incorporate Image-level Feature}} 
-PixelIOU $59.86\%$, after crf $63.87\%$.
+mean PixelIOU $59.86\%$, after crf $63.87\%$.
 
 {\bf{Visualization Results on VOC2012 validation set}}
 \begin{figure}[ht]
