@@ -28,6 +28,8 @@
 \newcommand{\lemref}[1]{Lemma~\ref{#1}}
 \newcommand{\ptyref}[1]{Property\onedot~\ref{#1}}
 
+\newcommand{\by}[2]{\ensuremath{#1 \! \times \! #2}}
+
 \makeatletter 
 \DeclareRobustCommand\onedot{\futurelet\@let@token\@onedot}
 \def\@onedot{\ifx\@let@token.\else.\null\fi\xspace}
@@ -46,8 +48,9 @@ Liang-Chieh Chen\\
 Univ\onedot of California, Los Angeles\\
 \texttt{lcchen@cs.ucla.edu}
 \And
-George Papandreou \thanks{Work performed while the author was with the Toyota
-  Technological Institute at Chicago.}\\
+George Papandreou \thanks{Work performed while G.P\onedot was with the Toyota
+  Technological Institute at Chicago. The first two authors contributed
+  equally to this work.}\\
 Google Inc.\\
 \texttt{gpapan@google.com}\\
 \And

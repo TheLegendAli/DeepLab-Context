@@ -1,6 +1,110 @@
-\section{Approach}
+\section{Convolutional Neural Networks for Dense Image Labeling}
 
-{\bf{Inference in Fully Connected CRFs: }} We briefly review the efficient inference in fully connected CRFs, and refer readers to \citep{krahenbuhl2011efficient} for more details. 
+\subsection{Model Architecture and Training}
+
+Herein we describe how we have re-purposed the publicly available state-of-art
+16 layer classification network of \cite{SiZi14} (VGG-16) into an efficient
+and effective component of our sliding window detector.
+
+\subsection{Efficient Dense Sliding Window Feature Extraction with the Hole Algorithm}
+
+Dense spatial score evaluation is instrumental in the success of our CNN
+sliding window detector. 
+
+As a first step to implement this, we convert the fully-connected layers
+of VGG-16 into convolutional ones and run the network in a convolutional
+fashion on the patchwork. However this is not enough as it yields very
+sparsely computed detection scores (with a stride of 32 pixels). To compute
+scores more densely at our target stride of 8 pixels, we develop a variation
+of the method previously employed by \cite{GCMG+13, SEZM+14}. We skip
+subsampling after the last two max-pooling layers in the network of
+\cite{SiZi14} and modify the convolutional filters in the layers that follow
+them by introducing zeros to increase their length (\by{2}{} in the last three
+convolutional layers and \by{4}{} in the first fully connected layer). We can
+implement this more efficiently by keeping the filters intact and instead
+sparsely sample the feature maps on which they are applied on using a stride
+of 2 or 4 pixels, respectively. This approach is known as the `hole algorithm'
+(`atrous algorithm') and has been developed before for efficient computation
+of the undecimated wavelet transform \cite{Mall99}. We have implemented this
+within the Caffe framework by adding to the \textsl{im2col} function (it
+converts multi-channel feature maps to vectorized patches) the option to
+sparsely sample the underlying feature map.
+
+\subsubsection{Shrinking the Receptive Field of Neural Networks}
+
+Explicit control on the receptive field size.
+
+Most recent DCNN-based image recognition methods rely on networks pre-trained
+on the Imagenet large-scale classification task. These networks typically have
+large receptive field size, \by{224}{224} in the case of the VGG-16 net we
+consider. We have found this receptive field size to be too large to allow
+good localization accuracy (unless one uses heavily zoomed-in versions of the
+image). Moreover, after converting the network to a fully convolutional one,
+the first fully connected layer has 4,096 filters of large \by{7}{7} spatial
+size and becomes the computational bottleneck in our sliding window detector
+system.
+
+We have addressed both of these serious practical problems by spatially
+subsampling the first FC layer to \by{4}{4} spatial size. This has reduced the
+receptive field of the network down to \by{128}{128} pixels and has reduced
+computation time for the first FC layer by 3 times.
+
+
+\section{Detailed Boundary Recovery: Multi-scale Predictors and
+  Fully-Connected Conditional Random Fields}
+
+\subsection{Deep Convolutional Networks and the Localization Challenge}
+
+As illustrated in Figure~\ref{fig:score-maps}, deep CNN feature maps can
+reliably predict the presense and rough position of objects in an image but
+are less well suited for pin-pointing their exact outline. There is a natural
+trade-off between classification accuracy and localization accuracy with
+convolutional networks: Deeper moders with multiple max-pooling layers have
+proven most successful in classification tasks, however their increased
+invariance and large receptive fields make the problem of inferring position
+from the scores at their top output levels more challenging.
+
+The reduced receptive field size in our network architecture can ameliorate
+but not fully resolve this problem. Recent work has pursued two directions to
+address this localization challenge. The first approach is to harness
+information from multiple layers in the convolutional network in order to
+better estimate the object boundaries. We present our own multi-scale
+prediction method along these lines in Section~\ref{}. The second approach is
+to employ a super-pixel representation, essentially delegating the
+localization task to a low-level segmentation method. This route is followed
+by the very successful recent method of \cite{Greg}. In Section~\ref{}, we
+pursue a novel alternative direction based on coupling the recognition
+capacity of deep CNNs and the fine-grained localization accuracy of fully
+connected CRFs and show that it is remarkably successful in addressing the
+localication challenge, producing accurate semantic segmentation results and
+recovering object boundaries at a level of detail that is well beyond the
+reach of existing methods. Combining the proposed fully-connected CRF method
+with multi-scale prediction yields further improvements.
+
+
+\subsection{Fully-Connected Conditional Random Fields for Accurate Localization}
+
+Traditionally, conditional random fields (CRFs) have been employed to smooth
+noisy segmentation maps \cite{rother2004grabcut, kohli2009robust}. Typically
+these models contain energy terms that couple neighboring nodes, favoring
+same-label assignments to spatially proximal pixels. Qualitatively, the
+primary function of these short-range CRFs has been to clean up the spurious
+predictions of weak classifiers built on top of local hand-engineered features.
+
+Compared to these weaker classifiers, modern deep CNN architectures such as
+the one we use in this work produce feature maps and semantic label
+predictions which are qualitatively different. As illustrated in
+Figure~\ref{fig:score-maps}, the feature maps are typically quite smooth and
+produce homogeneous classification results. In this regime, using short-range
+CRFs can be detrimental, as our goal should be to recover detailed local
+structure rather than further smooth it. Using contrast-sensitive potentials
+\cite{rother2004grabcut} within local-range CRFs can potentially improve
+localization but still miss thin-structures and can lead to expensive
+discrete optimization problems.
+
+In order to 
+
+We briefly review the efficient inference in fully connected CRFs, and refer readers to \citep{krahenbuhl2011efficient} for more details. 
 
 The CRF distribution over pixels is defined as follows.
 \begin{align}

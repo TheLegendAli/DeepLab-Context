@@ -1,4 +1,4 @@
-\section{Related Work}
+\subsection{Related Work}
 Our model is mostly related to two fields, and the goal of this work is to combine the best from them.
 
 {\bf{Conditional Random Fields for segmentation: }} Many semantic segmentation methods rely on Conditional Random Fields (CRFs), which model the local interactions (via the pairwise potential) between pixels \citep{rother2004grabcut, shotton2009textonboost} or superpixels \citep{lucchi2011spatial}. Several works have been proposed to model the hierarchical dependency \citep{he2004multiscale, ladicky2009associative, lempitsky2011pylon} and the high-order potential (not just pairwise potential) \citep{delong2012fast, gonfaus2010harmony, kohli2009robust, krahenbuhl2011efficient}. Our model takes use of the fully connected CRF proposed by \citet{krahenbuhl2011efficient} for its efficient computation, and powerful long range dependency.
