@@ -12,17 +12,20 @@ We employ VGG-16 \citep{simonyan2014very} as our DCNN, which is pre-trained on I
 mean PixelIOU $60.25\%$, after crf $64.14\%$.
 \begin{figure}[ht]
   \centering
-  \begin{tabular}{c c | c c | c c}
-      \includegraphics[height=0.12\linewidth]{fig/boundary_refine/vgg128noup_2007_000783.png} &
-      \includegraphics[height=0.12\linewidth]{fig/boundary_refine/vgg128ms_2007_000783.png} &
-      \includegraphics[height=0.12\linewidth]{fig/boundary_refine/vgg128noup_2007_001284.png} &
-      \includegraphics[height=0.12\linewidth]{fig/boundary_refine/vgg128ms_2007_001284.png} &
+  \begin{tabular}{c c | c c}
+      \includegraphics[height=0.14\linewidth]{fig/boundary_refine/vgg128noup_2007_000783.png} &
+      \includegraphics[height=0.14\linewidth]{fig/boundary_refine/vgg128ms_2007_000783.png} &
+      \includegraphics[height=0.14\linewidth]{fig/boundary_refine/vgg128noup_2007_001284.png} &
+      \includegraphics[height=0.14\linewidth]{fig/boundary_refine/vgg128ms_2007_001284.png} \\
+      \hline
+      \includegraphics[height=0.12\linewidth]{fig/boundary_refine/vgg128noup_2007_001239.png} &
+      \includegraphics[height=0.12\linewidth]{fig/boundary_refine/vgg128ms_2007_001239.png} &
       \includegraphics[height=0.12\linewidth]{fig/boundary_refine/vgg128noup_2007_001289.png} &
       \includegraphics[height=0.12\linewidth]{fig/boundary_refine/vgg128ms_2007_001289.png} \\
-      (a) & (b) & (a) & (b) & (a) & (b)
+      (a) & (b) & (a) & (b) \\ 
   \end{tabular}
   \label{fig:msBoundary}
-  \caption{Incorporating multi-scale features improves the boundary segmentation.}
+  \caption{Incorporating multi-scale features improves the boundary segmentation. Our DeepLab-MSc (b) can slightly improve the boundary segmentation compared to DeepLab (a).}
 \end{figure}
 
 {\bf{Incorporate Image-level Feature}} 
@@ -51,14 +54,14 @@ To quantize the improvement of different models, we evaluate the segmention erro
 \begin{figure}[ht]
   \centering
   \begin{tabular}{c c}
-    \includegraphics[height=0.3\linewidth]{fig/SegPixelAccWithinTrimap_Berkeley.pdf} &
-    \includegraphics[height=0.3\linewidth]{fig/SegPixelIOUWithinTrimap_Berkeley.pdf} \\
+    \includegraphics[height=0.3\linewidth]{fig/SegPixelAccWithinTrimap.pdf} &
+    \includegraphics[height=0.3\linewidth]{fig/SegPixelIOUWithinTrimap.pdf} \\
     (a) & (b)
   \end{tabular}
   \caption{Quality of segmentation result within a band around the object
     boundaries for the proposed methods. (a) Pixelwise accuracy. (b)
-    Segmentation mean IOU. \color{red}{Jay: change the legend names and remove
-    FCN}}  
+    Pixel mean IOU.
+    }  
   \label{fig:IOUBoundary}
 \end{figure}
 
