@@ -106,7 +106,7 @@ Section~\ref{sec:multiscale}.
     \includegraphics[width=0.15\linewidth]{fig/mean_field_illustration/Belief_Class1_Itr1.pdf} & 
     \includegraphics[width=0.15\linewidth]{fig/mean_field_illustration/Belief_Class1_Itr2.pdf} & 
     \includegraphics[width=0.15\linewidth]{fig/mean_field_illustration/Belief_Class1_Itr10.pdf} \\
-    Image/G.T. & CNN score map & Iteration 1 & Iteration 2 3 & Iteration 10 \\
+    Image/G.T. & CNN score map & Iteration 1 & Iteration 2 & Iteration 10 \\
   \end{tabular}
   \caption{The CNN classifier score map and CRF belief maps (at iteration 1, 2, and 10) for Background (first row) and Aeroplane (second row). The whiter, the higher probability is.
     }
@@ -149,6 +149,7 @@ Gaussian kernel depends on features extracted for pixel $i$ and $j$ and is
 weighted by parameter $w^m$. We adopt bilateral position and color terms,
 specifically
 \begin{align}
+  \label{eq:fully_crf}
   \theta_{ij}(x_i, x_j) = w^1 \exp \Big(-\frac{|p_i-p_j|^2}{2\sigma_\alpha^2} -\frac{|I_i-I_j|^2}{2\sigma_\beta^2} \Big) + w^2 \exp \Big(-\frac{|p_i-p_j|^2}{2\sigma_\gamma^2}\Big)
 \end{align}
 where the first kernel depends on both pixel positions (denoted as $p$) and
