@@ -1,5 +1,9 @@
-function VOCopts = GetVOCopts(seg_root, seg_res_dir, trainset, testset)
+function VOCopts = GetVOCopts(seg_root, seg_res_dir, trainset, testset, dataset)
 %clear VOCopts
+
+if nargin < 5
+    dataset = 'VOC2012';
+end
 
 % dataset
 %
@@ -7,7 +11,7 @@ function VOCopts = GetVOCopts(seg_root, seg_res_dir, trainset, testset)
 % of the VOC2012 test set. You don't need to do anything special
 % to submit results for VOC2008-11.
 
-VOCopts.dataset='VOC2012';
+VOCopts.dataset=dataset;
 
 % get devkit directory with forward slashes
 devkitroot=strrep(fileparts(fileparts(mfilename('fullpath'))),'\','/');
@@ -45,7 +49,12 @@ VOCopts.detrespath=[VOCopts.resdir 'Main/%s_det_' VOCopts.testset '_%s.txt'];
 
 % initialize segmentation task paths
 
-VOCopts.seg.clsimgpath=[seg_root '/SegmentationClassAug/%s.png'];
+%if strcmp(dataset, 'VOC2012')
+ %   VOCopts.seg.clsimgpath=[seg_root '/SegmentationClassAug/%s.png'];
+%else
+    VOCopts.seg.clsimgpath=[seg_root '/SegmentationClass/%s.png'];
+%end
+
 VOCopts.seg.instimgpath=[seg_root '/SegmentationObject/%s.png'];
 VOCopts.seg.imgsetpath=[seg_root '/ImageSets/Segmentation/%s.txt'];
 

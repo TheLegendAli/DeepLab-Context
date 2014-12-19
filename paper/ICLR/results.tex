@@ -31,8 +31,18 @@ To quantize the improvement of different models, we evaluate the segmention erro
 
 \begin{figure}[ht]
   \centering
-  \includegraphics[height=0.3\linewidth]{fig/SegPixelIOUWithinTrimap.pdf}
-  \caption{Segmentation accuracy (mean IOU) within trimp. {\color{red} TODO: change legend, should we also show some examples of trimap?}}
+  \begin{tabular}{c c c}
+    \begin{tabular}{c c c}
+        \includegraphics[height=0.12\linewidth]{fig/img/2007_002266.jpg} &
+        \includegraphics[height=0.12\linewidth]{fig/fcn8s/2007_002266.png} &
+        \includegraphics[height=0.12\linewidth]{fig/res_crf/2007_002266.png}
+    \end{tabular} 
+     &
+    \includegraphics[height=0.12\linewidth]{fig/SegPixelAccWithinTrimap_Berkeley.pdf} &
+    \includegraphics[height=0.12\linewidth]{fig/SegPixelIOUWithinTrimap_Berkeley.pdf} \\
+    (a) & (b) & (c)
+  \end{tabular}
+  \caption{(a) Some comparisons with FCN-8S: (left) image (middle) FCN-8S (right) ms-crf. (b) Segmentation accuracy (pixelwise accuracy) within trimap. (c) Segmentation accuracy (mean IOU) within trimap. {\color{red} TODO: change legend. HELP: I cannot make them equally spaced....}}
   \label{fig:IOUBoundary}
 \end{figure}
 

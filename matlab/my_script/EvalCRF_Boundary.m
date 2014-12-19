@@ -5,7 +5,9 @@
 
 % change values here
 boundary_w = 1:40;
+dataset         = 'VOC2011';
 
+test_berkeley      = 1;
 is_server             = 0;
 has_postprocess = 1;   % has done densecrf post processing or not
 
@@ -23,7 +25,7 @@ trainset   = 'train_aug';
 %testset   = 'trainval_aug';
 testset    = 'val';
 
-model_name = 'vgg128_noup';   %'vgg128_noup', 'vgg128_noup_glob', 'vgg128_ms'
+model_name = 'vgg128_ms';   %'vgg128_noup', 'vgg128_noup_glob', 'vgg128_ms'
 
 if has_postprocess
   post_folder = sprintf('post_densecrf_W%d_XStd%d_RStd%d_PosW%d_PosXStd%d', bi_w, bi_x_std, bi_r_std, pos_w, pos_x_std); 
@@ -49,13 +51,17 @@ pixel_iou = zeros(1, length(boundary_w));
 seg_res_dir = [save_root_folder '/results/VOC2012/'];
 save_result_folder = fullfile(seg_res_dir, 'Segmentation', [id '_' testset '_cls']);
 
-seg_root = fullfile(VOC_root_folder, 'VOC2012');
+seg_root = fullfile(VOC_root_folder, dataset);
 
 if ~exist(save_result_folder, 'dir')
     mkdir(save_result_folder);
 end
 
-VOCopts = GetVOCopts(seg_root, seg_res_dir, trainset, testset);
+if test_berkeley
+    seg_res_dir = '~/workspace/deeplabeling/Berkeley_FCN_results/results_color/val2011/fcn-8s/';
+end
+
+VOCopts = GetVOCopts(seg_root, seg_res_dir, trainset, testset, dataset);
 
 for i = 1 : length(boundary_w)
     w = boundary_w(i);
