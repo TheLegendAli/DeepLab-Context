@@ -54,19 +54,25 @@ To quantize the improvement of different models, we evaluate the segmention accu
 %   \label{fig:IOUBoundary}
 % \end{figure}
 
-\begin{figure}[ht]
-  \centering
-  \begin{tabular}{c c}
-    \includegraphics[height=0.3\linewidth]{fig/SegPixelAccWithinTrimap.pdf} &
-    \includegraphics[height=0.3\linewidth]{fig/SegPixelIOUWithinTrimap.pdf} \\
-    (a) & (b)
-  \end{tabular}
+\begin{table}
+\centering
+  \begin{tabular} {c c c}
+    \begin{tabular}{c c}
+      \includegraphics[height=0.1\linewidth]{fig/trimap/2007_000363.jpg} &
+      \includegraphics[height=0.1\linewidth]{fig/trimap/2007_000363.png} \\
+      \includegraphics[height=0.1\linewidth]{fig/trimap/TrimapWidth2.pdf} &
+      \includegraphics[height=0.1\linewidth]{fig/trimap/TrimapWidth10.pdf} \\
+    \end{tabular} &
+    \includegraphics[height=0.2\linewidth]{fig/SegPixelAccWithinTrimap.pdf} &
+    \includegraphics[height=0.2\linewidth]{fig/SegPixelIOUWithinTrimap.pdf} \\
+   \end{tabular}
   \caption{Quality of segmentation result within a band around the object
     boundaries for the proposed methods. (a) Pixelwise accuracy. (b)
-    Pixel mean IOU.
+    Pixel mean IOU. {\color{red} I cannot make it right.....(jay)}
     }  
   \label{fig:IOUBoundary}
-\end{figure}
+\end{table}
+
 
 \begin{table*}[t]\scriptsize
 \setlength{\tabcolsep}{3pt}
