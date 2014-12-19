@@ -95,12 +95,21 @@ Section~\ref{sec:multiscale}.
 
 \begin{figure}[ht]
   \centering
-  \begin{tabular}{c c}
+  \begin{tabular}{c c c c c}
+    \includegraphics[width=0.15\linewidth]{fig/mean_field_illustration/2007_007470.jpg} & 
+    \includegraphics[width=0.15\linewidth]{fig/mean_field_illustration/Belief_Class0_Itr0.pdf} & 
+    \includegraphics[width=0.15\linewidth]{fig/mean_field_illustration/Belief_Class0_Itr1.pdf} & 
+    \includegraphics[width=0.15\linewidth]{fig/mean_field_illustration/Belief_Class0_Itr2.pdf} & 
+    \includegraphics[width=0.15\linewidth]{fig/mean_field_illustration/Belief_Class0_Itr10.pdf} \\
+    \includegraphics[width=0.15\linewidth]{fig/mean_field_illustration/2007_007470.png} & 
+    \includegraphics[width=0.15\linewidth]{fig/mean_field_illustration/Belief_Class1_Itr0.pdf} & 
+    \includegraphics[width=0.15\linewidth]{fig/mean_field_illustration/Belief_Class1_Itr1.pdf} & 
+    \includegraphics[width=0.15\linewidth]{fig/mean_field_illustration/Belief_Class1_Itr2.pdf} & 
+    \includegraphics[width=0.15\linewidth]{fig/mean_field_illustration/Belief_Class1_Itr10.pdf} \\
+    Image/G.T. & CNN score map & Iteration 1 & Iteration 2 3 & Iteration 10 \\
   \end{tabular}
-  \caption{(a) CNN classifier score map (dominant class). (b) Corresponding
-    CRF belief map after convergence of the mean-field inference
-    algorithm. {\color{red} Jay, is it possible to extract (b) from the
-      inference code?}}
+  \caption{The CNN classifier score map and CRF belief maps (at iteration 1, 2, and 10) for Background (first row) and Aeroplane (second row). The whiter, the higher probability is.
+    }
   \label{fig:score-maps}
 \end{figure}
 
