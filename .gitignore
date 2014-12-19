@@ -3,8 +3,10 @@
 *.blg
 *.out
 *.log
-*.auc
+*.aux
 *.bbl
+*.gz
+*.dvi
 
 # Compiled Object files
 *.slo
