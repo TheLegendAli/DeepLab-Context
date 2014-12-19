@@ -29,7 +29,7 @@ sparsely sample the feature maps on which they are applied on using a stride
 of 2 or 4 pixels, respectively. This approach is known as the `hole algorithm'
 (`atrous algorithm') and has been developed before for efficient computation
 of the undecimated wavelet transform \cite{Mall99}. We have implemented this
-within the Caffe framework by adding to the \textsl{im2col} function (it
+within the Caffe framework \citep{jia2014caffe} by adding to the \textsl{im2col} function (it
 converts multi-channel feature maps to vectorized patches) the option to
 sparsely sample the underlying feature map.
 
