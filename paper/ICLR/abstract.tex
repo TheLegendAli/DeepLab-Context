@@ -1,6 +1,19 @@
+\newcommand{\mycomment}[1]{}
 \begin{abstract}
-While Deep Convolutional Neural Networks (DCNN) have decisevely changed  high-level vision, their application to low-level tasks is still not as widespread. This can be partially attributed to their increased invariance to local image transformations, which results in excellent high-level classification but may inpair low-level tasks, such as semantic segmentation.
-In this work we take a step in the direction of using DCNNs for semantic segmentation, and demonstrate that simple modifications to the standard architectures used for object classification can lead to excellent segmentation performance. More importantly, we couple DCNNs  with Markov Random Field inference and obtain state-of-the-art results on the PASCAL semantic image segmentation task.  We consider our main contribution to be the increase of the acuity of DCNNs, by combining invariant classifications with bottom-up, image-driven cues for segmentation. 
+While Deep Convolutional Neural Networks (DCNN) have decisevely pushed the envelope of  high-level vision, their applications to low-level tasks are often not up the level of engineered computer vision systems. Our understanding is that this is  potentially due to their increased invariance to local image transformations;  our main contribution consists in  increasing the spatial acuity of DCNNs in  sementaic segmentation, by combining their invariant classification results with bottom-up, image-driven cues for segmentation. 
+
+In particular, we first demonstrate that simple modifications to the standard architectures used for object classification can deliver excellent semantic segmentation results while operating at XXX frames-per-seconds. More importantly, we couple DCNNs  with Mean Field inference for Markov Random Fields  and obtain state-of-the-art results on the PASCAL semantic image segmentation task.  
+
+\mycomment{We consider our main contribution to be the increase of the acuity of DCNNs, by combining invariant classifications with bottom-up, image-driven cues for segmentation.} 
 
 \end{abstract}
 
+
+While Deep Convolutional Neural Networks (DCNNs) have been established in machine learning for more than two decades, it is only recently that their applications in  vision have become the mainstream of high-level vison research.
+Over the past two years  DCNNs have 
+ pushed the envelope of high-level vision system performance, delivering  dramatically better results than systems relying on engineered features, such as SIFT or HOG features.
+Still, the applications of DCNNs to low-level vision tasks, such as segmentation, or semantic image labelling still lag behind, with existing DCNN systems still underpeforming the state-of-the-art engineered computer vision systems, e.g. XXX, XXX.
+
+ This can be partially attributed to their increased invariance to local image transformations, which results in excellent high-level classification but may inpair low-level tasks, such as semantic segmentation - where invariance to signal transformation is not necessarily a desired property. In particular, DCNNs achieve invariance to spatial transformations by a combination of spatial pooling and sub-sampling, which delivers a descriptor of 
+
+that deliver 
