@@ -148,14 +148,13 @@ on pixel positions. The hyper parameters $\sigma_\alpha$, $\sigma_\beta$ and
 $\sigma_\gamma$ control the ``scale'' of the Gaussian kernels.
 
 Crucially, this model is amenable to efficient approximate probabilistic
-inference \citep{krahenbuhl2011efficient}. The mean field message passing
-updates under a fully decomposable variational approximation
-$b(\boldsymbol{x}) = \prod_i b_i(x_i)$ can be expressed as convolutions with a
-Gaussian kernel in feature space. High-dimensional filtering algorihtms
-\citep{adams2010fast} significantly speed-up this computation resulting in an
-algorithm that is very fast in practice, less that 0.5 sec on average for
-Pascal VOC images using the publicly available implementation of
-\citep{krahenbuhl2011efficient}.
+inference \citep{krahenbuhl2011efficient}. The message passing updates under a
+fully decomposable mean field approximation $b(\boldsymbol{x}) = \prod_i
+b_i(x_i)$ can be expressed as convolutions with a Gaussian kernel in feature
+space. High-dimensional filtering algorihtms \citep{adams2010fast}
+significantly speed-up this computation resulting in an algorithm that is very
+fast in practice, less that 0.5 sec on average for Pascal VOC images using the
+publicly available implementation of \citep{krahenbuhl2011efficient}.
 
 \begin{figure}
   \centering
