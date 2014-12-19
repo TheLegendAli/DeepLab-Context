@@ -31,26 +31,26 @@ To quantize the improvement of different models, we evaluate the segmention erro
 
 \begin{figure}[ht]
   \centering
-  \begin{tabular}{c c c}
-    \begin{tabular}{c c c}
-        \includegraphics[height=0.12\linewidth]{fig/img/2007_002266.jpg} &
-        \includegraphics[height=0.12\linewidth]{fig/fcn8s/2007_002266.png} &
-        \includegraphics[height=0.12\linewidth]{fig/res_crf/2007_002266.png}
-    \end{tabular} 
-     &
+  \begin{tabular}{c c c | c c}
+    \includegraphics[height=0.12\linewidth]{fig/img/2007_002266.jpg} &
+    \includegraphics[height=0.12\linewidth]{fig/fcn8s/2007_002266.png} &
+    \includegraphics[height=0.12\linewidth]{fig/res_crf/2007_002266.png} &
     \includegraphics[height=0.12\linewidth]{fig/SegPixelAccWithinTrimap_Berkeley.pdf} &
     \includegraphics[height=0.12\linewidth]{fig/SegPixelIOUWithinTrimap_Berkeley.pdf} \\
-    (a) & (b) & (c)
+    (a) & (b) & (c) & (d) & (e)
   \end{tabular}
-  \caption{(a) Some comparisons with FCN-8S: (left) image (middle) FCN-8S (right) ms-crf. (b) Segmentation accuracy (pixelwise accuracy) within trimap. (c) Segmentation accuracy (mean IOU) within trimap. {\color{red} TODO: change legend. HELP: I cannot make them equally spaced....}}
+  \caption{(Left) Some comparisons with FCN-8S: (a) image; (b) FCN-8S; (c)
+    ms-crf. (d) Segmentation accuracy (pixelwise accuracy) within trimap. (e)
+    Segmentation accuracy (mean IOU) within trimap. {\color{red} TODO: change
+      legend. HELP: I cannot make them equally spaced....}} 
   \label{fig:IOUBoundary}
 \end{figure}
 
 
-{\bf{Visualization Results on VOC2012 validation set}}
-\begin{figure}[ht]
+\begin{figure}[!htbp]
   \centering
-  \vspace{-1.cm}
+  %\vspace{-1.cm}
+  \scalebox{0.82} {
   \begin{tabular}{c c c | c c c}
     %\addtolength{\tabcolsep}{-6.5pt}
     \includegraphics[height=0.12\linewidth]{fig/img/2007_002094.jpg} &
@@ -122,6 +122,7 @@ To quantize the improvement of different models, we evaluate the segmention erro
     \includegraphics[height=0.12\linewidth]{fig/res_none/2007_000663.png} &
     \includegraphics[height=0.12\linewidth]{fig/res_crf/2007_000663.png} \\    
   \end{tabular}
+  }
   %\vspace{-0.3cm}
   \caption{Visualization results on VOC 2012 val. For each row, we show image, segmentation result by CNN, and refined segmentation result by Fully Connected CRF. We show our failure modes in teh last two rows.} 
   \label{fig:ValResults}
