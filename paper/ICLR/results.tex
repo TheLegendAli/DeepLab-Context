@@ -1,4 +1,6 @@
 \section{Experimental Evaluation}
+\label{sec:experiments}
+
 {\bf{Dataset: }} Our model is tested on the PASCAL VOC 2012 segmentation benchmark, which includes 20 foreground object classes and one background class \citep{everingham2014pascal}. The original dataset contains $1,464$, $1,449$, and $1,456$ images for training, validation, and test, respectively. The dataset is augmented by the extra annotations provided by \citep{hariharan2011semantic}, resulting in $10,582$ training images. The performance is measured in terms of pixel intersection-over-union (IOU) averaged across the 21 classes. 
 
 We employ VGG-16 \citep{simonyan2014very} as our DCNN, which is pre-trained on ImageNet \citep{deng2009imagenet}.

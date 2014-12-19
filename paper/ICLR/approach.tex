@@ -1,12 +1,15 @@
 \section{Convolutional Neural Networks for Dense Image Labeling}
+\label{sec:convnets}
 
 \subsection{Model Architecture and Training}
+\label{sec:convnet-arch}
 
 Herein we describe how we have re-purposed the publicly available state-of-art
 16 layer classification network of \cite{SiZi14} (VGG-16) into an efficient
 and effective component of our sliding window detector.
 
 \subsection{Efficient Dense Sliding Window Feature Extraction with the Hole Algorithm}
+\label{sec:convnet-hole}
 
 Dense spatial score evaluation is instrumental in the success of our CNN
 sliding window detector. 
@@ -30,7 +33,8 @@ within the Caffe framework by adding to the \textsl{im2col} function (it
 converts multi-channel feature maps to vectorized patches) the option to
 sparsely sample the underlying feature map.
 
-\subsubsection{Shrinking the Receptive Field of Neural Networks}
+\subsection{Shrinking the Receptive Field of Neural Networks}
+\label{sec:convnet-field}
 
 Explicit control on the receptive field size.
 
@@ -50,10 +54,12 @@ receptive field of the network down to \by{128}{128} pixels and has reduced
 computation time for the first FC layer by 3 times.
 
 
-\section{Detailed Boundary Recovery: Multi-scale Predictors and
-  Fully-Connected Conditional Random Fields}
+\section{Detailed Boundary Recovery: Fully-Connected Conditional Random Fields
+  and Multi-scale Predictors}
+\label{sec:boundary-recovery}
 
 \subsection{Deep Convolutional Networks and the Localization Challenge}
+\label{sec:local-chal}
 
 As illustrated in Figure~\ref{fig:score-maps}, deep CNN feature maps can
 reliably predict the presense and rough position of objects in an image but
@@ -68,21 +74,23 @@ The reduced receptive field size in our network architecture can ameliorate
 but not fully resolve this problem. Recent work has pursued two directions to
 address this localization challenge. The first approach is to harness
 information from multiple layers in the convolutional network in order to
-better estimate the object boundaries. We present our own multi-scale
-prediction method along these lines in Section~\ref{}. The second approach is
+better estimate the object boundaries. The second approach is
 to employ a super-pixel representation, essentially delegating the
 localization task to a low-level segmentation method. This route is followed
-by the very successful recent method of \cite{Greg}. In Section~\ref{}, we
-pursue a novel alternative direction based on coupling the recognition
-capacity of deep CNNs and the fine-grained localization accuracy of fully
-connected CRFs and show that it is remarkably successful in addressing the
-localication challenge, producing accurate semantic segmentation results and
-recovering object boundaries at a level of detail that is well beyond the
-reach of existing methods. Combining the proposed fully-connected CRF method
-with multi-scale prediction yields further improvements.
+by the very successful recent method of \cite{Greg}.
 
+In Section~\ref{}, we pursue a novel alternative direction based on coupling
+the recognition capacity of deep CNNs and the fine-grained localization
+accuracy of fully connected CRFs and show that it is remarkably successful in
+addressing the localication challenge, producing accurate semantic
+segmentation results and recovering object boundaries at a level of detail
+that is well beyond the reach of existing methods.  We have also pursued a
+hybrid approach in which we combine the proposed fully-connected CRF method
+with our own variant of multi-scale prediction. This combined approach yields
+further small improvements, as discussed in Section~\ref{}. 
 
 \subsection{Fully-Connected Conditional Random Fields for Accurate Localization}
+\label{sec:dense-crf}
 
 Traditionally, conditional random fields (CRFs) have been employed to smooth
 noisy segmentation maps \cite{rother2004grabcut, kohli2009robust}. Typically
@@ -98,9 +106,9 @@ Figure~\ref{fig:score-maps}, the feature maps are typically quite smooth and
 produce homogeneous classification results. In this regime, using short-range
 CRFs can be detrimental, as our goal should be to recover detailed local
 structure rather than further smooth it. Using contrast-sensitive potentials
-\cite{rother2004grabcut} within local-range CRFs can potentially improve
-localization but still miss thin-structures and can lead to expensive
-discrete optimization problems.
+\cite{rother2004grabcut} in conjunction to local-range CRFs can potentially
+improve localization but still miss thin-structures and typically requires
+solving an expensive discrete optimization problem.
 
 In order to 
 
@@ -122,28 +130,28 @@ where the first kernel depends on both pixel positions (denoted as $p$) and pixe
 
 The efficient inference algorithm is based on mean field approximation to the CRF distribution, which finds another simple distribution $b(\boldsymbol{x}) = \prod_i b_i(x_i)$ that minimizes the KL-divergence $KL(b(\boldsymbol{x}) \| P(\boldsymbol{x}))$. The resulting algorithm is stated in \figref{fig:InferenceCRF}. Within the while loop, the first step (\ie, the message passing step) can be expressed as a convolution with a Gaussian kernel in feature space. High-dimensional filtering algorihtms \citep{adams2010fast} have been proposed to speed-up this computation.
 
-\begin{figure}[t]
-%\vspace{-0.5cm}
-\fbox{
-\begin{minipage}[c]{13.5cm}
-{\bf Algorithm: Efficient Inference in Fully Connected CRFs}
+% \begin{figure}[t]
+% %\vspace{-0.5cm}
+% \fbox{
+% \begin{minipage}[c]{13.5cm}
+% {\bf Algorithm: Efficient Inference in Fully Connected CRFs}
 
-Initialize $b_i(x_i) \leftarrow \frac{1}{Z_i} \exp \Big(-\theta_i(x)i \Big)$
+% Initialize $b_i(x_i) \leftarrow \frac{1}{Z_i} \exp \Big(-\theta_i(x_i) \Big)$
 
-{\bf While} not converged, 
+% {\bf While} not converged, 
 
-\begin{enumerate}[labelindent=0pt,labelwidth=\widthof{\ref{last-item}},label=\arabic*.,itemindent=2em,leftmargin=0pt]
-\item $\tilde{b_i}^m(l) \leftarrow \sum_{j \neq i}k^m(\boldsymbol{f}_i,\boldsymbol{f}_j) \cdot b_j(l), \ \forall m$
-\item $\hat{b_i}(x_i) \leftarrow \sum_{l} \sum_m w^m \cdot \tilde{b_i}^m(l)$
-\item $b_i(x_i) \propto \exp \Big(-\theta_i(x_i) - \hat{b_i}(x_i) \Big)$
-\end{enumerate}
+% \begin{enumerate}[labelindent=0pt,labelwidth=\widthof{\ref{last-item}},label=\arabic*.,itemindent=2em,leftmargin=0pt]
+% \item $\tilde{b_i}^m(l) \leftarrow \sum_{j \neq i}k^m(\boldsymbol{f}_i,\boldsymbol{f}_j) \cdot b_j(l), \ \forall m$
+% \item $\hat{b_i}(x_i) \leftarrow \sum_{l} \sum_m w^m \cdot \tilde{b_i}^m(l)$
+% \item $b_i(x_i) \propto \exp \Big(-\theta_i(x_i) - \hat{b_i}(x_i) \Big)$
+% \end{enumerate}
 
-\end{minipage}
-}
-\caption{Efficient Inference algorithm in Fully Connected CRFs
-}
-\label{fig:InferenceCRF}
-\end{figure}
+% \end{minipage}
+% }
+% \caption{Efficient Inference algorithm in Fully Connected CRFs
+% }
+% \label{fig:InferenceCRF}
+% \end{figure}
 
 
 
