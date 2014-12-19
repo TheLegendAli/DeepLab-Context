@@ -3,14 +3,24 @@
 
 {\bf{Dataset: }} Our model is tested on the PASCAL VOC 2012 segmentation benchmark, which includes 20 foreground object classes and one background class \citep{everingham2014pascal}. The original dataset contains $1,464$, $1,449$, and $1,456$ images for training, validation, and test, respectively. The dataset is augmented by the extra annotations provided by \citep{hariharan2011semantic}, resulting in $10,582$ training images. The performance is measured in terms of pixel intersection-over-union (IOU) averaged across the 21 classes. 
 
-{\bf{Training: }} We employ piecewise training method to train our model: the DCNN is fine-tuned on the training set {\color{red}jay: George, would you like to add something here?} and then we cross-validate the five parameters in the fully connected CRF model in \equref{eq:fully_crf}. To avoid overfitting the validation set, the parameters $w^2$ and $\sigma_\gamma$ are fixed to be $3$ and the best values of $w^1$, $\sigma_\alpha$, and $\sigma_\beta$ are cross-validated on a small subset of the validation set (we used only 182 images).  
+{\bf{Training: }} We employ piecewise training method to train our model: the DCNN is fine-tuned on the training set {\color{red}jay: George, would you like to add something here?} and then we cross-validate the five parameters in the fully connected CRF model in \equref{eq:fully_crf}. To avoid overfitting the validation set, the parameters $w^2$ and $\sigma_\gamma$ are fixed to be $3$ and the best values of $w^1$, $\sigma_\alpha$, and $\sigma_\beta$ are cross-validated on a small subset of the validation set (we use only 182 images).  
 
-{\bf{Weighted loss: }} Weighting the loss function according to the class frequency has been employed to overcome the label imbalanced problem. We have also experimented this by adjusting the loss function for one pixel to be $-\frac{1}{n_{x}} \log \hat{P}(x)$, where $n_x$ is the frequency of class $x$ and $\hat{P}$ is the prediction probability. Our experiments on VOC 2012 val set show that using weighted loss function increases the mean class accuracy (the pixel accuracy averaged across classes) from $73.68\%$ to $88.81\%$. However, the mean IOU decreases a lot to $41.77\%$. We found that many background pixels are labeled as foreground classes because the background class has less penality on loss function, and therefore the false positives for foreground classes increase a lot.
+{\bf{Evaluation on Val set: }} Most of our evaluations are conducted on the validation set. As shown in \tabref{tb:valIOU}, the performance improves as multi-scale features are added. The fully connected CRF can even further boost about 4\% improvement; the improvement (after adding CRF) is much larger than the result of \citet{krahenbuhl2011efficient}. We beleve the gain comes from the powerful DCNN (even though the predictions are very coarse). The effect of employing multi-scale features is visualized in \figref{fig:msBoundary}. The predicted object boundaries are refined, however, they are still very far from perfect. We show more visual results between DeepLab-MSc and DL-MSc-CRF (DeepLab-MSc added with CRF) in \figref{fig:ValResults}. As shown in the figure, employing fully connected CRF improves not only quantatative but also qualitative results, especially along complicate object boundaries.
 
-On the validation set. Without weighted loss: pixel accuracy $90.13\%$, mean class accuracy $73.68\%$, mean Pixel IOU $59.80\%$. With weighted loss: pixel accuracy $66.82\%$, mean class accuracy $88.81\%$, mean pixel IOU $41.77\%$.
+\begin{table}
+  \centering
+  \begin{tabular}{c | c}
+    Method      & mean IOU (\%) \\
+    \hline
+    DeepLab     & 59.80 \\
+    DeepLab-MSc & 60.25 \\
+    DeepLab-CRF & 63.74 \\
+    DL-MSc-CRF  & 64.14 \\
+  \end{tabular}
+  \caption{Performance of our proposed models on validation set. DL-MSc-CRF is the model where fully connected CRF is combined with DeepLab-MSc.}
+  \label{tb:valIOU}
+\end{table}
 
-{\bf{Incorporate Multi-Scale Features}}
-mean PixelIOU $60.25\%$, after crf $64.14\%$.
 \begin{figure}[ht]
   \centering
   \begin{tabular}{c c | c c}
@@ -25,15 +35,17 @@ mean PixelIOU $60.25\%$, after crf $64.14\%$.
       \includegraphics[height=0.12\linewidth]{fig/boundary_refine/vgg128ms_2007_001289.png} \\
       (a) & (b) & (a) & (b) \\ 
   \end{tabular}
-  \label{fig:msBoundary}
   \caption{Incorporating multi-scale features improves the boundary segmentation. Our DeepLab-MSc (b) can slightly improve the boundary segmentation compared to DeepLab (a).}
+  \label{fig:msBoundary}
 \end{figure}
 
-{\bf{Incorporate Image-level Feature}} 
-mean PixelIOU $59.86\%$, after crf $63.87\%$.
+
+{\bf{Weighted loss: }} Weighting the loss function according to the class frequency has been employed to overcome the label imbalanced problem. We have experimented this by adjusting the loss function for one pixel to be $-\frac{1}{n_{x}} \log \hat{P}(x)$, where $n_x$ is the frequency of class $x$ and $\hat{P}$ is the prediction probability. Our experiments on VOC 2012 val set show that using weighted loss function increases the mean class accuracy (the pixelwise accuracy averaged across classes) from $73.68\%$ to $88.81\%$. However, the mean IOU decreases a lot from $59.80\%$ to $41.77\%$. We found that many background pixels are labeled as foreground classes because the background class has less penality on loss function, and therefore the false positives for foreground classes increase a lot. This finding is inconsistent to \citet{mostajabi2014feedforward}. We suspect it is because they predict lables for superpixels while we employ sliding window for pixel prediction.
 
 {\bf{Mean Pixel IOU along Object Boundaries: }}
-To quantize the improvement of different models, we evaluate the segmention accuracy around object boundaries \citep{kohli2009robust, krahenbuhl2011efficient}. Specifically, we take use of the ``void'' label annotated in PASCAL val set, which usually occurs around object boundaries. We compute the mean IOU for those pixels that are located within a narrow band (called trimap) of ``void'' labels. As shown in \figref{fig:IOUBoundary}, adding multi-scale features improve the accuracy slightly. On the other hand, refining the segmentation results by fully connected CRF significantly improve the results around object boundaries. 
+To quantize the improvement of different models, we evaluate the segmention accuracy around object boundaries \citep{kohli2009robust, krahenbuhl2011efficient}. Specifically, we take use of the ``void'' label annotated in val set, which usually occurs around object boundaries. We compute the mean IOU for those pixels that are located within a narrow band (called trimap) of ``void'' labels. As shown in \figref{fig:IOUBoundary}, adding multi-scale features improve the accuracy slightly. On the other hand, refining the segmentation results by fully connected CRF significantly improves the results around object boundaries. 
+
+{\bf{Test set results: }} Last, we evaluate our model, DeepLab-CRF, on the VOC 2012 test set. As shown in \tabref{tab:voc2012}, our model achieves performance of $66.4\%$ mean IOU, outperforming all the other state-of-the-art models. 
 
 % \begin{figure}[ht]
 %   \centering
@@ -67,7 +79,7 @@ To quantize the improvement of different models, we evaluate the segmention accu
     \includegraphics[height=0.25\linewidth]{fig/SegPixelIOUWithinTrimap.pdf} \\
     (a) & (b) & (c) \\
    \end{tabular}
-  \caption{(a) Some trimap examples (bottome left panel: width of 2 pixels, and bottome right panel: width of 10 pixels). Quality of segmentation result within a band around the object boundaries for the proposed methods. (a) Pixelwise accuracy. (b) Pixel mean IOU. 
+  \caption{(a) Some trimap examples (top-left: image. top-right: ground-truth. bottom-left: trimap of 2 pixels. bottom-right: trimap of 10 pixels). Quality of segmentation result within a band around the object boundaries for the proposed methods. (b) Pixelwise accuracy. (c) Pixel mean IOU. 
     }  
   \label{fig:IOUBoundary}
 \end{figure}
@@ -75,23 +87,21 @@ To quantize the improvement of different models, we evaluate the segmention accu
 
 \begin{table*}[t]\scriptsize
 \setlength{\tabcolsep}{3pt}
-\begin{center}
+\hspace{-1.8cm}
 \begin{tabular}{|c||c*{20}{|c}||c|}
 \hline
 Method         & bkg &  aero & bike & bird & boat & bottle& bus & car  &  cat & chair& cow  &table & dog  & horse & mbike& person& plant&sheep& sofa &train & tv   & mean \\
 \hline\hline
-DeepLab-CRF    & 92.1 & 78.4 & 33.1 & 78.2 & 55.6 & 65.3 & 81.3 & 75.5 & 78.6 & 25.3 & 69.2 & 52.7 & 75.2 & 69.0  & 79.1 & 77.6 & 54.7 & 78.3 & 45.1 & 73.3 & 56.2 & 66.4 \\ 
-DL-MSc-CRF     &      &      &      &      &      &      &      &      &      &      &      &      &      &       &      &      &      &      &      &      &      &      \\
+DeepLab-CRF    &{\bf 92.1} & 78.4 & 33.1 & {\bf 78.2} & 55.6 & 65.3 & {\bf 81.3} & {\bf 75.5} & 78.6 & 25.3 & 69.2 & 52.7 & {\bf 75.2} & 69.0  & {\bf 79.1} & {\bf 77.6} & {\bf 54.7} & {\bf 78.3} & {\bf 45.1} & {\bf 73.3} & {\bf 56.2} & {\bf 66.4} \\ 
 \hline
-TTI-Zoomout-16 & 89.8 & 81.9 & 35.1 & 78.2 & 57.4 & 56.5 & 80.5 & 74.0 & 79.8 & 22.4 & 69.6 & 53.7 & 74.0 & 76.0  & 76.6 & 68.8 & 44.3 & 70.2 & 40.2 & 68.9 & 55.3 & 64.4 \\
+TTI-Zoomout-16 & 89.8 & {\bf 81.9} & {\bf 35.1} & {\bf 78.2} & {\bf 57.4} & 56.5 & 80.5 & 74.0 & {\bf 79.8} & 22.4 & {\bf 69.6} & {\bf 53.7} & 74.0 & {\bf 76.0} & 76.6 & 68.8 & 44.3 & 70.2 & 40.2 & 68.9 & 55.3 & 64.4 \\
 FCN-8s         & -    & 76.8 & 34.2 & 68.9 & 49.4 & 60.3 & 75.3 & 74.7 & 77.6 & 21.4 & 62.5 & 46.8 & 71.8 & 63.9  & 76.5 & 73.9 & 45.2 & 72.4 & 37.4 & 70.9 & 55.1 & 62.2 \\
-MSRA-CFM       & -    & 75.7 & 26.7 & 69.5 & 48.8 & 65.6 & 81.0 & 69.2 & 73.3 & 30.0 & 68.7 & 51.5 & 69.1 & 68.1  & 71.7 & 67.5 & 50.4 & 66.5 & 44.4 & 58.9 & 53.5 & 61.8 \\
+MSRA-CFM       & -    & 75.7 & 26.7 & 69.5 & 48.8 & {\bf 65.6} & 81.0 & 69.2 & 73.3 & {\bf 30.0} & 68.7 & 51.5 & 69.1 & 68.1  & 71.7 & 67.5 & 50.4 & 66.5 & 44.4 & 58.9 & 53.5 & 61.8 \\
 \hline
  \end{tabular}
  \caption{Labeling IoU (\%) on the PASCAL VOC 2012 test set
    training on the trainval.}
  \label{tab:voc2012}
- \end{center}
 \end{table*}
 
 
