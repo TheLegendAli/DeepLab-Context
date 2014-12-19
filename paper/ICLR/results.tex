@@ -31,20 +31,34 @@ mean PixelIOU $59.86\%$, after crf $63.87\%$.
 {\bf{Mean Pixel IOU along Object Boundaries: }}
 To quantize the improvement of different models, we evaluate the segmention error, defined as (1 - mean IOU), around object boundaries \citep{kohli2009robust, krahenbuhl2011efficient}. Specifically, we take use of the ``void'' label annotated in PASCAL val set, which usually occurs around object boundaries. We compute the mean IOU for those pixels that are located within a narrow band (called trimap) of ``void'' labels. As shown in \figref{fig:IOUBoundary}, adding multi-scale features improve the accuracy slightly. On the other hand, refining the segmentation results by fully connected CRF significantly improve the results around object boundaries. 
 
+% \begin{figure}[ht]
+%   \centering
+%   \begin{tabular}{c c c | c c}
+%     \includegraphics[height=0.12\linewidth]{fig/img/2007_002266.jpg} &
+%     \includegraphics[height=0.12\linewidth]{fig/fcn8s/2007_002266.png} &
+%     \includegraphics[height=0.12\linewidth]{fig/res_crf/2007_002266.png} &
+%     \includegraphics[height=0.12\linewidth]{fig/SegPixelAccWithinTrimap_Berkeley.pdf} &
+%     \includegraphics[height=0.12\linewidth]{fig/SegPixelIOUWithinTrimap_Berkeley.pdf} \\
+%     (a) & (b) & (c) & (d) & (e)
+%   \end{tabular}
+%   \caption{(Left) Some comparisons with FCN-8S: (a) image; (b) FCN-8S; (c)
+%     ms-crf. (d) Segmentation accuracy (pixelwise accuracy) within trimap. (e)
+%     Segmentation accuracy (mean IOU) within trimap. {\color{red} TODO: change
+%       legend. HELP: I cannot make them equally spaced....}} 
+%   \label{fig:IOUBoundary}
+% \end{figure}
+
 \begin{figure}[ht]
   \centering
-  \begin{tabular}{c c c | c c}
-    \includegraphics[height=0.12\linewidth]{fig/img/2007_002266.jpg} &
-    \includegraphics[height=0.12\linewidth]{fig/fcn8s/2007_002266.png} &
-    \includegraphics[height=0.12\linewidth]{fig/res_crf/2007_002266.png} &
-    \includegraphics[height=0.12\linewidth]{fig/SegPixelAccWithinTrimap_Berkeley.pdf} &
-    \includegraphics[height=0.12\linewidth]{fig/SegPixelIOUWithinTrimap_Berkeley.pdf} \\
-    (a) & (b) & (c) & (d) & (e)
+  \begin{tabular}{c c}
+    \includegraphics[height=0.3\linewidth]{fig/SegPixelAccWithinTrimap_Berkeley.pdf} &
+    \includegraphics[height=0.3\linewidth]{fig/SegPixelIOUWithinTrimap_Berkeley.pdf} \\
+    (a) & (b)
   \end{tabular}
-  \caption{(Left) Some comparisons with FCN-8S: (a) image; (b) FCN-8S; (c)
-    ms-crf. (d) Segmentation accuracy (pixelwise accuracy) within trimap. (e)
-    Segmentation accuracy (mean IOU) within trimap. {\color{red} TODO: change
-      legend. HELP: I cannot make them equally spaced....}} 
+  \caption{Quality of segmentation result within a band around the object
+    boundaries for the proposed methods. (a) Pixelwise accuracy. (b)
+    Segmentation mean IOU. \color{red}{Jay: change the legend names and remove
+    FCN}}  
   \label{fig:IOUBoundary}
 \end{figure}
 
