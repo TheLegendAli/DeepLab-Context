@@ -16,7 +16,7 @@ sliding window detector.
 
 As a first step to implement this, we convert the fully-connected layers
 of VGG-16 into convolutional ones and run the network in a convolutional
-fashion on the patchwork. However this is not enough as it yields very
+fashion on the patchwork \citep{dubout2012exact}. However this is not enough as it yields very
 sparsely computed detection scores (with a stride of 32 pixels). To compute
 scores more densely at our target stride of 8 pixels, we develop a variation
 of the method previously employed by \cite{GCMG+13, sermanet2013overfeat}. We skip
@@ -74,7 +74,7 @@ The reduced receptive field size in our network architecture can ameliorate
 but not fully resolve this problem. Recent work has pursued two directions to
 address this localization challenge. The first approach is to harness
 information from multiple layers in the convolutional network in order to
-better estimate the object boundaries. The second approach is
+better estimate the object boundaries \citep{long2014fully, eigen2014predicting}. The second approach is
 to employ a super-pixel representation, essentially delegating the
 localization task to a low-level segmentation method. This route is followed
 by the very successful recent method of \cite{mostajabi2014feedforward}.
