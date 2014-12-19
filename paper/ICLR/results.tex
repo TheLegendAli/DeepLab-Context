@@ -26,6 +26,17 @@ mean PixelIOU $60.25\%$, after crf $64.14\%$.
 {\bf{Incorporate Image-level Feature}} 
 mean PixelIOU $59.86\%$, after crf $63.87\%$.
 
+{\bf{Mean Pixel IOU along Object Boundaries: }}
+To quantize the improvement of different models, we evaluate the segmention error, defined as (1 - mean IOU), around object boundaries \citep{kohli2009robust, krahenbuhl2011efficient}. Specifically, we take use of the ``void'' label annotated in PASCAL val set, which usually occurs around object boundaries. We compute the mean IOU for those pixels that are located within a narrow band (called trimap) of ``void'' labels. As shown in \figref{fig:IOUBoundary}, adding multi-scale features improve the accuracy slightly. On the other hand, refining the segmentation results by fully connected CRF significantly improve the results around object boundaries. 
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[height=0.3\linewidth]{fig/SegPixelIOUWithinTrimap.pdf}
+  \caption{Segmentation accuracy (mean IOU) within trimp. {\color{red} TODO: change legend, should we also show some examples of trimap?}}
+  \label{fig:IOUBoundary}
+\end{figure}
+
+
 {\bf{Visualization Results on VOC2012 validation set}}
 \begin{figure}[ht]
   \centering
