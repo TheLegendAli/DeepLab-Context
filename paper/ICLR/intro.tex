@@ -13,17 +13,7 @@ While this invariance is a blessing for high-level vision tasks, it can hamper l
 There are two technical hurdles in the application of DCNNs to image labelling tasks: the first problem relates to the reduction of signal resolution incurred by the repeated combination of max-pooling and downsampling (`striding') performed at every layer of DCNNs; DCNNs effectively downsample an $N\times N$ image by a factor of $N$ to reach a 
 a single  classification decision for the whole image. This is clearly not appropriate for the task of pixel-level labelling, where $N \times N$ labels are needed. This could  be naively alleaviated by upsampling the image by a factor of $N$, yielding an $N^2\times N^2$ image, and an $N\times N$ set of labels. Instead of this naive approach we introducing into the problem the `atrous' (with holes) algorithm developped for  discrete wavelet analysis in \cite{}, resulting in substantial gains in efficiency. 
 
-
-
-, and repeating the classification process multiple times - or making the last, fully connected layers of a DCNN convolutional, with a trivial $1\times 1 convolution kernel. Rather than using 
-
- this is clearly 
-
-with the goal of arriving at 
-
-
- The second side relates to the invariance that is inherently necessary in order to obtain high-level, object-centric decisions. Even if the first aspect were resolved (e.g. naively 
-
+The second problem relates to the invariance that is inherently necessary in order to obtain high-level, object-centric decisions from a classifier. This is in a sense orthogonal to the problem above, since 
 In brief, we treat the first side of the problem by , and the second by coupling DCNNs with Conditional Random Field inference, so as to combine the high-level decisons of DCNNs with the sharp spatial localization of CRFs.
 
 Our work draws inspiration from a broad range of works developped around the problem of semantic segmentation. We can clump 
