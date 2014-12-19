@@ -1,4 +1,10 @@
 ## General
+*.pdf
+*.blg
+*.out
+*.log
+*.auc
+*.bbl
 
 # Compiled Object files
 *.slo
