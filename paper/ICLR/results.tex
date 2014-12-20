@@ -5,11 +5,11 @@
 
 {\bf{Training: }} We adopt the simplest form of piecewise training, decoupling the DCNN and CRF training stages, assuming the unary terms provided by the DCNN are fixed during CRF training. 
 
-For DCNN training we e employ the VGG-16 netwok which has been pre-trained on ImageNet. We fine-tuned the VGG-16 network on the VOC 21-way classification task by stochastic gradient descent on the cross-entropy loss function. We use a mini-batch of 20 images and a learning rate of $0.001$ with ``step'' learning policy,  reducing the learning rate by 0.1 at every 2000 iterations. We use momentum of $0.9$ and a weight decay of $0.0005$. Since, as detailed in Sec.~2.2 our model has a stride of 8 in the last layer, we the training labels are obtained by downsampling the ground truth segmentations  by a factor of 8.
+For DCNN training we employ the VGG-16 netwok which has been pre-trained on ImageNet. We fine-tuned the VGG-16 network on the VOC 21-way classification task by stochastic gradient descent on the cross-entropy loss function. We use a mini-batch of 20 images and a learning rate of $0.001$ with ``step'' learning policy,  reducing the learning rate by 0.1 at every 2000 iterations. We use momentum of $0.9$ and a weight decay of $0.0005$. Since, as detailed in Sec.~2.2 our model has a stride of 8 in the last layer, the training labels are obtained by downsampling the ground truth segmentations by a factor of 8.
 
 %a DCNN is first fine-tuned on the training set and then, as in the work of \citet{krahenbuhl2011efficient}  we cross-validate the 
   After the DCNN has been fine-tuned, we cross-validate the   parameters of the fully connected CRF model in \equref{eq:fully_crf} along the lines of \citet{krahenbuhl2011efficient};
- to avoid overfitting the validation set, the parameters $w^2$ and $\sigma_\gamma$ are fixed to be $3$ and the best values of $w^1$, $\sigma_\alpha$, and $\sigma_\beta$ are cross-validated on a small subset of the validation set (we use only 182 images).  
+ to avoid overfitting the validation set, the parameters $w^2$ and $\sigma_\gamma$ are fixed to be $3$ and the best values of $w^1$, $\sigma_\alpha$, and $\sigma_\beta$ are cross-validated on a small subset of the validation set (we use around 200 images).  
 
 {\bf{Evaluation on Validation set: }} We conduct the majority of our evaluations on the validation set. As shown in \tabref{tb:valIOU}, the performance improves moderately as multi-scale features are added. The fully connected CRF yields a substantially larger boost in performance, in the order of about 4\%; the improvement - while using both CRFs and multi-scale DCNN features yields an additional improvement. 
 We note that the original work of \citet{krahenbuhl2011efficient} improved the $27.6\%$
