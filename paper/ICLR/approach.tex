@@ -147,7 +147,7 @@ potential is $\theta_{ij}(x_i, x_j) = \sum_{m=1}^{K} w^m \cdot
 k^m(\boldsymbol{f}_i, \boldsymbol{f}_j)$. There is one pairwise term for each
 pair of pixels $i$ and $j$ in the image no matter how far from each other they
 lie, \ie the model's factor graph is fully connected. Each $k^m$ is the
-Gaussian kernel depends on features extracted for pixel $i$ and $j$ and is
+Gaussian kernel depends on features (denoted as $\boldsymbol{f}$) extracted for pixel $i$ and $j$ and is
 weighted by parameter $w^m$. We adopt bilateral position and color terms,
 specifically
 \begin{align}
