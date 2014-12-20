@@ -1,22 +1,24 @@
-\newcommand{\mycomment}[1]{}
+%\newcommand{\mycomment}[1]{}
 \begin{abstract}
-  Deep Convolutional Neural Networks (DCNN) have decisively pushed the
-  envelope of high-level vision over the last couple of years. However, their
-  applications to low-level tasks are often still not up the level of computer
-  vision systems using simple classifiers with well-engineered features. This
-  is likely due to the increased invariance of DCNNs to local image
-  transformations; in this work we aim at handling the effects of this
-  invariance in the context of semantic segmentation.
+Deep Convolutional Neural Networks (DCNNs) have recently shown state of the art performance in high level vision tasks, such as image classification and object detection. However, they have not yet outperformed more traditional methods, such as Conditional Random Fields (CRFs), on some low level vision problems, such as per-pixel classification (also called "semantic segmentation"). In part, this is due to the very invariance properties that make DCNNs good for high level tasks. In this paper, we show how a simple modification to the standard DCNN architecture can result in very accurate dense labeling results. We further show that using DCNN features inside of a fully connected CRF, with Gaussian edge potentials, yields even more accurate segment boundaries, achieving a state of the art performance of 66.4\% on the PASCAL semantic image segmentation task. We also show how these results can be obtained at 8 frames per second, by using a novel application of the 'hole' algorithm from the wavelet community.
 
-  Our main contribution consists in increasing the spatial acuity of DCNNs by
-  combining their invariant classification results with image-based
-  segmentation cues.  We first demonstrate that simple modifications to the
-  standard architectures used for object classification can deliver
-  impressively accurate dense labeling results while operating at 8
-  frames-per-seconds. We then couple DCNNs with Mean Field inference for
-  Markov Random Fields and obtain state-of-the-art results on the PASCAL
-  semantic image segmentation task.
+%  Deep Convolutional Neural Networks (DCNN) have decisively pushed the
+%  envelope of high-level vision over the last couple of years. However, their
+%  applications to low-level tasks are often still not up the level of computer
+%  vision systems using simple classifiers with well-engineered features. This
+%  is likely due to the increased invariance of DCNNs to local image
+%  transformations; in this work we aim at handling the effects of this
+%  invariance in the context of semantic segmentation.
 
-\mycomment{We consider our main contribution to be the increase of the acuity of DCNNs, by combining invariant classifications with bottom-up, image-driven cues for segmentation.} 
+%  Our main contribution consists in increasing the spatial acuity of DCNNs by
+%  combining their invariant classification results with image-based
+%  segmentation cues.  We first demonstrate that simple modifications to the
+%  standard architectures used for object classification can deliver
+%  impressively accurate dense labeling results while operating at 8
+%  frames-per-seconds. We then couple DCNNs with Mean Field inference for
+%  Markov Random Fields and obtain state-of-the-art results on the PASCAL
+%  semantic image segmentation task.
+
+%\mycomment{We consider our main contribution to be the increase of the acuity of DCNNs, by combining invariant classifications with bottom-up, image-driven cues for segmentation.} 
 \end{abstract}
 

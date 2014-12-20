@@ -162,8 +162,6 @@ structure rather than further smooth it. Using contrast-sensitive potentials
 improve localization but still miss thin-structures and typically requires
 solving an expensive discrete optimization problem.
 
-In order to 
-
 We briefly review the fully connected CRFs, and refer readers to
 \citep{krahenbuhl2011efficient} for more details. We use the energy function
 \begin{align}
@@ -172,16 +170,16 @@ We briefly review the fully connected CRFs, and refer readers to
 where $\boldsymbol{x}$ is the label assignment for pixels. We use as unary
 potential $\theta_i(x_i) = - \log P(x_i)$, where $P(x_i)$ is the label
 assignment probability at pixel $i$ as computed by DCNN. The pairwise
-potential is $\theta_{ij}(x_i, x_j) = \sum_{m=1}^{K} w^m \cdot
+potential is $\theta_{ij}(x_i, x_j) = \sum_{m=1}^{K} w_m \cdot
 k^m(\boldsymbol{f}_i, \boldsymbol{f}_j)$. There is one pairwise term for each
 pair of pixels $i$ and $j$ in the image no matter how far from each other they
 lie, \ie the model's factor graph is fully connected. Each $k^m$ is the
 Gaussian kernel depends on features (denoted as $\boldsymbol{f}$) extracted for pixel $i$ and $j$ and is
-weighted by parameter $w^m$. We adopt bilateral position and color terms,
+weighted by parameter $w_m$. We adopt bilateral position and color terms,
 specifically
 \begin{align}
   \label{eq:fully_crf}
-  \theta_{ij}(x_i, x_j) = w^1 \exp \Big(-\frac{|p_i-p_j|^2}{2\sigma_\alpha^2} -\frac{|I_i-I_j|^2}{2\sigma_\beta^2} \Big) + w^2 \exp \Big(-\frac{|p_i-p_j|^2}{2\sigma_\gamma^2}\Big)
+  \theta_{ij}(x_i, x_j) = w_1 \exp \Big(-\frac{|p_i-p_j|^2}{2\sigma_\alpha^2} -\frac{|I_i-I_j|^2}{2\sigma_\beta^2} \Big) + w_2 \exp \Big(-\frac{|p_i-p_j|^2}{2\sigma_\gamma^2}\Big)
 \end{align}
 where the first kernel depends on both pixel positions (denoted as $p$) and
 pixel color intensities (denoted as $I$), and the second kernel only depends
@@ -207,21 +205,3 @@ publicly available implementation of \citep{krahenbuhl2011efficient}.
   \label{fig:ModelIllustration}
 \end{figure}
 
-\subsection{Multi-Scale Prediction}
-\label{sec:multiscale}
-
-Following the promising recent results of \cite{hariharan2014hypercolumns,
-  long2014fully} we have also explored a multi-scale prediction method to
-increase the boundary localization accuracy. Specifically, we attach \by{1}{1}
-convolutional classifiers \cite{lin2013network} with 128 hidden units to the
-original color image and the output of the first four max-pooling layers of
-our adapted VGG network. We upsample their scores to the original image size
-and append them to the original 4096 output of the net's last layer, resulting
-into an enhanced 4736 ($4096 + 5 \cdot 128$) dimensional feature vector. We
-only adjust the newly added weights, keeping the other network parameters to
-the values learned by the method of Section~\ref{sec:convnet-arch}. As
-discussed in the experimental section, introducing these extra direct
-connections from fine-resolution layers improves localization performance, yet
-the effect is not as dramatic as the one obtained with the fully-connected
-CRF. Having said that, we obtain our best PASCAL VOC validation set results by
-combining the two methods.

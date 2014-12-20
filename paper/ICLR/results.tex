@@ -9,13 +9,13 @@ For DCNN training we employ the VGG-16 netwok which has been pre-trained on Imag
 
 %a DCNN is first fine-tuned on the training set and then, as in the work of \citet{krahenbuhl2011efficient}  we cross-validate the 
   After the DCNN has been fine-tuned, we cross-validate the   parameters of the fully connected CRF model in \equref{eq:fully_crf} along the lines of \citet{krahenbuhl2011efficient};
- to avoid overfitting the validation set, the parameters $w^2$ and $\sigma_\gamma$ are fixed to be $3$ and the best values of $w^1$, $\sigma_\alpha$, and $\sigma_\beta$ are cross-validated on a small subset of the validation set (we use around 200 images).  
+ to avoid overfitting the validation set, the parameters $w_2$ and $\sigma_\gamma$ are fixed to be $3$ and the best values of $w_1$, $\sigma_\alpha$, and $\sigma_\beta$ are cross-validated on a small subset of the validation set (we use around 200 images).  
 
 {\bf{Evaluation on Validation set: }} We conduct the majority of our evaluations on the validation set. As shown in \tabref{tb:valIOU}, the performance improves moderately as multi-scale features are added. The fully connected CRF yields a substantially larger boost in performance, in the order of about 4\% improvement - while using both CRFs and multi-scale DCNN features yields an additional $0.4\%$ improvement. 
 We note that the original work of \citet{krahenbuhl2011efficient} improved the $27.6\%$
 result of TextonBoost \citep{shotton2009textonboost} to $29.1\%$, which makes the  improvement we report here (from $59.8\%$ to $63.7\%$) all the more impressive - since we have also a {\emph{larger relative}} improvement. We can understand this as indicating how essential it has been to use  a CRF on top of DCNN features - which apparently were so loosely localized  that they would leave a large margin of improvement to the CRF. 
 
-Turning to qualitative results, the effect of employing multi-scale features is visualized in \figref{fig:msBoundary}. The predicted object boundaries are refined, but   far from perfect. By contrast, employing a fully connected CRF significantly improves the results visually, especially along intricate object boundaries. We provide more visual comparisons between DeepLab-MSc and DL-MSc-CRF in \figref{fig:ValResults}.
+Turning to qualitative results, we provide more visual comparisons between DeepLab and DeepLab-CRF in \figref{fig:ValResults}. Employing a fully connected CRF significantly improves the results visually, especially along intricate object boundaries. 
 
 \begin{table}
   \centering
@@ -23,31 +23,11 @@ Turning to qualitative results, the effect of employing multi-scale features is 
     Method      & mean IOU (\%) \\
     \hline
     DeepLab     & 59.80 \\
-    DeepLab-MSc & 60.25 \\
     DeepLab-CRF & 63.74 \\
-    DL-MSc-CRF  & 64.14 \\
   \end{tabular}
-  \caption{Performance of our proposed models on the validation set. DeepLab-MSc: multi-scale features are added to DeepLab. DeepLab-CRF: combination of DeepLab and fully connected CRF. DL-MSc-CRF: combination of DeepLab-MSc and fully connected CRF}.
+  \caption{Performance of our proposed models on the validation set. Incorporating fully connected CRF can further boost 4\% improvement.}
   \label{tb:valIOU}
 \end{table}
-
-\begin{figure}[ht]
-  \centering
-  \begin{tabular}{c c | c c}
-      \includegraphics[height=0.14\linewidth]{fig/boundary_refine/vgg128noup_2007_000783.png} &
-      \includegraphics[height=0.14\linewidth]{fig/boundary_refine/vgg128ms_2007_000783.png} &
-      \includegraphics[height=0.14\linewidth]{fig/boundary_refine/vgg128noup_2007_001284.png} &
-      \includegraphics[height=0.14\linewidth]{fig/boundary_refine/vgg128ms_2007_001284.png} \\
-      \hline
-      \includegraphics[height=0.12\linewidth]{fig/boundary_refine/vgg128noup_2007_001239.png} &
-      \includegraphics[height=0.12\linewidth]{fig/boundary_refine/vgg128ms_2007_001239.png} &
-      \includegraphics[height=0.12\linewidth]{fig/boundary_refine/vgg128noup_2007_001289.png} &
-      \includegraphics[height=0.12\linewidth]{fig/boundary_refine/vgg128ms_2007_001289.png} \\
-      (a) & (b) & (a) & (b) \\ 
-  \end{tabular}
-  \caption{Incorporating multi-scale features improves the boundary segmentation. Our DeepLab-MSc (b) can slightly improve the boundary segmentation compared to DeepLab (a).}
-  \label{fig:msBoundary}
-\end{figure}
 
 
 {\bf{Weighted loss: }} In PASCAL VOC 2012 dataset, most of the pixels are labeled as background in the ground truths. Weighting the loss function according to the class frequency has been employed, \eg \citet{farabet2013learning, mostajabi2014feedforward}, to overcome the label imbalance problem. Our experiments on VOC 2012 val set show that using a weighted loss function increases the mean class accuracy (the pixelwise accuracy averaged across classes), but does not improve the mean IOU too much in our model. 

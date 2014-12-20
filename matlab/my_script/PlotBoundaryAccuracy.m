@@ -56,17 +56,18 @@ w = 1 : size(pixelIOU, 2);
 % pixel iou
 figure(1)
 
-plot(w(1:subsample:end), pixelIOU(4,1:subsample:end), '-rx', 'LineWidth', lineWidth, 'color', cols(1,:));
+%plot(w(1:subsample:end), pixelIOU(4,1:subsample:end), '-rx', 'LineWidth', lineWidth, 'color', cols(1,:));
 hold on
-plot(w(1:subsample:end), pixelIOU(3,1:subsample:end), '-ro', 'LineWidth', lineWidth, 'color', cols(3,:));
-plot(w(1:subsample:end), pixelIOU(2,1:subsample:end), '-rs', 'LineWidth', lineWidth, 'color', cols(2,:));
+plot(w(1:subsample:end), pixelIOU(3,1:subsample:end), '-ro', 'LineWidth', lineWidth, 'color', cols(1,:));
+%plot(w(1:subsample:end), pixelIOU(2,1:subsample:end), '-rs', 'LineWidth', lineWidth, 'color', cols(2,:));
 plot(w(1:subsample:end), pixelIOU(1,1:subsample:end), '-r+', 'LineWidth', lineWidth, 'color', cols(4,:));
 %plot(w(1:subsample:end), pixelIOU(5,1:subsample:end), '-rd', 'LineWidth', lineWidth, 'color', cols(9,:));
 
 ylabel('mean IOU (%)', 'FontSize', fontSize) 
 xlabel('Trimap Width (pixels)', 'FontSize', fontSize)
 
-leg = legend('DL-MSc-CRF', 'DeepLab-CRF', 'DeepLab-MSc', 'DeepLab');
+%leg = legend('DL-MSc-CRF', 'DeepLab-CRF', 'DeepLab-MSc', 'DeepLab');
+leg = legend( 'DeepLab-CRF', 'DeepLab');
 set(leg, 'FontSize', fontSize, 'Position', [0.34 0.20 0.55 0.2]);
 set(gca, 'XGrid', 'on')
 set(gca, 'YGrid', 'on');
@@ -80,17 +81,18 @@ export_fig(fn);
 % pixel acc
 figure(2)
 
-plot(w(1:subsample:end), pixelAcc(4,1:subsample:end), '-rx', 'LineWidth', lineWidth, 'color', cols(1,:));
+%plot(w(1:subsample:end), pixelAcc(4,1:subsample:end), '-rx', 'LineWidth', lineWidth, 'color', cols(1,:));
 hold on
-plot(w(1:subsample:end), pixelAcc(3,1:subsample:end), '-ro', 'LineWidth', lineWidth, 'color', cols(3,:));
-plot(w(1:subsample:end), pixelAcc(2,1:subsample:end), '-rs', 'LineWidth', lineWidth, 'color', cols(2,:));
+plot(w(1:subsample:end), pixelAcc(3,1:subsample:end), '-ro', 'LineWidth', lineWidth, 'color', cols(1,:));
+%plot(w(1:subsample:end), pixelAcc(2,1:subsample:end), '-rs', 'LineWidth', lineWidth, 'color', cols(2,:));
 plot(w(1:subsample:end), pixelAcc(1,1:subsample:end), '-r+', 'LineWidth', lineWidth, 'color', cols(4,:));
 %plot(w(1:subsample:end), pixelAcc(5,1:subsample:end), '-rd', 'LineWidth', lineWidth, 'color', cols(9,:));
 
 ylabel('Pixelwise Accuracy (%)', 'FontSize', fontSize) 
 xlabel('Trimap Width (pixels)', 'FontSize', fontSize)
 
-leg = legend('DL-MSc-CRF',  'DeepLab-CRF', 'DeepLab-MSc', 'DeepLab');
+%leg = legend('DL-MSc-CRF',  'DeepLab-CRF', 'DeepLab-MSc', 'DeepLab');
+leg = legend( 'DeepLab-CRF', 'DeepLab');
 set(leg, 'FontSize', fontSize, 'Position', [0.34 0.20 0.55 0.2]);
 set(gca, 'XGrid', 'on')
 set(gca, 'YGrid', 'on');
