@@ -1,17 +1,21 @@
 \section{Experimental Evaluation}
 \label{sec:experiments}
 
-{\bf{Dataset: }} Our model is tested on the PASCAL VOC 2012 segmentation benchmark, which includes 20 foreground object classes and one background class \citep{everingham2014pascal}. The original dataset contains $1,464$, $1,449$, and $1,456$ images for training, validation, and test, respectively. The dataset is augmented by the extra annotations provided by \citep{hariharan2011semantic}, resulting in $10,582$ training images. The performance is measured in terms of pixel intersection-over-union (IOU) averaged across the 21 classes. 
+{\bf{Dataset: }} Our model is tested on the PASCAL VOC 2012 segmentation benchmark \citep{everingham2014pascal}, consisting of 20 foreground object classes and one background class. The original dataset contains $1,464$, $1,449$, and $1,456$ images for training, validation, and testing, respectively. The dataset is augmented by the extra annotations provided by \citep{hariharan2011semantic}, resulting in $10,582$ training images. The performance is measured in terms of pixel intersection-over-union (IOU) averaged across the 21 classes. 
 
-{\bf{Training: }} We adopt piecewise training method: the DCNN is first fine-tuned on the training set and then we cross-validate the five parameters in the fully connected CRF model in \equref{eq:fully_crf}. 
+{\bf{Training: }} We adopt the simplest form of piecewise training, decoupling the DCNN and CRF training stages, assuming the unary terms provided by the DCNN are fixed during CRF training. 
 
+For DCNN training we e employ the VGG-16 netwok which has been pre-trained on ImageNet. We fine-tuned the VGG-16 network on the VOC 21-way classification task by stochastic gradient descent on the cross-entropy loss function. We use a mini-batch of 20 images and a learning rate of $0.001$ with ``step'' learning policy,  reducing the learning rate by 0.1 at every 2000 iterations. We use momentum of $0.9$ and a weight decay of $0.0005$. Since, as detailed in Sec.~2.2 our model has a stride of 8 in the last layer, we the training labels are obtained by downsampling the ground truth segmentations  by a factor of 8.
 
-  We employ VGG-16 for our experiments, which has been pre-trained on ImageNet. The DCNN is fine-tuned by stochastic gradient descent with momentum. We use a mini-batch of 20 images and learning rate of $0.001$ with ``step'' learning policy, which reduces the learning rate by 0.1 at every 2000 iterations. We use momentum of $0.9$ and weight decay of $0.0005$. Our loss function is the cross-entropy function with the ground truth segmentation shrinked by a factor of 8 (our model has stride 8 in last layer, as explained in Sec.~2.2).
+%a DCNN is first fine-tuned on the training set and then, as in the work of \citet{krahenbuhl2011efficient}  we cross-validate the 
+  After the DCNN has been fine-tuned, we cross-validate the   parameters of the fully connected CRF model in \equref{eq:fully_crf} along the lines of \citet{krahenbuhl2011efficient};
+ to avoid overfitting the validation set, the parameters $w^2$ and $\sigma_\gamma$ are fixed to be $3$ and the best values of $w^1$, $\sigma_\alpha$, and $\sigma_\beta$ are cross-validated on a small subset of the validation set (we use only 182 images).  
 
+{\bf{Evaluation on Validation set: }} We conduct the majority of our evaluations on the validation set. As shown in \tabref{tb:valIOU}, the performance improves moderately as multi-scale features are added. The fully connected CRF yields a substantially larger boost in performance, in the order of about 4\%; the improvement - while using both CRFs and multi-scale DCNN features yields an additional improvement. 
+We note that the original work of \citet{krahenbuhl2011efficient} improved the $27.6\%$
+result of TextonBoost \citep{shotton2009textonboost} to $29.1\%$, which makes the  improvement we report here (from $59.8\%$ to $63.7\%$) all the more impressive - since we have also a {\emph{larger relative}} improvement. We can understand this as indicating how essential it has been to use  a CRF on top of DCNN features - which apparently were so loosely localized  that they would leave a large margin of improvement to the CRF. 
 
-  After the DCNN has been fine-tuned, we optimize the parameters for the CRF. To avoid overfitting the validation set, the parameters $w^2$ and $\sigma_\gamma$ are fixed to be $3$ and the best values of $w^1$, $\sigma_\alpha$, and $\sigma_\beta$ are cross-validated on a small subset of the validation set (we use only 182 images).  
-
-{\bf{Evaluation on Val set: }} Most of our evaluations are conducted on the validation set. As shown in \tabref{tb:valIOU}, the performance improves as multi-scale features are added. The fully connected CRF can even further boost about 4\% improvement; the improvement (after adding CRF) is much larger than the result of \citet{krahenbuhl2011efficient}. We think the gain comes from the powerful DCNN over the TextonBoost \citep{shotton2009textonboost}. The effect of employing multi-scale features is visualized in \figref{fig:msBoundary}. The predicted object boundaries are refined, however, they are still very far from perfect. We show more visual results between DeepLab-MSc and DL-MSc-CRF in \figref{fig:ValResults}. As shown in the figure, employing fully connected CRF significantly improves the results not only quantitatively but also qualitatively, especially along complicate object boundaries.
+Turning to qualitative results, the effect of employing multi-scale features is visualized in \figref{fig:msBoundary}. The predicted object boundaries are refined, but   far from perfect. By contrast, employing a fully connected CRF significantly improves the results visually, especially along intricate object boundaries. We provide more visual comparisons between DeepLab-MSc and DL-MSc-CRF in \figref{fig:ValResults}.
 
 \begin{table}
   \centering
@@ -23,7 +27,7 @@
     DeepLab-CRF & 63.74 \\
     DL-MSc-CRF  & 64.14 \\
   \end{tabular}
-  \caption{Performance of our proposed models on validation set. DeepLab-MSc: multi-scale features are added to DeepLab. DeepLab-CRF: combination of DeepLab and fully connected CRF. DL-MSc-CRF: combination of DeepLab-MSc and fully connected CRF}.
+  \caption{Performance of our proposed models on the validation set. DeepLab-MSc: multi-scale features are added to DeepLab. DeepLab-CRF: combination of DeepLab and fully connected CRF. DL-MSc-CRF: combination of DeepLab-MSc and fully connected CRF}.
   \label{tb:valIOU}
 \end{table}
 
@@ -46,12 +50,12 @@
 \end{figure}
 
 
-{\bf{Weighted loss: }} Weighting the loss function according to the class frequency has been employed to overcome the label imbalanced problem. We have experimented this by adjusting the loss function for one pixel to be $-\frac{1}{n_{x}} \log P(x)$, where $n_x$ is the frequency of class $x$ and $P$ is the prediction probability. Our experiments on VOC 2012 val set show that using weighted loss function increases the mean class accuracy (the pixelwise accuracy averaged across classes) from $73.68\%$ to $88.81\%$. However, the mean IOU decreases a lot from $59.80\%$ to $41.77\%$. We found that many background pixels are labeled as foreground classes because the background class has less penalty on loss function, and therefore the false positives for foreground classes increase a lot. This finding is inconsistent to \citet{mostajabi2014feedforward}. We suspect it is because they predict labels for superpixels while we employ sliding window for pixel prediction.
+{\bf{Weighted loss: }} Weighting the loss function according to the class frequency has been employed, e.g. in \cite{mostajabi2014feedforward} to overcome the label imbalance problem. We have experimented with this idea by adjusting the loss function for one pixel to be $-\frac{1}{n_{x}} \log P(x)$, where $n_x$ is the frequency of class $x$ and $P$ is the prediction probability. Our experiments on VOC 2012 val set show that using a weighted loss function increases the mean class accuracy (the pixelwise accuracy averaged across classes) from $73.68\%$ to $88.81\%$. However, the mean IOU decreases a lot from $59.80\%$ to $41.77\%$. We found that many background pixels are labeled as foreground classes because the mislassifying the background class incurs a lower  loss, resulting in an increase of  the false positives rate of  foreground classes. This finding is inconsistent to \citet{mostajabi2014feedforward}. We suspect it is because they predict labels for superpixels while we employ sliding windows for pixel prediction.
 
 {\bf{Mean Pixel IOU along Object Boundaries: }}
-To quantize the improvement of different models, we evaluate the segmentation accuracy around object boundaries \citep{kohli2009robust, krahenbuhl2011efficient}. Specifically, we take use of the ``void'' label annotated in val set, which usually occurs around object boundaries. We compute the mean IOU for those pixels that are located within a narrow band (called trimap) of ``void'' labels. As shown in \figref{fig:IOUBoundary}, adding multi-scale features improve the accuracy slightly. On the other hand, refining the segmentation results by fully connected CRF significantly improves the results around object boundaries. 
+To quantify the improvement of different models, we evaluate the segmentation accuracy around object boundaries \citep{kohli2009robust, krahenbuhl2011efficient}. Specifically, we  use  the ``void'' label annotated in val set, which usually occurs around object boundaries. We compute the mean IOU for those pixels that are located within a narrow band (called trimap) of ``void'' labels. As shown in \figref{fig:IOUBoundary}, adding multi-scale features improves the accuracy slightly. On the other hand, refining the segmentation results by a fully connected CRF significantly improves the results around object boundaries. 
 
-{\bf{Test set results: }} Last, we evaluate our model, DeepLab-CRF\footnote{http://host.robots.ox.ac.uk:8080/anonymous/NTHWZK.html}, on the VOC 2012 test set. As shown in \tabref{tab:voc2012}, our model achieves performance of $66.4\%$ mean IOU, outperforming all the other state-of-the-art models. 
+{\bf{Test set results: }} Having set our model choices on the validation set, we turn to evaluating our model, DeepLab-CRF\footnote{http://host.robots.ox.ac.uk:8080/anonymous/NTHWZK.html}, on the VOC 2012 test set. As shown in \tabref{tab:voc2012}, our model achieves performance of $66.4\%$ mean IOU, outperforming all the other state-of-the-art models. 
 
 \begin{table*}[ht]\scriptsize
 \setlength{\tabcolsep}{3pt}
@@ -195,6 +199,6 @@ MSRA-CFM       & -    & 75.7 & 26.7 & 69.5 & 48.8 & {\bf 65.6} & 81.0 & 69.2 & 7
   \end{tabular}
   }
   %\vspace{-0.3cm}
-  \caption{Visualization results on VOC 2012 val. For each row, we show image, segmentation result by CNN, and refined segmentation result by Fully Connected CRF. We show our failure modes in the last three rows.} 
+  \caption{Visualization results on VOC 2012-val. For each row, we show the input image, the segmentation result delivered by the DCNN, and the refined segmentation result of the Fully Connected CRF. We show our failure modes in the last three rows.} 
   \label{fig:ValResults}
 \end{figure}
