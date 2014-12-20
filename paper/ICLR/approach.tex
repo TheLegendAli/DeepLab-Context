@@ -61,7 +61,7 @@ computation time for the first FC layer by 3 times.
 \subsection{Deep Convolutional Networks and the Localization Challenge}
 \label{sec:local-chal}
 
-As illustrated in Figure~\ref{fig:score-maps}, deep CNN feature maps can
+As illustrated in Figure~\ref{fig:score-maps}, DCNN feature maps can
 reliably predict the presense and rough position of objects in an image but
 are less well suited for pin-pointing their exact outline. There is a natural
 trade-off between classification accuracy and localization accuracy with
@@ -80,7 +80,7 @@ localization task to a low-level segmentation method. This route is followed
 by the very successful recent method of \cite{mostajabi2014feedforward}.
 
 In Section~\ref{sec:dense-crf}, we pursue a novel alternative direction based
-on coupling the recognition capacity of deep CNNs and the fine-grained
+on coupling the recognition capacity of DCNNs and the fine-grained
 localization accuracy of fully connected CRFs and show that it is remarkably
 successful in addressing the localication challenge, producing accurate
 semantic segmentation results and recovering object boundaries at a level of
@@ -110,7 +110,7 @@ Section~\ref{sec:multiscale}.
     \includegraphics[width=0.13\linewidth]{fig/mean_field_illustration/Belief_Class1_Itr10.pdf} \\
     Image/G.T. & CNN score map & CNN belief map & Iteration 1 & Iteration 2 & Iteration 10 \\
   \end{tabular}
-  \caption{The CNNn score map, CNN belief map (normalize the score), and CRF belief maps (at iteration 1, 2, and 10) for Background (first row) and Aeroplane (second row).
+  \caption{The CNN score map, CNN belief map (normalize the score), and CRF belief maps (at iteration 1, 2, and 10) for Background (first row) and Aeroplane (second row).
     }
   \label{fig:score-maps}
 \end{figure}
@@ -122,7 +122,7 @@ same-label assignments to spatially proximal pixels. Qualitatively, the
 primary function of these short-range CRFs has been to clean up the spurious
 predictions of weak classifiers built on top of local hand-engineered features.
 
-Compared to these weaker classifiers, modern deep CNN architectures such as
+Compared to these weaker classifiers, modern DCNN architectures such as
 the one we use in this work produce feature maps and semantic label
 predictions which are qualitatively different. As illustrated in
 Figure~\ref{fig:score-maps}, the feature maps are typically quite smooth and
