@@ -9,7 +9,7 @@ For DCNN training we employ the VGG-16 netwok which has been pre-trained on Imag
 
 %a DCNN is first fine-tuned on the training set and then, as in the work of \citet{krahenbuhl2011efficient}  we cross-validate the 
   After the DCNN has been fine-tuned, we cross-validate the   parameters of the fully connected CRF model in \equref{eq:fully_crf} along the lines of \citet{krahenbuhl2011efficient};
- to avoid overfitting the validation set, the parameters $w_2$ and $\sigma_\gamma$ are fixed to be $3$ and the best values of $w_1$, $\sigma_\alpha$, and $\sigma_\beta$ are cross-validated on a small subset of the validation set (we use around 200 images).  
+ to avoid overfitting the validation set, the parameters $w_2$ and $\sigma_\gamma$ are fixed to be $3$ and the best values of $w_1$, $\sigma_\alpha$, and $\sigma_\beta$ are cross-validated on a small subset of the validation set (we use around 200 images). We use 10 iterations for the efficient inference algorithm \citep{krahenbuhl2011efficient}. 
 
 {\bf{Evaluation on Validation set: }} We conduct the majority of our evaluations on the validation set. As shown in \tabref{tb:valIOU}, incorporating the fully connected CRF to our model (denoted by DeepLab-CRF) yields a substantially larger boost in performance, in the order of about 4\% improvement. We note that the original work of \citet{krahenbuhl2011efficient} improved the $27.6\%$
 result of TextonBoost \citep{shotton2009textonboost} to $29.1\%$, which makes the  improvement we report here (from $59.8\%$ to $63.7\%$) all the more impressive - since we have also a {\emph{larger relative}} improvement. We can understand this as indicating how essential it has been to use  a CRF on top of DCNN features - which apparently were so loosely localized  that they would leave a large margin of improvement to the CRF. 
@@ -34,7 +34,7 @@ Turning to qualitative results, we provide more visual comparisons between DeepL
 {\bf{Mean Pixel IOU along Object Boundaries: }}
 To quantify the improvement of different models, we evaluate the segmentation accuracy around object boundaries \citep{kohli2009robust, krahenbuhl2011efficient}. Specifically, we  use  the ``void'' label annotated in val set, which usually occurs around object boundaries. We compute the mean IOU for those pixels that are located within a narrow band (called trimap) of ``void'' labels. As shown in \figref{fig:IOUBoundary}, refining the segmentation results by a fully connected CRF significantly improves the results around object boundaries. 
 
-{\bf{Test set results: }} Having set our model choices on the validation set, we turn to evaluating our model, DeepLab-CRF\footnote{http://host.robots.ox.ac.uk:8080/anonymous/NTHWZK.html}, on the VOC 2012 test set. As shown in \tabref{tab:voc2012}, our model achieves performance of $66.4\%$ mean IOU, outperforming all the other state-of-the-art models (specifically, TTI-Zoomout \citep{mostajabi2014feedforward}, FCN-8s \citep{long2014fully}, and MSRA-CFM \citep{dai2014convolutional}).
+{\bf{Test set results: }} Having set our model choices on the validation set, we turn to evaluating our model, DeepLab-CRF\footnote{http://host.robots.ox.ac.uk:8080/anonymous/NTHWZK.html}, on the VOC 2012 test set.  As shown in \tabref{tab:voc2012}, our model achieves performance of $66.4\%$ mean IOU, outperforming all the other state-of-the-art models (specifically, TTI-Zoomout \citep{mostajabi2014feedforward}, FCN-8s \citep{long2014fully}, and MSRA-CFM \citep{dai2014convolutional}).
 
 \begin{table*}[ht]\scriptsize
 \setlength{\tabcolsep}{3pt}
