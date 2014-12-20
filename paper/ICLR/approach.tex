@@ -85,8 +85,7 @@ speed during training is 3 frames/sec. Using smaller networks such as
 \cite{KrizhevskyNIPS2013} could allow video-rate test-time dense feature
 computation even on light-weight GPUs.
 
-\section{Detailed Boundary Recovery: Fully-Connected Conditional Random Fields
-  and Multi-scale Predictors}
+\section{Detailed Boundary Recovery: Fully-Connected Conditional Random Fields}
 \label{sec:boundary-recovery}
 
 \subsection{Deep Convolutional Networks and the Localization Challenge}
@@ -115,11 +114,13 @@ on coupling the recognition capacity of DCNNs and the fine-grained
 localization accuracy of fully connected CRFs and show that it is remarkably
 successful in addressing the localication challenge, producing accurate
 semantic segmentation results and recovering object boundaries at a level of
-detail that is well beyond the reach of existing methods.  We have also
-pursued a hybrid approach in which we combine the proposed fully-connected CRF
-method with our own variant of multi-scale prediction. This combined approach
-yields a further performance improvement, as discussed in
-Section~\ref{sec:multiscale}.
+detail that is well beyond the reach of existing methods.  
+
+%We have also
+%pursued a hybrid approach in which we combine the proposed fully-connected CRF
+%method with our own variant of multi-scale prediction. This combined approach
+%yields a further performance improvement, as discussed in
+%Section~\ref{sec:multiscale}.
 
 \subsection{Fully-Connected Conditional Random Fields for Accurate Localization}
 \label{sec:dense-crf}
@@ -170,16 +171,16 @@ We briefly review the fully connected CRFs, and refer readers to
 where $\boldsymbol{x}$ is the label assignment for pixels. We use as unary
 potential $\theta_i(x_i) = - \log P(x_i)$, where $P(x_i)$ is the label
 assignment probability at pixel $i$ as computed by DCNN. The pairwise
-potential is $\theta_{ij}(x_i, x_j) = \sum_{m=1}^{K} w_m \cdot
-k^m(\boldsymbol{f}_i, \boldsymbol{f}_j)$. There is one pairwise term for each
+potential is $\theta_{ij}(x_i, x_j) = \mu(x_i,x_j)\sum_{m=1}^{K} w_m \cdot
+k^m(\boldsymbol{f}_i, \boldsymbol{f}_j)$, where $\mu(x_i,x_j)=1 \text{ if } x_i \neq x_j$, and zero otherwise (\ie, Potts Model). There is one pairwise term for each
 pair of pixels $i$ and $j$ in the image no matter how far from each other they
 lie, \ie the model's factor graph is fully connected. Each $k^m$ is the
 Gaussian kernel depends on features (denoted as $\boldsymbol{f}$) extracted for pixel $i$ and $j$ and is
 weighted by parameter $w_m$. We adopt bilateral position and color terms,
-specifically
+specifically, the kernels are
 \begin{align}
   \label{eq:fully_crf}
-  \theta_{ij}(x_i, x_j) = w_1 \exp \Big(-\frac{|p_i-p_j|^2}{2\sigma_\alpha^2} -\frac{|I_i-I_j|^2}{2\sigma_\beta^2} \Big) + w_2 \exp \Big(-\frac{|p_i-p_j|^2}{2\sigma_\gamma^2}\Big)
+  w_1 \exp \Big(-\frac{|p_i-p_j|^2}{2\sigma_\alpha^2} -\frac{|I_i-I_j|^2}{2\sigma_\beta^2} \Big) + w_2 \exp \Big(-\frac{|p_i-p_j|^2}{2\sigma_\gamma^2}\Big)
 \end{align}
 where the first kernel depends on both pixel positions (denoted as $p$) and
 pixel color intensities (denoted as $I$), and the second kernel only depends
@@ -197,7 +198,7 @@ publicly available implementation of \citep{krahenbuhl2011efficient}.
 
 \begin{figure}
   \centering
-  \includegraphics[width=1\linewidth]{fig/model_illustration2.pdf}
+  \includegraphics[width=0.7\linewidth]{fig/model_illustration2.pdf}
   \caption{Model Illustration. The coarse output of Deep Convolutional Neural
     Network (with fully convolutional layers) is upsampled by bi-linear
     interpolation. A fully connected CRF is applied to refine the segmentation
