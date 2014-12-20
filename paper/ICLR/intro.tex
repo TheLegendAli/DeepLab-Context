@@ -10,14 +10,38 @@ This success can be partially attributed to the built-in  invariance of DCNNs to
 
 %However, the applications of DCNNs to low-level vision tasks, such as segmentation, or semantic image labelling still lags a bit behind in performance, with existing DCNN systems underpeforming  systems that use flat classifiers with well-engineered features, as witnessed e.g. in boundary detection with DCNNs \cite{williams14} as opposed to the  Forest-based system of \cite{DollarZ13}. 
 
-There are two technical hurdles in the application of DCNNs to image labelling tasks: signal downsampling, and spatial `insensitivity' (invariance). 
-The first problem relates to the reduction of signal resolution incurred by the repeated combination of max-pooling and downsampling (`striding') performed at every layer of DCNNs.  Some of the most successful  DCNNs e.g. 
-\citep{KrizhevskyNIPS2013, simonyan2014very, szegedy2014going}
-effectively downsample an $N\times N$ image by a factor of $N$ to reach 
-a single  classification decision for the whole image - while $N \times N$ labels are needed for pixel-level labelling. This could  be trivially alleviated by upsampling the image by a factor of $N$, yielding an $N^2\times N^2$ image, which would then result in an $N\times N$ set of labels (ignoring boundary effects). Instead, as in  \cite{papandreou2014untangling}, we introduce into the problem the `atrous' (with holes) algorithm developed for  discrete wavelet analysis in  \cite{Mall99}, thereby achieving substantial gains in efficiency over this naive approach. 
+There are two technical hurdles in the application of DCNNs to image labelling
+tasks: signal downsampling, and spatial `insensitivity' (invariance).  The
+first problem relates to the reduction of signal resolution incurred by the
+repeated combination of max-pooling and downsampling (`striding') performed at
+every layer of standard DCNNs, e.g. \citep{KrizhevskyNIPS2013,
+  simonyan2014very, szegedy2014going}. Instead, as in
+\cite{papandreou2014untangling}, we introduce into the problem the `atrous'
+(with holes) algorithm originally developed for efficiently computing the
+discrete wavelet transform \cite{Mall99}, thereby achieving substantial gains
+in efficiency over this naive approach.
 
-The second problem relates to the fact that obtaining object-centric decisions from a classifier inherently requires invariance to spatial transformations. For instance, we cannot expect a `bicycle' classifier to respond differently to pixels that are  placed on the bicycle's support and to pixels that are placed in the interior of its holes, e.g. within the bicycle's chassis, or rays. In order to deal with this problem we turn to  Conditional Random Fields (CRFs) that have been broadly used in semantic segmentation to combine class scores computed by multi-way classifiers with the low-level information captured by the local interactions of   pixels and edges \citep{rother2004grabcut, shotton2009textonboost} or superpixels \citep{lucchi2011spatial}. Even though works of increased sophistication have been proposed 
- to model the hierarchical dependency \citep{he2004multiscale, ladicky2009associative, lempitsky2011pylon} and/or  high-order dependencies of segments \citep{delong2012fast, gonfaus2010harmony, kohli2009robust}, we use the  fully connected pairwise CRF proposed by \citet{krahenbuhl2011efficient} for its efficient computation, and ability to capture  long range dependencies. That model was shown in  \citet{krahenbuhl2011efficient} to largely improve the performance of a boosting-based pixel-level classifier, and in our work we demonstrate that it leads to state-of-the-art results when coupled with a DCNN-based pixel-level classifier. 
+The second problem relates to the fact that obtaining object-centric decisions
+from a classifier inherently requires invariance to spatial
+transformations. For instance, we cannot expect a `bicycle' classifier to
+respond differently to pixels that are placed on the bicycle's support and to
+pixels that are placed in the interior of its holes, e.g. within the bicycle's
+chassis, or rays. In order to deal with this problem we turn to Conditional
+Random Fields (CRFs) that have been broadly used in semantic segmentation to
+combine class scores computed by multi-way classifiers with the low-level
+information captured by the local interactions of pixels and edges
+\citep{rother2004grabcut, shotton2009textonboost} or superpixels
+\citep{lucchi2011spatial}. Even though works of increased sophistication have
+been proposed to model the hierarchical dependency \citep{he2004multiscale,
+  ladicky2009associative, lempitsky2011pylon} and/or high-order dependencies
+of segments \citep{delong2012fast, gonfaus2010harmony, kohli2009robust}, we
+use the fully connected pairwise CRF proposed by
+\citet{krahenbuhl2011efficient} for its efficient computation, and ability to
+capture long range dependencies. That model was shown in
+\citet{krahenbuhl2011efficient} to largely improve the performance of a
+boosting-based pixel-level classifier, and in our work we demonstrate that it
+leads to state-of-the-art results when coupled with a DCNN-based pixel-level
+classifier.
 
 %invariance that is inherently necessary in order to obtain high-level, 
 %In brief, we treat the first side of the problem by , and the second by coupling DCNNs with Conditional Random Field inference, so as to combine the high-level decisons of DCNNs with the sharp spatial localization of CRFs.
