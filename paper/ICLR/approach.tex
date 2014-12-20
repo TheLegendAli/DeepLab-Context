@@ -4,55 +4,86 @@
 \subsection{Model Architecture and Training}
 \label{sec:convnet-arch}
 
-Herein we describe how we have re-purposed the publicly available state-of-art
-16 layer classification network of \cite{simonyan2014very} (VGG-16) into an efficient
-and effective component of our sliding window detector.
+Herein we describe how we have re-purposed and finetuned the publicly
+available state-of-art 16 layer classification network of
+\cite{simonyan2014very} (VGG-16) into an efficient and effective dense feature
+extractor for our dense image labeling system.
 
 \subsection{Efficient Dense Sliding Window Feature Extraction with the Hole Algorithm}
 \label{sec:convnet-hole}
 
-Dense spatial score evaluation is instrumental in the success of our CNN
-sliding window detector. 
+Dense spatial score evaluation is instrumental in the success of our dense CNN
+feature extractor. As a first step to implement this, we convert the
+fully-connected layers of VGG-16 into convolutional ones and run the network
+in a convolutional fashion on the image at its original resolution. However
+this is not enough as it yields very sparsely computed detection scores (with
+a stride of 32 pixels). To compute scores more densely at our target stride of
+8 pixels, we develop a variation of the method previously employed by
+\cite{GCMG+13, sermanet2013overfeat}. We skip subsampling after the last two
+max-pooling layers in the network of \cite{simonyan2014very} and modify the
+convolutional filters in the layers that follow them by introducing zeros to
+increase their length (\by{2}{} in the last three convolutional layers and
+\by{4}{} in the first fully connected layer). We can implement this more
+efficiently by keeping the filters intact and instead sparsely sample the
+feature maps on which they are applied on using a stride of 2 or 4 pixels,
+respectively. This approach is known as the `hole algorithm' (`atrous
+algorithm') and has been developed before for efficient computation of the
+undecimated wavelet transform \cite{Mall99}. We have implemented this within
+the Caffe framework \citep{jia2014caffe} by adding to the \textsl{im2col}
+function (it converts multi-channel feature maps to vectorized patches) the
+option to sparsely sample the underlying feature map. This approach is
+generally applicable and allows us to efficiently compute dense CNN feature
+maps at any target subsampling rate without introducing any approximations.
 
-As a first step to implement this, we convert the fully-connected layers
-of VGG-16 into convolutional ones and run the network in a convolutional
-fashion on the patchwork \citep{dubout2012exact}. However this is not enough as it yields very
-sparsely computed detection scores (with a stride of 32 pixels). To compute
-scores more densely at our target stride of 8 pixels, we develop a variation
-of the method previously employed by \cite{GCMG+13, sermanet2013overfeat}. We skip
-subsampling after the last two max-pooling layers in the network of
-\cite{simonyan2014very} and modify the convolutional filters in the layers that follow
-them by introducing zeros to increase their length (\by{2}{} in the last three
-convolutional layers and \by{4}{} in the first fully connected layer). We can
-implement this more efficiently by keeping the filters intact and instead
-sparsely sample the feature maps on which they are applied on using a stride
-of 2 or 4 pixels, respectively. This approach is known as the `hole algorithm'
-(`atrous algorithm') and has been developed before for efficient computation
-of the undecimated wavelet transform \cite{Mall99}. We have implemented this
-within the Caffe framework \citep{jia2014caffe} by adding to the \textsl{im2col} function (it
-converts multi-channel feature maps to vectorized patches) the option to
-sparsely sample the underlying feature map.
+We finetune the model weights of the Imagenet-pretrained VGG-16 network to
+adapt it to the image classification task in a straightforward fashion,
+following the procedure of \cite{long2014fully}. We replace the 1000-way
+Imagenet classifier in the last layer of VGG-16 with a 21-way one. Our loss
+function is the sum of cross-entropy terms for each spatial position in the
+CNN output map (subsampled by 8 compared to the original image). All positions
+and labels are equally weighted in the overall loss function. Our targets are
+the ground truth labels (subsampled by 8). We optimize the objective function
+with respect to the weights at all network layers by the standard SGD
+procedure of \cite{KrizhevskyNIPS2013}.
 
-\subsection{Shrinking the Receptive Field of Pretrained Neural Networks}
+During testing, we need class score maps at the original image resolution. As
+illustrated in Figure~\ref{fig:score-maps} and further elaborated in
+Section~\ref{sec:local-chal}, the class score maps (corresponding to
+log-probabilities) are quite smooth, which allows us to use simple bilinear
+interpolation to increase their resolution by a factor of 8 at a negligible
+computational cost. Note that the method of \cite{long2014fully} does not use
+the hole algorithm and produces very coarse scores (subsampled by a factor of
+32) at the CNN output. This forced them to use learned upsampling layers,
+significantly increasing the complexity of their system.
+
+\subsection{Shrinking the Receptive Field and Accelerating Dense Computation
+  with Convolutional Nets}
 \label{sec:convnet-field}
 
-Explicit control on the receptive field size.
-
-Most recent DCNN-based image recognition methods rely on networks pre-trained
-on the Imagenet large-scale classification task. These networks typically have
-large receptive field size, \by{224}{224} in the case of the VGG-16 net we
-consider. We have found this receptive field size to be too large to allow
-good localization accuracy (unless one uses heavily zoomed-in versions of the
-image). Moreover, after converting the network to a fully convolutional one,
-the first fully connected layer has 4,096 filters of large \by{7}{7} spatial
-size and becomes the computational bottleneck in our sliding window detector
-system.
+Another key ingredient in re-purposing our network for dense score computation
+is explicitly controlling the network's receptive field size. Most recent
+DCNN-based image recognition methods rely on networks pre-trained on the
+Imagenet large-scale classification task. These networks typically have large
+receptive field size: in the case of the VGG-16 net we consider, its receptive
+field is \by{224}{224} (with zero-padding) and \by{404}{404} pixels if the net
+is applied convolutionally. We consider this receptive field size to be too
+large to allow good localization accuracy (unless one uses heavily zoomed-in
+versions of the image). Moreover, after converting the network to a fully
+convolutional one, the first fully connected layer has 4,096 filters of large
+\by{7}{7} spatial size and becomes the computational bottleneck in our dense
+score map computation.
 
 We have addressed both of these serious practical problems by spatially
 subsampling the first FC layer to \by{4}{4} spatial size. This has reduced the
-receptive field of the network down to \by{128}{128} pixels and has reduced
-computation time for the first FC layer by 3 times.
-
+receptive field of the network down to \by{128}{128} (with zero-padding) or
+\by{308}{308}) (in convolutional mode) and has reduced computation time for
+the first FC layer by 3 times. Using our Caffe-based implementation and a
+Titan GPU, the resulting VGG-derived network is very efficient: Given a
+\by{306}{306} input image, it produces \by{39}{39} dense raw feature scores at
+the top of the network at a rate of about 8 frames/sec during testing. The
+speed during training is 3 frames/sec. Using smaller networks such as
+\cite{KrizhevskyNIPS2013} could allow video-rate test-time dense feature
+computation even on light-weight GPUs.
 
 \section{Detailed Boundary Recovery: Fully-Connected Conditional Random Fields
   and Multi-scale Predictors}
