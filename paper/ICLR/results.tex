@@ -59,7 +59,8 @@ To quantify the improvement of different models, we evaluate the segmentation ac
 
 \begin{table*}[ht]\scriptsize
 \setlength{\tabcolsep}{3pt}
-\hspace{-1.8cm}
+%\hspace{-1.8cm}
+\resizebox{\columnwidth}{!}{
 \begin{tabular}{|c||c*{20}{|c}||c|}
 \hline
 Method         & bkg &  aero & bike & bird & boat & bottle& bus & car  &  cat & chair& cow  &table & dog  & horse & mbike& person& plant&sheep& sofa &train & tv   & mean \\
@@ -71,8 +72,8 @@ FCN-8s         & -    & 76.8 & 34.2 & 68.9 & 49.4 & 60.3 & 75.3 & 74.7 & 77.6 & 
 MSRA-CFM       & -    & 75.7 & 26.7 & 69.5 & 48.8 & {\bf 65.6} & 81.0 & 69.2 & 73.3 & {\bf 30.0} & 68.7 & 51.5 & 69.1 & 68.1  & 71.7 & 67.5 & 50.4 & 66.5 & 44.4 & 58.9 & 53.5 & 61.8 \\
 \hline
  \end{tabular}
- \caption{Labeling IoU (\%) on the PASCAL VOC 2012 test set
-   training on the trainval.}
+}
+ \caption{Labeling IoU (\%) on the PASCAL VOC 2012 test set, using the trainval set for training.}
  \label{tab:voc2012}
 \end{table*}
 
@@ -97,6 +98,7 @@ MSRA-CFM       & -    & 75.7 & 26.7 & 69.5 & 48.8 & {\bf 65.6} & 81.0 & 69.2 & 7
 
 \begin{figure}
 \centering
+\resizebox{\columnwidth}{!}{
   \begin{tabular} {c c c}
 %    \hspace{-0.5cm}\raisebox{2cm}
     \raisebox{1.7cm} {
@@ -110,6 +112,7 @@ MSRA-CFM       & -    & 75.7 & 26.7 & 69.5 & 48.8 & {\bf 65.6} & 81.0 & 69.2 & 7
     \includegraphics[height=0.25\linewidth]{fig/SegPixelIOUWithinTrimap.pdf} \\
     (a) & (b) & (c) \\
    \end{tabular}
+}
   \caption{(a) Some trimap examples (top-left: image. top-right: ground-truth. bottom-left: trimap of 2 pixels. bottom-right: trimap of 10 pixels). Quality of segmentation result within a band around the object boundaries for the proposed methods. (b) Pixelwise accuracy. (c) Pixel mean IOU. 
     }  
   \label{fig:IOUBoundary}
