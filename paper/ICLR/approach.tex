@@ -210,7 +210,18 @@ publicly available implementation of \citep{krahenbuhl2011efficient}.
 \subsection{Multi-Scale Prediction}
 \label{sec:multiscale}
 
-GEORGE: Add description of the multi-scale net and also outline
-  the fused system.
-
-Following the recent success of ... we have explored a multi-scale variant of 
+Following the promising recent results of \cite{hariharan2014hypercolumns,
+  long2014fully} we have also explored a multi-scale prediction method to
+increase the boundary localization accuracy. Specifically, we attach \by{1}{1}
+convolutional classifiers \cite{lin2013network} with 128 hidden units to the
+original color image and the output of the first four max-pooling layers of
+our adapted VGG network. We upsample their scores to the original image size
+and append them to the original 4096 output of the net's last layer, resulting
+into an enhanced 4736 ($4096 + 5 \cdot 128$) dimensional feature vector. We
+only adjust the newly added weights, keeping the other network parameters to
+the values learned by the method of Section~\ref{sec:convnet-arch}. As
+discussed in the experimental section, introducing these extra direct
+connections from fine-resolution layers improves localization performance, yet
+the effect is not as dramatic as the one obtained with the fully-connected
+CRF. Having said that, we obtain our best PASCAL VOC validation set results by
+combining the two methods.
