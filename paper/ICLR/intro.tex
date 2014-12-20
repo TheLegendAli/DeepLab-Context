@@ -21,22 +21,40 @@ The second problem relates to the fact that obtaining object-centric decisions f
 %invariance that is inherently necessary in order to obtain high-level, 
 %In brief, we treat the first side of the problem by , and the second by coupling DCNNs with Conditional Random Field inference, so as to combine the high-level decisons of DCNNs with the sharp spatial localization of CRFs.
 
-There  three main advantages of our method are (i) speed: by virtue of the `atrous' algorithm our DCNN classifier operates at XX fps, while Mean Field Inference for the fully-connected CRF requires XXXseconds, (ii) accuracy: we obtain state-of-the-art results on the PASCAL semantic segmentation challenge, outperforming the second-best approach of \citet{mostajabi2014feedforward} by a factor of XX$\%$ and (iii) simplicity: our system is composed of a cascade of two fairly well-established modules, DCNNs and CRFs, that can eventually be jointly trained. 
+There  three main advantages of our method are (i) speed: by virtue of the `atrous' algorithm our DCNN classifier operates at XX fps, while Mean Field Inference for the fully-connected CRF requires XXXseconds, (ii) accuracy: we obtain state-of-the-art results on the PASCAL semantic segmentation challenge, outperforming the second-best approach of \citet{mostajabi2014feedforward} by a factor of 2$\%$ and (iii) simplicity: our system is composed of a cascade of two fairly well-established modules, DCNNs and CRFs, that can eventually be jointly trained. 
 
 %In particular, when compared to a broad pool of works recently developped around the problem of combining DCNNs with semantic segmentation, our system can be understood as being substantially simpler, relying on a minimal number of components, while at the same time delivering state-of-the-art results.
 
 %\citet{mostajabi2014feedforward} 
 
-This is in contrast to the two-stage approaches that are now most common in semantic segmentation with DCNNs, using a cascade of bottom-up image segmentation and region classification. In particular, bounding box proposals and masked regions are used in 
-\citet{girshick2014rcnn, hariharan2014simultaneous}  as inputs to a DCNN to introduce  shape information into the classification process; \citet{farabet2013learning} apply DCNNs at multiple image resolutions and employ a segmentation tree to smooth the prediction results;  \citet{mostajabi2014feedforward} label pre-computed superpixels by 
- combining  multi-scale cues extracted by DCNNs  some hand-crafted features;
+This is in contrast to the two-stage approaches that are now most common in semantic segmentation with DCNNs: such techniques typically use a cascade of bottom-up image segmentation and DCNN-based region classification, which makes the system commit to whatever errors of the front-end segmentation system.  
+For instance, bounding box proposals and masked regions delivered by \citep{arbelaez2014multiscale, Uijlings13} are used in 
+\citet{girshick2014rcnn, hariharan2014simultaneous}  as inputs to a DCNN to introduce  shape information into the classification process;  \citet{mostajabi2014feedforward} label pre-computed superpixels using multi-scale DCNN cues extracted around them with some hand-crafted features; while a celebrated  non-DCNN precursor to these 
+is the second order pooling method of \citep{carreira2012semantic} which also assigns labels to the regions proposals delivered by \citep{carreira2012cpmc}. 
+Understanding the perils of committing to a single segmentation, the authors of \citet{cogswell2014combining} 
+build on \citep{yadollahpour2013discriminative} to explore a diverse set of CRF-based segmentation proposals (computed by \citep{carreira2012cpmc}), which are then re-ranked according to a DCNN trained for the particular task of reranking them.  Still, there is no explicit exploiting of the DCNN scores in  the CRF-based segmentation algorithm - the DCNN is only applied post-hoc, while it would make sense to directly try to use its results for segmentation. 
+% and the DCNN
 
-%, but also  heavily depends on the region proposals \citep{arbelaez2014multiscale, Uijlings13};  a similar approach using manually engineered features is the second order pooling method of \citep{carreira2012semantic} that also assigns labels to regions proposals, delivered by \citep{carreira2012cpmc}. 
 
-. We also notice that there are serveral concurrent works, which bear similarities to our proposed model.  However, they results depend on the superpixels, which may leak out the object boundaries. \citet{hariharan2014hypercolumns} propose to concatenate the computed inter-mediate feature maps within the DCNNs for pixel classfication, and \citet{dai2014convolutional} propose to pool the inter-mediate feature maps by region proposals. Their models are two-step models, which depends on the accuracy of first step (\ie region proposals). 
+Moving towards works that lie closer to our own, several other researchers have considered the use of convolutionally computed DCNN features for dense image labelling -potentially coupled with some segmentation post-processing, rather than pre-processing. Among the first have been
+\citet{farabet2013learning} who apply DCNNs at multiple image resolutions and then employ a segmentation tree to smooth the prediction results; more recently, \citet{hariharan2014hypercolumns} propose to concatenate the computed inter-mediate feature maps within the DCNNs for pixel classfication, and \citet{dai2014convolutional} propose to pool the inter-mediate feature maps by region proposals. Even though these works still employ  segmentation algorithms that are  decoupled from the DCNN classifier's results, we believe it is advantageous that segmentation is only used at a later stage, avoiding the commitment  to premature decisions. 
 
+%, but also  heavily depends on the region proposals;  a similar approach using manually engineered features is 
+%. We also notice that there are serveral concurrent works, which bear similarities to our proposed model.  However, they results depend on the superpixels, which may leak out the object boundaries.  Their models are two-step models, which depends on the accuracy of first step (\ie region proposals). 
 
-On the other hand, our model is most similar to \citet{long2014fully, eigen2014predicting}, which directly apply DCNNs to the whole image in a sliding window fashion, replacing the last fully connected layers within a DCNN  by convolutional layers (similar ideas have been pursued for classification in \cite{simonyan2014very,papandreou2014untangling}). \citet{long2014fully} upsample and concatenate the scores from inter-mediate feature maps, while \citet{eigen2014predicting} refine the prediction result from coarse to fine by propagating the coarse results to another DCNN. Another recent work that also attempts to combine the effectivenss of graphical model and DCNN for segmentation is \citet{cogswell2014combining}, where the authors employ CRFs to propose diverse region proposals, an extension of \citet{yadollahpour2013discriminative}.
+More recent, segmentation-free techniques \citet{long2014fully, eigen2014predicting} directly apply DCNNs to the whole image in a sliding window fashion, replacing the last fully connected layers within a DCNN  by convolutional layers. In order to deal with the spatial localization issues outlined in the beginning of the introduction, \citet{long2014fully} upsample and concatenate the scores from inter-mediate feature maps, while \citet{eigen2014predicting} refine the prediction result from coarse to fine by propagating the coarse results to another DCNN. 
+
+%Another recent work that also attempts to combine the effectiveness of graphical model and DCNNs for segmentation is \citet{cogswell2014combining}, where the authors employ CRFs to propose diverse region proposals, an extension of \citet{yadollahpour2013discriminative}.
+
+The main difference between our model and other state-of-the-art models is the combination of pixel-level CRFs and DCNN-based `unary terms'. Regarding the closest    works in this direction, we mention that  the authors of \citet{cogswell2014combining} use CRFs as a proposal mechanism for a DCNN-based reranking system, while the authors of  
+\citet{farabet2013learning} use superpixels as  nodes for a local pairwise CRF and alpha-beta expansion for discrete inference; as such their results can be limited by errors in superpixel computations, while ignoring  long-range superpixel dependencies. Our approach instead treats every pixel as a CRF node, exploits long-range dependencies, and uses  CRF inference to optimize a DCNN-driven cost function. 
+
+% used in our fully-connected CRF. 
+ %extract features via DCNN
+%the one is by , who
+% also employ CRF to propose diverse region proposals , and \citet{chen2014learning} which efficiently blend inference and learning to jointly train DCNN and CRF. 
+%Our current model employs piecewise training, and jointly training is our next goal.
+
 
 %{\bf{Conditional Random Fields for segmentation
 %,  or crop several  bounding boxes from an image \citep{, girshick2014rcnn} to deal with multiple objects.
