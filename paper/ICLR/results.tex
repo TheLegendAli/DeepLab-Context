@@ -34,6 +34,20 @@ Turning to qualitative results, we provide more visual comparisons between DeepL
 {\bf{Mean Pixel IOU along Object Boundaries: }}
 To quantify the improvement of different models, we evaluate the segmentation accuracy around object boundaries \citep{kohli2009robust, krahenbuhl2011efficient}. Specifically, we  use  the ``void'' label annotated in val set, which usually occurs around object boundaries. We compute the mean IOU for those pixels that are located within a narrow band (called trimap) of ``void'' labels. As shown in \figref{fig:IOUBoundary}, refining the segmentation results by a fully connected CRF significantly improves the results around object boundaries. 
 
+{\bf Compared with State-of-the-art: } In \figref{fig:val_comparison}, we show the visual results of our proposed model, DeepLab-CRF, compared with two state-of-the-art models: FCN-8s \citep{long2014fully} and RoomOut \citep{mostajabi2014feedforward} on the val set (the results are extracted from their papers). Our model is able to capture the intricate object boundaries and is not constrained by the errors committed by superpixels as RoomOut.
+
+\begin{figure}[h]
+  \centering
+  \begin{tabular}{c c}
+    \includegraphics[height=0.55\linewidth]{fig/comparedWithFCN.pdf} &
+    \includegraphics[height=0.55\linewidth]{fig/comparedWithRoomOut.pdf} \\
+    (a) FCN-8s vs. DeepLab-CRF & (b) RoomOut vs. DeepLab-CRF \\
+  \end{tabular}
+  \caption{Comparisons with state-of-the-ard models on the val set. First row: images. Second row: ground truths. Third row: state-of-the-art models (Left: FCN-8s, Right: RoomOut). Forth row: our DeepLab-CRF.}
+  \label{fig:val_comparison}
+\end{figure}
+
+
 {\bf{Test set results: }} Having set our model choices on the validation set, we turn to evaluating our model, DeepLab-CRF\footnote{http://host.robots.ox.ac.uk:8080/anonymous/NTHWZK.html}, on the VOC 2012 test set.  As shown in \tabref{tab:voc2012}, our model achieves performance of $66.4\%$ mean IOU, outperforming all the other state-of-the-art models (specifically, TTI-Zoomout \citep{mostajabi2014feedforward}, FCN-8s \citep{long2014fully}, and MSRA-CFM \citep{dai2014convolutional}).
 
 \begin{table*}[ht]\scriptsize
