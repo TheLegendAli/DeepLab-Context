@@ -6,20 +6,13 @@ fully-connected conditional random fields, yielding a novel method able to
 produce semantically accurate predictions and detailed segmentation maps,
 while being computationally efficient. Our experimental results show that the
 proposed method significantly advances the state-of-art in the challenging
-PASCAL VOC semantic image labeling task.
+PASCAL VOC 2012 semantic image segmentation task.
 
-There are multiple aspects in our model that we intend to refine, with the
-most important being the full integration of its two main components (CNN and
-CRF) and training the whole system in an end-to-end fashion.  In particular,
-we currently use a very naive form of piecewise training, which consists in
-first training the DCNN classifier, and then training the CRF while keeping
-the DCNN classifier fixed. But the gradient of the fully contected CRF loss
-with respect to the unary terms can be computed \cite{Koltun13} and therefore
-back-propagated to the DCNN, while in recent work \citet{chen2014learning} we
-have also explored ways of efficiently blending inference and learning to
-jointly train DCNNs and CRFs. We intend to further pursue this direction in
-our future work.  We also plan to experiment with more datasets and apply our
-method to other sources of data such as depth maps or videos.
+There are multiple aspects in our model that we intend to refine, such as
+fully integrating its two main components (CNN and CRF) and train the whole
+system in an end-to-end fashion, similar to \citet{Koltun13, chen2014learning}.
+We also plan to experiment with more datasets and apply our method to other 
+sources of data such as depth maps or videos.
 
 At a higher level, our work lies in the intersection of convolutional neural
 networks and probabilistic graphical models. We plan to further investigate
