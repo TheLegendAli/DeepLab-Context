@@ -2,25 +2,25 @@ clear all; close all;
 
 % change values here
 is_server       = 1;
-is_mat          = 1;    % the results are save as mat or png
-has_postprocess = 0;   % has done densecrf post processing or not
+is_mat          = 0;   % the results are saved as mat or png
+has_postprocess = 1;   % has done densecrf post processing or not
 
 pos_w          = 3;
 pos_x_std      = 3;
 
-bi_w           = 5;
-bi_x_std       = 50;
-bi_r_std       = 10;
+bi_w      = 3;    %5;
+bi_x_std  = 95;   %50;
+bi_r_std  = 3;    %10;
 
 id         = 'comp6';
 %trainset  = 'trainval_aug';
 trainset   = 'train_aug';
 
-%testset   = 'trainval_aug';
-testset    = 'val';
+testset   = 'val';
+%testset    = 'test';            %'val', 'test'
 
-model_name = 'vgg128_noup';   %'vgg128_noup', 'vgg128_noup_glob', 'vgg128_ms'
-feature_name = 'features4';   %'', 'features4'
+model_name = 'vgg128_ms_pool3';   %'vgg128_noup', 'vgg128_noup_glob', 'vgg128_ms'
+feature_name = 'features2';        %'features', 'features4', 'features2'
 
 if is_server
     VOC_root_folder = '/rmt/data/pascal/VOCdevkit';
@@ -38,10 +38,13 @@ end
 %output_mat_folder = fullfile('/rmt/work/deeplabel/exper/voc12/features', model_name, testset, 'fc8');
 output_mat_folder = fullfile('/rmt/work/deeplabel/exper/voc12', feature_name, model_name, testset, 'fc8');
 
-%save_root_folder = fullfile('/rmt/work/deeplabel/exper/voc12/res', model_name, testset, 'fc8', post_folder);
-save_root_folder = fullfile('/rmt/work/deeplabel/exper/voc12/res', feature_name, model_name, testset, 'fc8', post_folder);
+if strcmp(feature_name, 'features')
+  save_root_folder = fullfile('/rmt/work/deeplabel/exper/voc12/res', model_name, testset, 'fc8', post_folder);
+else 
+  save_root_folder = fullfile('/rmt/work/deeplabel/exper/voc12/res', feature_name, model_name, testset, 'fc8', post_folder);
+end
 
-
+fprintf(1, 'Saving to %s\n', save_root_folder);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % You do not need to chage values below
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -62,9 +65,9 @@ if is_mat
 
   output_dir = dir(fullfile(output_mat_folder, '*.mat'));
 
-  matlabpool('4');
-  parfor i = 1 : numel(output_dir)
-  %for i = 1 : numel(output_dir)
+  %matlabpool('4');
+  %parfor i = 1 : numel(output_dir)
+  for i = 1 : numel(output_dir)
     fprintf(1, 'processing %d (%d)...\n', i, numel(output_dir));
     
     data = load(fullfile(output_mat_folder, output_dir(i).name));
@@ -83,11 +86,15 @@ if is_mat
     result = uint8(result) - 1;
     imwrite(result, colormap, fullfile(save_result_folder, [img_fn, '.png']));
   end
-  matlabpool('close');
+  %matlabpool('close');
 end
 
 % get iou score
-[accuracies, avacc, conf, rawcounts] = MyVOCevalseg(VOCopts, id);
+if strcmp(testset, 'val')
+  [accuracies, avacc, conf, rawcounts] = MyVOCevalseg(VOCopts, id);
+else
+  fprintf(1, 'This is test set. No evaluation. Just saved as png\n');
+end 
 
     
     

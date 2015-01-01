@@ -1,4 +1,4 @@
-% downsample the bin files for faster cross-validation
+% downsample the bin files for faster cross-validation and not overfit val set
 % 
 clear all; 
 
@@ -7,7 +7,7 @@ down_sample_rate = 8;
 is_server = 1;
 
 testset = 'val';
-model_name = 'vgg128_noup';  %vgg128_noup, vgg128_ms
+model_name = 'vgg128_ms_pool3';  %vgg128_noup, vgg128_ms
 
 if is_server
   mat_folder  = fullfile('/rmt/work/deeplabel/exper/voc12/features', model_name, testset, 'fc8');

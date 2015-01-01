@@ -7,16 +7,19 @@ is_server = 1;
 pos_w     = 3;
 pos_x_std = 3;
 
-bi_w      = 5;
-bi_x_std  = 50;
-bi_r_std  = 10;
+bi_w      = 3;    %5;
+bi_x_std  = 95;   %50;
+bi_r_std  = 3;    %10;
 
 id = 'comp6';
-trainset = 'train_aug';
-testset  = 'val';
+%trainset = 'train_aug';  %'trainval_aug';
+trainset = 'trainval_aug';
 
-model_name = 'vgg128_noup'; %vgg128_noup, vgg128_noup_glob, vgg128_ms
-feature_name = 'features4'; %'', 'features4'
+%testset  = 'val';        %'val', 'test'
+testset  = 'test';
+
+model_name = 'vgg128_ms_pool3'; %vgg128_noup, vgg128_noup_glob, vgg128_ms
+feature_name = 'features2'; %'', 'features4', 'features2'  %% use '' for 'features'
 
 if is_server
   %map_folder = fullfile('/rmt/work/deeplabel/exper/voc12/res', model_name, testset, 'fc8', sprintf('post_densecrf_W%d_XStd%d_RStd%d_PosW%d_PosXStd%d', bi_w, bi_x_std, bi_r_std, pos_w, pos_x_std)); 

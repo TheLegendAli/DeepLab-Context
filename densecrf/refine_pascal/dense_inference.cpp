@@ -46,6 +46,7 @@
 #include "../libDenseCRF/densecrf.h"
 #include "../libDenseCRF/util.h"
 #include "dense_inference.h"
+#include "../util/Timer.h"
 
 template <typename T>
 void LoadBinFile(std::string& fn, T*& data, 
@@ -341,6 +342,8 @@ int main( int argc, char* argv[]){
   int img_row, img_col; //, img_channel;
   int feat_row, feat_col, feat_channel;
 
+  CPrecisionTimer CTmr;
+  CTmr.Start();
   for (size_t i = 0; i < feat_file_names.size(); ++i) {
     std::cout << "processing " << i << " (" << feat_file_names.size() << ")..." << std::endl;
 
@@ -385,5 +388,5 @@ int main( int argc, char* argv[]){
     delete[] img;
     delete[] map;
   }
-
+  std::cout << "Time for inference: " << CTmr.Stop() << std::endl;
 }
