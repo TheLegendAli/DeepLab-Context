@@ -1,4 +1,11 @@
 /*
+ * This class is modified from Philipp Krähenbühl's NIPS 2011 code
+ * See his webstire for more information
+ * http://graphics.stanford.edu/projects/densecrf/
+ *
+ * Liang-Chieh Chen, 2015
+*/ 
+/*
     Copyright (c) 2011, Philipp Krähenbühl
     All rights reserved.
 
@@ -25,7 +32,9 @@
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#pragma once
+#ifndef _PERMUTOHEDRAL_H
+#define _PERMUTOHEDRAL_H
+
 #include <cstdlib>
 
 #include <cstring>
@@ -80,7 +89,7 @@ class HashTable{
     memcpy( keys_, old_keys, filled_*key_size_*sizeof(short) );
 		
     // Reinsert each element
-    for( int i=0; i<old_capacity; i++ )
+    for( size_t i=0; i<old_capacity; i++ )
       if (old_table[i] >= 0){
 	int e = old_table[i];
 	size_t h = hash( old_keys+(getKey(e)-keys_) ) % capacity_;
@@ -732,3 +741,6 @@ class Permutohedral {
   }
 #endif
 };
+
+
+#endif

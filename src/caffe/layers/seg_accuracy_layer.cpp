@@ -18,6 +18,16 @@ void SegAccuracyLayer<Dtype>::LayerSetUp(
   const vector<Blob<Dtype>*>& bottom, const vector<Blob<Dtype>*>& top) {
   confusion_matrix_.clear();
   confusion_matrix_.resize(bottom[0]->channels());
+
+  SegAccuracyParameter seg_accuracy_param = this->layer_param_.seg_accuracy_param();
+
+  if (seg_accuracy_param.ignore_label_size() > 0) {
+    for (int c = 0; c < seg_accuracy_param.ignore_label_size(); ++c){
+      ignore_label_.insert(seg_accuracy_param.ignore_label(c));
+    }
+  }
+
+
 }
 
 template <typename Dtype>
@@ -73,10 +83,15 @@ void SegAccuracyLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
 	// check if true label is in top k predictions
 	label_index = h * width + w;
 	const int gt_label = static_cast<int>(bottom_label[label_index]);
-      
-	if (gt_label < channels) {
+
+	if (ignore_label_.count(gt_label) != 0) {
+	  // ignore the pixel with this gt_label
+	  continue;
+	} else if (gt_label >= 0 && gt_label < channels) {
 	  // current position is not "255", indicating ambiguous position
 	  confusion_matrix_.accumulate(gt_label, bottom_data_vector[0].second);
+	} else {
+	  LOG(ERROR) << "Unexpected label.";
 	}
       }
     }

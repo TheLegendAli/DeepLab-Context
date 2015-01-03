@@ -19,9 +19,11 @@ void SoftmaxWithLossLayer<Dtype>::LayerSetUp(
   softmax_top_vec_.push_back(&prob_);
   softmax_layer_->SetUp(softmax_bottom_vec_, softmax_top_vec_);
 
+  SoftmaxLossParameter softmaxloss_param = this->layer_param_.softmaxloss_param();
+
   // read the weight for each class
-  if (this->layer_param_.softmaxloss_param().has_weight_source()) {
-    const string& weight_source = this->layer_param_.softmaxloss_param().weight_source();
+  if (softmaxloss_param.has_weight_source()) {
+    const string& weight_source = softmaxloss_param.weight_source();
     LOG(INFO) << "Opening file " << weight_source;
     std::fstream infile(weight_source.c_str(), std::fstream::in);
     CHECK(infile.is_open());
@@ -37,6 +39,12 @@ void SoftmaxWithLossLayer<Dtype>::LayerSetUp(
   } else {
     LOG(INFO) << "Weight_Loss file is not provided. Assign all one to it.";
     loss_weights_.assign(prob_.channels(), 1.0);
+  }
+
+  if (softmaxloss_param.ignore_label_size() > 0) {
+    for (int c = 0; c < softmaxloss_param.ignore_label_size(); ++c){
+      ignore_label_.insert(softmaxloss_param.ignore_label(c));
+    }
   }
 
 }
@@ -68,12 +76,17 @@ void SoftmaxWithLossLayer<Dtype>::Forward_cpu(
   for (int i = 0; i < num; ++i) {
     for (int j = 0; j < spatial_dim; j++) {
       const int gt_label = static_cast<int>(label[i * spatial_dim + j]);
-      CHECK_GE(gt_label, 0);
-      if (gt_label < channels) {
+
+      if (ignore_label_.count(gt_label) != 0) {
+	// ignore the pixel with this gt_label
+	continue;
+      } else if (gt_label >= 0 && gt_label < channels) {
 	batch_weight += loss_weights_[gt_label];
 	// weighted loss
 	loss -= loss_weights_[gt_label] * log(std::max(prob_data[i * dim +
            gt_label * spatial_dim + j], Dtype(FLT_MIN)));
+      } else {
+	LOG(ERROR) << "Unexpected label.";
       }
     }
   }
@@ -105,7 +118,11 @@ void SoftmaxWithLossLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
     for (int i = 0; i < num; ++i) {
       for (int j = 0; j < spatial_dim; ++j) {
 	const int gt_label = static_cast<int>(label[i * spatial_dim + j]);
-	if (gt_label < channels) {
+
+	if (ignore_label_.count(gt_label) != 0) {
+	  // ignore the pixel with this gt_label
+	  continue;
+	} else if (gt_label >= 0 && gt_label < channels) {
 	  batch_weight += loss_weights_[gt_label];
 	  for (int c = 0; c < channels; ++c) {
 	    bottom_diff[i * dim + c * spatial_dim + j] = 
@@ -113,6 +130,8 @@ void SoftmaxWithLossLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
 	  }
 	  bottom_diff[i * dim + gt_label * spatial_dim + j] -= 
 	    loss_weights_[gt_label];
+	} else {
+	  LOG(ERROR) << "Unexpected label.";
 	}
       }
     }

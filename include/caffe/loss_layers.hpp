@@ -4,6 +4,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <set>
 
 #include "caffe/blob.hpp"
 #include "caffe/common.hpp"
@@ -766,7 +767,10 @@ class SoftmaxWithLossLayer : public LossLayer<Dtype> {
 
   // jay add
   // the weight for different object classes when computing loss
-  vector<Dtype> loss_weights_;
+  std::vector<Dtype> loss_weights_;
+  
+  // set of ignore labels
+  std::set<int> ignore_label_;
   // end jay
 
 };
@@ -775,7 +779,7 @@ class SoftmaxWithLossLayer : public LossLayer<Dtype> {
  * @brief Computes the classification accuracy for pixel-wise one-of-many
  *        classification task.
  */
-    template <typename Dtype>
+template <typename Dtype>
 class SegAccuracyLayer : public Layer<Dtype> {
  public:
   /**
@@ -836,8 +840,11 @@ class SegAccuracyLayer : public Layer<Dtype> {
       if (propagate_down[i]) { NOT_IMPLEMENTED; }
     }
   }
-
+      
   ConfusionMatrix confusion_matrix_;
+
+  // set of ignore labels
+  std::set<int> ignore_label_;
 };
 
 

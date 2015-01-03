@@ -335,15 +335,41 @@ class WindowDataLayer : public BasePrefetchingDataLayer<Dtype> {
 
 
 /** Jay add
- * @brief Provides data to the Net from image / segmentation files.
+ * @brief prefetching data layer which also prefetches data dimensions
  *
  * TODO(dox): thorough documentation for Forward and proto params.
  */
 template <typename Dtype>
-class ImageSegDataLayer : public BasePrefetchingDataLayer<Dtype> {
+class ImageDimPrefetchingDataLayer : public BasePrefetchingDataLayer<Dtype> {
+ public:
+  explicit ImageDimPrefetchingDataLayer(const LayerParameter& param)
+      : BasePrefetchingDataLayer<Dtype>(param) {}
+  virtual ~ImageDimPrefetchingDataLayer() {}
+  // LayerSetUp: implements common data layer setup functionality, and calls
+  // DataLayerSetUp to do special data layer setup for individual layer types.
+  // This method may not be overridden.
+  void LayerSetUp(const vector<Blob<Dtype>*>& bottom,
+      const vector<Blob<Dtype>*>& top);
+
+  virtual void Forward_cpu(const vector<Blob<Dtype>*>& bottom,
+      const vector<Blob<Dtype>*>& top);
+  virtual void Forward_gpu(const vector<Blob<Dtype>*>& bottom,
+      const vector<Blob<Dtype>*>& top);
+
+  // The thread's function
+  virtual void InternalThreadEntry() {}
+
+ protected:
+  Blob<Dtype> prefetch_data_dim_;
+  bool output_data_dim_;
+};
+
+
+template <typename Dtype>
+class ImageSegDataLayer : public ImageDimPrefetchingDataLayer<Dtype> {
  public:
   explicit ImageSegDataLayer(const LayerParameter& param)
-      : BasePrefetchingDataLayer<Dtype>(param) {}
+      : ImageDimPrefetchingDataLayer<Dtype>(param) {}
   virtual ~ImageSegDataLayer();
   virtual void DataLayerSetUp(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top);
@@ -352,15 +378,18 @@ class ImageSegDataLayer : public BasePrefetchingDataLayer<Dtype> {
     return LayerParameter_LayerType_IMAGE_DATA;
   }
   virtual inline int ExactNumBottomBlobs() const { return 0; }
-  virtual inline int ExactNumTopBlobs() const { return 2; }
+  //virtual inline int MinTopBlobs() const { return 2; }
+  //virtual inline int ExactNumTopBlobs() const { return 3; }
   virtual inline bool AutoTopBlobs() const { return true; }
+
+ protected:
+  virtual void ShuffleImages();
+  virtual void InternalThreadEntry();
 
  protected:
   Blob<Dtype> transformed_label_;
 
   shared_ptr<Caffe::RNG> prefetch_rng_;
-  virtual void ShuffleImages();
-  virtual void InternalThreadEntry();
 
   vector<std::pair<std::string, std::string> > lines_;
   int lines_id_;

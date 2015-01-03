@@ -5,9 +5,9 @@
 
 % change values here
 boundary_w = 1:40;
-dataset         = 'VOC2011';
+dataset         = 'VOC2012';
 
-test_berkeley      = 1;
+test_berkeley      = 0;
 is_server             = 0;
 has_postprocess = 1;   % has done densecrf post processing or not
 
@@ -25,7 +25,7 @@ trainset   = 'train_aug';
 %testset   = 'trainval_aug';
 testset    = 'val';
 
-model_name = 'vgg128_ms';   %'vgg128_noup', 'vgg128_noup_glob', 'vgg128_ms'
+model_name = 'vgg128_noup';   %'vgg128_noup', 'vgg128_noup_glob', 'vgg128_ms_pool3'
 
 if has_postprocess
   post_folder = sprintf('post_densecrf_W%d_XStd%d_RStd%d_PosW%d_PosXStd%d', bi_w, bi_x_std, bi_r_std, pos_w, pos_x_std); 

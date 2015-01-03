@@ -103,6 +103,11 @@ void ImageSegDataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom
     this->prefetch_label_.Reshape(batch_size, 1, height, width);
     this->transformed_label_.Reshape(1, 1, height, width);
   }
+
+  // image dimensions, for each image, stores (img_height, img_width)
+  top[2]->Reshape(batch_size, 1, 1, 2);
+  this->prefetch_data_dim_.Reshape(batch_size, 1, 1, 2);
+
   LOG(INFO) << "output data size: " << top[0]->num() << ","
       << top[0]->channels() << "," << top[0]->height() << ","
       << top[0]->width();
@@ -110,6 +115,11 @@ void ImageSegDataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom
   LOG(INFO) << "output label size: " << top[1]->num() << ","
       << top[1]->channels() << "," << top[1]->height() << ","
       << top[1]->width();
+  // image_dim
+  LOG(INFO) << "output data_dim size: " << top[2]->num() << ","
+      << top[2]->channels() << "," << top[2]->height() << ","
+      << top[2]->width();
+
 }
 
 template <typename Dtype>
@@ -129,27 +139,39 @@ void ImageSegDataLayer<Dtype>::InternalThreadEntry() {
   CPUTimer timer;
   CHECK(this->prefetch_data_.count());
   CHECK(this->transformed_data_.count());
-  Dtype* top_data = this->prefetch_data_.mutable_cpu_data();
-  Dtype* top_label = this->prefetch_label_.mutable_cpu_data(); 
-  ImageDataParameter image_data_param = this->layer_param_.image_data_param();
+
+  Dtype* top_data     = this->prefetch_data_.mutable_cpu_data();
+  Dtype* top_label    = this->prefetch_label_.mutable_cpu_data(); 
+  Dtype* top_data_dim = this->prefetch_data_dim_.mutable_cpu_data();
+
+  ImageDataParameter image_data_param    = this->layer_param_.image_data_param();
   TransformationParameter transorm_param = this->layer_param_.transform_param();
   const int batch_size = image_data_param.batch_size();
   const int new_height = image_data_param.new_height();
-  const int new_width = image_data_param.new_width();
+  const int new_width  = image_data_param.new_width();
   const bool has_label = image_data_param.has_label();
-  const bool is_color = image_data_param.is_color();
-  string root_folder = image_data_param.root_folder();
+  const bool is_color  = image_data_param.is_color();
+  string root_folder   = image_data_param.root_folder();
 
   const int lines_size = lines_.size();
+  int top_data_dim_offset;
 
   for (int item_id = 0; item_id < batch_size; ++item_id) {
+    top_data_dim_offset = this->prefetch_data_dim_.offset(item_id);
+
     std::vector<cv::Mat> cv_img_seg;
 
     // get a blob
     timer.Start();
     CHECK_GT(lines_size, lines_id_);
+
+    int img_row, img_col;
     cv_img_seg.push_back(ReadImageToCVMat(root_folder + lines_[lines_id_].first,
-					  new_height, new_width, is_color));
+	  new_height, new_width, is_color, &img_row, &img_col));
+
+    *(top_data_dim + top_data_dim_offset)     = static_cast<Dtype>(img_row);
+    *(top_data_dim + top_data_dim_offset + 1) = static_cast<Dtype>(img_col);
+
     if (!cv_img_seg[0].data) {
       DLOG(INFO) << "Fail to load img: " << root_folder + lines_[lines_id_].first;
     }
