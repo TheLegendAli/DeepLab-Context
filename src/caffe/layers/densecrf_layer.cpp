@@ -60,7 +60,10 @@ void DenseCRFLayer<Dtype>::LayerSetUp(
   CHECK_GE(bottom.size(), 2) 
     << "bottom must have size larger than 2 (i.e., DCNN output and image dim).";
 
-  if (bottom.size() <= 2) {
+  CHECK_LE(bottom.size(), 3)
+    << "bottom size is at most three.";
+
+  if (bottom.size() == 2) {
     has_image = false;
   } else {
     has_image = true;
@@ -86,7 +89,6 @@ void DenseCRFLayer<Dtype>::Reshape(
   //        bottom[1]: dimension for each image (i.e., store effective dimensions)
   //        bottom[2]: images after data-transformer (optional, if no bilateral)
   //        top[0]   : inference values
-  //        top[1]   : map results
   //
 
   num_ = bottom[0]->num();
@@ -120,7 +122,6 @@ void DenseCRFLayer<Dtype>::Reshape(
 
   // allocate largest possible size for top
   top[0]->Reshape(num_, M_, pad_height_, pad_width_);
-  top[1]->Reshape(num_,  1, pad_height_, pad_width_);
 
   sum_multiplier_.Reshape(1, M_, 1, 1);
   Dtype* multiplier_data = sum_multiplier_.mutable_cpu_data();
@@ -138,18 +139,21 @@ void DenseCRFLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
   //        bottom[1]: dimension for each image
   //        bottom[2]: images after data-transformer (optional, if no bilateral)
   //        top[0]   : inference values
-  //        top[1]   : map results
   //
 
   const Dtype* bottom_data = bottom[0]->cpu_data();
   const Dtype* data_dims   = bottom[1]->cpu_data();
 
-  int data_offset;
+  Dtype* top_data = top[0]->mutable_cpu_data();
+
+  int bottom_data_offset;
   int data_dim_offset;
+  int top_data_offset;
 
   for (int n = 0; n < num_; ++n) {
-    data_offset     = bottom[0]->offset(n);
-    data_dim_offset = bottom[1]->offset(n);
+    bottom_data_offset  = bottom[0]->offset(n);
+    data_dim_offset     = bottom[1]->offset(n);
+    top_data_offset     = top[0]->offset(n);
 
     // check dimension of data arrays
     // if too small, reallocate memory
@@ -162,7 +166,7 @@ void DenseCRFLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
       W_ = pad_width_;
       N_ = W_ * H_;
     } else {
-      // image is padded with redudant values
+      // image is padded with redundant values
       H_ = real_img_height;
       W_ = real_img_width;
       N_ = W_ * H_;
@@ -181,9 +185,9 @@ void DenseCRFLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
     }
     */
 
-    SetupUnaryEnergy(bottom_data + data_offset);
+    SetupUnaryEnergy(bottom_data + bottom_data_offset);
     SetupPairwiseFunctions(bottom);
-    ComputeMap(n, top);
+    ComputeMap(top_data + top_data_offset);
     ClearPairwiseFunctions();
   }
 }
@@ -283,38 +287,34 @@ void DenseCRFLayer<Dtype>::ClearPairwiseFunctions() {
 template <typename Dtype>
 void DenseCRFLayer<Dtype>::RunInference() {
   StartInference();
-
   for (int i = 0; i < max_iter_; ++i) {
     StepInference();
   }
 }
 
 template <typename Dtype>
-void DenseCRFLayer<Dtype>::ComputeMap(const int num, const vector<Blob<Dtype>*>& top) {
-  // compute map for num-th data
+void DenseCRFLayer<Dtype>::ComputeMap(Dtype* top_inf) {
+  // compute map 
   //
 
-  Dtype* top_inf = top[0]->mutable_cpu_data() + top[0]->offset(num);
-  Dtype* top_map = top[1]->mutable_cpu_data() + top[1]->offset(num);
+  memset(top_inf, 0, sizeof(Dtype)*M_*pad_height_*pad_width_);
 
-  int top_channels = top[0]->channels();
-  int top_height   = top[0]->height();
-  int top_width    = top[0]->width();
-  memset(top_inf, 0, sizeof(Dtype)*top_channels*top_height*top_width);
-  memset(top_map, 0, sizeof(Dtype)*top_height*top_width);
-
-  CHECK_EQ(top_channels, M_);
-  CHECK_EQ(top_height, pad_height_);
-  CHECK_EQ(top_width, pad_width_);
-
-  // results are saved to current_, after call RunInference()
+  // results are saved to current_ after call RunInference()
   RunInference();
 
   int in_index;
   int out_index;
 
+  // copy current_ to top
   for (int h = 0; h < H_; ++h) {
     for (int w = 0; w < W_; ++w) {      
+      for (int c = 0; c < M_; ++c) {
+	in_index  = (h * W_ + w) * M_ + c;
+	out_index = (c * pad_height_ + h) * pad_width_ + w;
+	top_inf[out_index] = static_cast<Dtype>(current_[in_index]);
+      }
+
+      /*
       // c = 0
       in_index  = (h * W_ + w) * M_;
       out_index = h * top_width + w;
@@ -339,6 +339,7 @@ void DenseCRFLayer<Dtype>::ComputeMap(const int num, const vector<Blob<Dtype>*>&
       out_index = h * top_width + w;
       // copy to top[1]. assume row-order
       top_map[out_index] = static_cast<Dtype>(imx);
+      */
     } 
   }
 }
@@ -360,7 +361,6 @@ void DenseCRFLayer<Dtype>::SetupPairwiseFunctions(const vector<Blob<Dtype>*>& bo
     delete[] features;
   }
 
-  // read image
   if (has_image) {
     const Dtype* im = bottom[2]->cpu_data();
     int channel_offset = pad_height_ * pad_width_;
@@ -396,7 +396,7 @@ void DenseCRFLayer<Dtype>::SetupUnaryEnergy(const Dtype* bottom_data) {
   // take exp and then -log
   Dtype* scale_data = scale_.mutable_cpu_data();
   Dtype* norm_data  = norm_data_.mutable_cpu_data();
-  int spatial_dim = pad_height_ * pad_width_;
+  int spatial_dim   = pad_height_ * pad_width_;
 
   // norm_data is the normalized result of bottom_data
   caffe_copy(spatial_dim * M_, bottom_data, norm_data);

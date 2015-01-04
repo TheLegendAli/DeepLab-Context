@@ -498,33 +498,6 @@ class CuDNNPoolingLayer : public PoolingLayer<Dtype> {
 };
 #endif
 
-/*
- * SinkLayer takes all "floating" top as inputs and do nothing
- * 
- */
-/*
-template <typename Dtype>
-class SinkLayer : public Layer<Dtype> {
- public:
-  explicit SinkLayer(const LayerParameter& param)
-      : Layer<Dtype>(param) {}
-  virtual void LayerSetUp(const vector<Blob<Dtype>*>& bottom,
-      const vector<Blob<Dtype>*>& top);
-  virtual void Reshape(const vector<Blob<Dtype>*>& bottom,
-      const vector<Blob<Dtype>*>& top);
-  virtual inline LayerParameter_LayerType type() const {
-    return LayerParameter_LayerType_SINK;
-  }
-  virtual inline int ExactNumTopBlobs() const { return 0; }
-
- protected:
-  virtual void Forward_cpu(const vector<Blob<Dtype>*>& bottom,
-      const vector<Blob<Dtype>*>& top);
-  virtual void Backward_cpu(const vector<Blob<Dtype>*>& top,
-      const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom);
-};
-*/
-
 /**
  * jay add
  * @brief DenseCRF
@@ -548,7 +521,7 @@ class DenseCRFLayer : public Layer<Dtype> {
   }
   // will take DCNN output, image (optional) and image_dim as input
   virtual inline int MinBottomBlobs() const { return 2; }
-  virtual inline int MinTopBlobs() const { return 1; }
+  virtual inline int ExactNumTopBlobs() const { return 1; }
 
  protected:
   virtual void Forward_cpu(const vector<Blob<Dtype>*>& bottom,
@@ -566,7 +539,7 @@ class DenseCRFLayer : public Layer<Dtype> {
 
   virtual void SetupUnaryEnergy(const Dtype* bottom);
 
-  virtual void ComputeMap(const int num, const vector<Blob<Dtype>*>& top);
+  virtual void ComputeMap(Dtype* top_inf);
 
   virtual void RunInference();
   virtual void StartInference();
