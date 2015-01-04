@@ -369,7 +369,7 @@ template <typename Dtype>
 class ImageSegDataLayer : public ImageDimPrefetchingDataLayer<Dtype> {
  public:
   explicit ImageSegDataLayer(const LayerParameter& param)
-      : ImageDimPrefetchingDataLayer<Dtype>(param) {}
+    : ImageDimPrefetchingDataLayer<Dtype>(param) {}
   virtual ~ImageSegDataLayer();
   virtual void DataLayerSetUp(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top);
@@ -378,8 +378,7 @@ class ImageSegDataLayer : public ImageDimPrefetchingDataLayer<Dtype> {
     return LayerParameter_LayerType_IMAGE_DATA;
   }
   virtual inline int ExactNumBottomBlobs() const { return 0; }
-  //virtual inline int MinTopBlobs() const { return 2; }
-  //virtual inline int ExactNumTopBlobs() const { return 3; }
+  virtual inline int ExactNumTopBlobs() const { return 3; }
   virtual inline bool AutoTopBlobs() const { return true; }
 
  protected:

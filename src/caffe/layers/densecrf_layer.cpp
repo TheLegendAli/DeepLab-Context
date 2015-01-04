@@ -436,7 +436,7 @@ void DenseCRFLayer<Dtype>::SetupUnaryEnergy(const Dtype* bottom_data) {
     for (int h = 0; h < H_; ++h) {
       for (int w = 0; w < W_; ++w) {
 	int in_index  = (c * pad_height_ + h) * pad_width_ + w;
-	int out_index = (h * pad_width_ + w) * M_ + c;
+	int out_index = (h * W_ + w) * M_ + c;
 	unary_[out_index] = -log(norm_data[in_index]);
       }
     }

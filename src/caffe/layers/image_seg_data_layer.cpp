@@ -93,6 +93,7 @@ void ImageSegDataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom
     top[1]->Reshape(batch_size, 1, crop_size, crop_size);
     this->prefetch_label_.Reshape(batch_size, 1, crop_size, crop_size);
     this->transformed_label_.Reshape(1, 1, crop_size, crop_size);
+     
   } else {
     top[0]->Reshape(batch_size, channels, height, width);
     this->prefetch_data_.Reshape(batch_size, channels, height, width);
@@ -101,7 +102,7 @@ void ImageSegDataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom
     //label
     top[1]->Reshape(batch_size, 1, height, width);
     this->prefetch_label_.Reshape(batch_size, 1, height, width);
-    this->transformed_label_.Reshape(1, 1, height, width);
+    this->transformed_label_.Reshape(1, 1, height, width);     
   }
 
   // image dimensions, for each image, stores (img_height, img_width)
@@ -109,17 +110,16 @@ void ImageSegDataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom
   this->prefetch_data_dim_.Reshape(batch_size, 1, 1, 2);
 
   LOG(INFO) << "output data size: " << top[0]->num() << ","
-      << top[0]->channels() << "," << top[0]->height() << ","
-      << top[0]->width();
+	    << top[0]->channels() << "," << top[0]->height() << ","
+	    << top[0]->width();
   // label
   LOG(INFO) << "output label size: " << top[1]->num() << ","
-      << top[1]->channels() << "," << top[1]->height() << ","
-      << top[1]->width();
+	    << top[1]->channels() << "," << top[1]->height() << ","
+	    << top[1]->width();
   // image_dim
   LOG(INFO) << "output data_dim size: " << top[2]->num() << ","
-      << top[2]->channels() << "," << top[2]->height() << ","
-      << top[2]->width();
-
+	    << top[2]->channels() << "," << top[2]->height() << ","
+	    << top[2]->width();
 }
 
 template <typename Dtype>

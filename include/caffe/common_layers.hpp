@@ -68,6 +68,7 @@ class ArgMaxLayer : public Layer<Dtype> {
       const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom) {
     NOT_IMPLEMENTED;
   }
+  int num_, channels_, height_, width_;
   bool out_max_val_;
   size_t top_k_;
 };

@@ -253,7 +253,14 @@ double ConfusionMatrix::totalSum() const {
 }
 
 double ConfusionMatrix::accuracy() const {
-  return (diagSum() / totalSum());
+  double total_sum = totalSum();
+  double diag_sum  = diagSum();
+
+  if (total_sum == 0) {
+    return 0;
+  } else {
+    return diag_sum / total_sum;
+  }
 }
 
 double ConfusionMatrix::avgPrecision() const {
@@ -283,7 +290,11 @@ double ConfusionMatrix::avgRecall(const bool strict) const {
     LOG(FATAL) << "not all classes represented in avgRecall()";
   }
 
-  return totalRecall / (double)numClasses;
+  if (numClasses == 0) {
+    return 0;
+  } else {
+    return totalRecall / (double)numClasses;
+  }
 }
 
 double ConfusionMatrix::avgJaccard() const {

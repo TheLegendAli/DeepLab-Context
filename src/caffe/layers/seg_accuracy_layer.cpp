@@ -91,7 +91,7 @@ void SegAccuracyLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
 	  // current position is not "255", indicating ambiguous position
 	  confusion_matrix_.accumulate(gt_label, bottom_data_vector[0].second);
 	} else {
-	  LOG(ERROR) << "Unexpected label.";
+	  LOG(FATAL) << "Unexpected label " << gt_label;
 	}
       }
     }

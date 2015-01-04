@@ -36,8 +36,8 @@ void ImageDimPrefetchingDataLayer<Dtype>::Forward_gpu(
     caffe_copy(this->prefetch_label_.count(), this->prefetch_label_.cpu_data(),
 	       top[1]->mutable_gpu_data());
   }
-  if (this->output_data_dim_) {
-    caffe_copy(this->prefetch_data_dim_.count(), this->prefetch_data_dim_.cpu_data(),
+  if (output_data_dim_) {
+    caffe_copy(prefetch_data_dim_.count(), prefetch_data_dim_.cpu_data(),
 	       top[2]->mutable_gpu_data());
   }
 
