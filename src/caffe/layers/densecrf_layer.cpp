@@ -13,8 +13,8 @@
 namespace caffe {
 
 template <typename Dtype>
-void DenseCRFLayer<Dtype>::LayerSetUp(
-  const vector<Blob<Dtype>*>& bottom, const vector<Blob<Dtype>*>& top) {
+void DenseCRFLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom, 
+				      const vector<Blob<Dtype>*>& top) {
 
   DenseCRFParameter dense_crf_param = this->layer_param_.dense_crf_param();
 
@@ -56,10 +56,10 @@ void DenseCRFLayer<Dtype>::LayerSetUp(
     << "bi_w and bi_xy_std should have the same size.";
   CHECK_EQ(bi_w_.size(), bi_rgb_std_.size())
     << "bi_w and bi_rgb_std should have the same size.";
-    
+  
   CHECK_GE(bottom.size(), 2) 
     << "bottom must have size larger than 2 (i.e., DCNN output and image dim).";
-
+  
   CHECK_LE(bottom.size(), 3)
     << "bottom size is at most three.";
 
@@ -72,25 +72,25 @@ void DenseCRFLayer<Dtype>::LayerSetUp(
     CHECK_EQ(bottom[2]->channels(), 3)
       << "Can Only support color images for now.";
   }
-
+  
   unary_element_ = 0;
   map_element_   = 0;
   unary_   = NULL;
   current_ = NULL;
   next_    = NULL;
   tmp_     = NULL;
-
+  
 }
 
 template <typename Dtype>
-void DenseCRFLayer<Dtype>::Reshape(
-  const vector<Blob<Dtype>*>& bottom, const vector<Blob<Dtype>*>& top) {
+void DenseCRFLayer<Dtype>::Reshape(const vector<Blob<Dtype>*>& bottom, 
+				   const vector<Blob<Dtype>*>& top) {
   // assume bottom[0]: output from DCNN (after upsampling)
   //        bottom[1]: dimension for each image (i.e., store effective dimensions)
   //        bottom[2]: images after data-transformer (optional, if no bilateral)
   //        top[0]   : inference values
   //
-
+  
   num_ = bottom[0]->num();
   M_   = bottom[0]->channels();
   pad_height_   = bottom[0]->height();
@@ -134,7 +134,7 @@ void DenseCRFLayer<Dtype>::Reshape(
 
 template <typename Dtype>
 void DenseCRFLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
-    const vector<Blob<Dtype>*>& top) {
+				       const vector<Blob<Dtype>*>& top) {
   // assume bottom[0]: output from DCNN
   //        bottom[1]: dimension for each image
   //        bottom[2]: images after data-transformer (optional, if no bilateral)
@@ -171,7 +171,7 @@ void DenseCRFLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
       W_ = real_img_width;
       N_ = W_ * H_;
     }
-
+    
     // check if the pre-allocated memory is not enough
     CHECK_LE(N_, map_element_)
       << "The pre-allocated memory is not enough!";
@@ -194,22 +194,23 @@ void DenseCRFLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
 
 template <typename Dtype>
 void DenseCRFLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
-      const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom) {
+					const vector<bool>& propagate_down, 
+					const vector<Blob<Dtype>*>& bottom) {
   NOT_IMPLEMENTED;
 }
 
 template <typename Dtype>
 DenseCRFLayer<Dtype>::~DenseCRFLayer() {
-    ClearPairwiseFunctions();
-    DeAllocateAllData();
+  ClearPairwiseFunctions();
+  DeAllocateAllData();
 }
 
 template <typename Dtype>
 void DenseCRFLayer<Dtype>::DeAllocateAllData() {
-    deallocate(unary_);
-    deallocate(current_);
-    deallocate(next_);
-    deallocate(tmp_);
+  deallocate(unary_);
+  deallocate(current_);
+  deallocate(next_);
+  deallocate(tmp_);
 }
 
 template <typename Dtype>
@@ -217,8 +218,7 @@ void DenseCRFLayer<Dtype>::AllocateAllData() {
   unary_   = allocate(unary_element_);
   current_ = allocate(unary_element_);
   next_    = allocate(unary_element_);
-  tmp_     = allocate(unary_element_);
-
+  tmp_     = allocate(unary_element_);  
 }
 
 template <typename Dtype>
@@ -240,7 +240,7 @@ void DenseCRFLayer<Dtype>::ExpAndNormalize(float* out, const float* in, float sc
     // Make it a probability
     for (int j=0; j < M_; ++j)
       V[j] /= tt;
-		
+    
     float* a = out + i*M_;
     for (int j = 0; j < M_; ++j)
       a[j] = V[j];
@@ -267,11 +267,11 @@ void DenseCRFLayer<Dtype>::StepInference() {
   for (int i = 0; i < N_*M_; ++i)
     next_[i] = -unary_[i];
 #endif
-	
+    
   // Add up all pairwise potentials
   for (size_t i=0; i < pairwise_.size(); ++i)
     pairwise_[i]->apply(next_, current_, tmp_, M_);
-	
+    
   // Exponentiate and normalize
   ExpAndNormalize(current_, next_, 1.0);
 }
@@ -313,33 +313,6 @@ void DenseCRFLayer<Dtype>::ComputeMap(Dtype* top_inf) {
 	out_index = (c * pad_height_ + h) * pad_width_ + w;
 	top_inf[out_index] = static_cast<Dtype>(current_[in_index]);
       }
-
-      /*
-      // c = 0
-      in_index  = (h * W_ + w) * M_;
-      out_index = h * top_width + w;
-      top_inf[out_index] = static_cast<Dtype>(current_[in_index]);
-
-      // find the map
-      float mx = top_inf[out_index];
-      int imx = 0;
-
-      for (int c = 1; c < M_; ++c) {
-	in_index  = (h * W_ + w) * M_ + c;
-	out_index = (c * top_height + h) * top_width + w;
-
-	top_inf[out_index] = static_cast<Dtype>(current_[in_index]);
-
-	if (mx < top_inf[out_index]) {
-	  mx = top_inf[out_index];
-	  imx = c;
-	}
-      }
-
-      out_index = h * top_width + w;
-      // copy to top[1]. assume row-order
-      top_map[out_index] = static_cast<Dtype>(imx);
-      */
     } 
   }
 }
@@ -368,7 +341,7 @@ void DenseCRFLayer<Dtype>::SetupPairwiseFunctions(const vector<Blob<Dtype>*>& bo
     // add pairwise Bilateral
     for (size_t k = 0; k < bi_w_.size(); ++k) {
       float* features = new float[N_*5];
-
+      
       // Note H_ and W_ are the effective dimension of image (not padded dimensions)
       for (int j = 0; j < H_; j++) {
 	for (int i = 0; i < W_; i++){
@@ -410,13 +383,13 @@ void DenseCRFLayer<Dtype>::SetupUnaryEnergy(const Dtype* bottom_data) {
   for (int j = 1; j < M_; ++j) {
     for (int k = 0; k < spatial_dim; ++k) {
       scale_data[k] = std::max(scale_data[k],
-       bottom_data[j * spatial_dim + k]);
+			       bottom_data[j * spatial_dim + k]);
     }
   }
 
   // subtraction
   caffe_cpu_gemm<Dtype>(CblasNoTrans, CblasNoTrans, M_, spatial_dim, 
-      1, -1., sum_multiplier_.cpu_data(), scale_data, 1., norm_data);
+			1, -1., sum_multiplier_.cpu_data(), scale_data, 1., norm_data);
 
   // exponentiation
   caffe_exp<Dtype>(spatial_dim * M_, norm_data, norm_data);
@@ -441,10 +414,9 @@ void DenseCRFLayer<Dtype>::SetupUnaryEnergy(const Dtype* bottom_data) {
       }
     }
   }
-
-}
-
   
+}
+ 
 INSTANTIATE_CLASS(DenseCRFLayer);
 REGISTER_LAYER_CLASS(DENSE_CRF, DenseCRFLayer);
 
