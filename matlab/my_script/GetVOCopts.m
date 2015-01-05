@@ -83,7 +83,8 @@ VOCopts.action.respath=[VOCopts.resdir 'Action/%s_action_' VOCopts.testset '_%s.
 
 % classes
 
-VOCopts.classes={...
+if ~isempty(strfind(seg_root, 'VOC'))
+  VOCopts.classes={...
     'aeroplane'
     'bicycle'
     'bird'
@@ -104,8 +105,16 @@ VOCopts.classes={...
     'sofa'
     'train'
     'tvmonitor'};
-
+  
+elseif ~isempty(strfind(seg_root, 'coco')) || ~isempty(strfind(seg_root, 'COCO'))
+  coco_categories = GetCocoCategories();
+  VOCopts.classes = coco_categories.values();
+else
+  error('Unknown dataset!\n');
+end
+ 
 VOCopts.nclasses=length(VOCopts.classes);	
+
 
 % poses
 

@@ -19,6 +19,9 @@ function [accuracies,avacc,conf,rawcounts] = VOCevalseg(VOCopts,id)
 num = VOCopts.nclasses+1; 
 confcounts = zeros(num);
 count=0;
+
+num_missing_img = 0;
+
 tic;
 for i=1:length(gtids)
     % display progress
@@ -40,7 +43,8 @@ for i=1:length(gtids)
     try
       [resim,map] = imread(resfile);
     catch err
-      fprintf(1, 'Fail to read %s\n', resfile);
+      num_missing_img = num_missing_img + 1;
+      %fprintf(1, 'Fail to read %s\n', resfile);
       continue;
     end
 
@@ -67,6 +71,10 @@ for i=1:length(gtids)
     confcounts(:) = confcounts(:) + hs(:);
 end
 
+if (num_missing_img > 0)
+  fprintf(1, 'WARNING: There are %d missing results!\n', num_missing_img);
+end
+
 % confusion matrix - first index is true label, second is inferred label
 %conf = zeros(num);
 conf = 100*confcounts./repmat(1E-20+sum(confcounts,2),[1 size(confcounts,2)]);
@@ -84,8 +92,6 @@ for i = 1 : num
     denom = sum(confcounts(i, :));
     if (denom == 0)
         denom = 1;
-    else
-        class_count = class_count + 1;
     end
     class_acc(i) = 100 * confcounts(i, i) / denom; 
     if i == 1
@@ -93,7 +99,11 @@ for i = 1 : num
     else
       clname = VOCopts.classes{i-1};
     end
-    fprintf('  %14s: %6.3f%%\n', clname, class_acc(i));
+    
+    if ~strcmp(clname, 'void')
+        class_count = class_count + 1;
+        fprintf('  %14s: %6.3f%%\n', clname, class_acc(i));
+    end
 end
 fprintf('-------------------------\n');
 avg_class_acc = sum(class_acc) / class_count;
@@ -102,6 +112,9 @@ fprintf('Mean Class Accuracy: %6.3f%%\n', avg_class_acc);
 % Pixel IOU
 accuracies = zeros(VOCopts.nclasses,1);
 fprintf('Accuracy for each class (intersection/union measure)\n');
+
+real_class_count = 0;
+
 for j=1:num
    
    gtj=sum(confcounts(j,:));
@@ -109,13 +122,33 @@ for j=1:num
    gtjresj=confcounts(j,j);
    % The accuracy is: true positive / (true positive + false positive + false negative) 
    % which is equivalent to the following percentage:
-   accuracies(j)=100*gtjresj/(gtj+resj-gtjresj);   
+   denom = (gtj+resj-gtjresj);
+
+   if denom == 0
+     denom = 1;
+   end
+   
+   accuracies(j)=100*gtjresj/denom;
    
    clname = 'background';
    if (j>1), clname = VOCopts.classes{j-1};end;
-   fprintf('  %14s: %6.3f%%\n',clname,accuracies(j));
+   
+   if ~strcmp(clname, 'void')
+       real_class_count = real_class_count + 1;
+   else
+       if denom ~= 1
+           fprintf(1, 'WARNING: this void class has denom = %d\n', denom);
+       end
+   end
+   
+   if ~strcmp(clname, 'void')
+       fprintf('  %14s: %6.3f%%\n',clname,accuracies(j));
+   end
 end
-accuracies = accuracies(1:end);
-avacc = mean(accuracies);
+
+%accuracies = accuracies(1:end);
+%avacc = mean(accuracies);
+avacc = sum(accuracies) / real_class_count;
+
 fprintf('-------------------------\n');
 fprintf('Average accuracy: %6.3f%%\n',avacc);

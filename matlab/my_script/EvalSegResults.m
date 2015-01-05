@@ -2,8 +2,10 @@ clear all; close all;
 
 % change values here
 is_server       = 1;
-is_mat          = 0;   % the results are saved as mat or png
+is_mat          = 1;   % the results are saved as mat or png
 has_postprocess = 1;   % has done densecrf post processing or not
+is_argmax       = 1;   % the output has been taken argmax already. assume the argmax takes C-convention (i.e., start from 0)
+debug           = 0;   % if debug, show some results
 
 pos_w          = 3;
 pos_x_std      = 3;
@@ -12,20 +14,41 @@ bi_w      = 3;    %5;
 bi_x_std  = 95;   %50;
 bi_r_std  = 3;    %10;
 
+dataset = 'coco';  %'voc12', 'coco'
+
 id         = 'comp6';
 %trainset  = 'trainval_aug';
-trainset   = 'train_aug';
+%trainset   = 'train_aug';
+trainset   = 'train';
 
 testset   = 'val';
 %testset    = 'test';            %'val', 'test'
 
-model_name = 'vgg128_ms_pool3';   %'vgg128_noup', 'vgg128_noup_glob', 'vgg128_ms'
-feature_name = 'features2';        %'features', 'features4', 'features2'
+model_name = 'vgg128_noup_pool3';   %'vgg128_noup', 'vgg128_noup_glob', 'vgg128_ms'
+feature_name = 'features';        %'features', 'features4', 'features2'
+feature_type = 'fc8_crf';   %'fc8', 'crf', 'fc8_crf'
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% You do not need to chage values below
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 if is_server
+  if strcmp(dataset, 'voc12')
     VOC_root_folder = '/rmt/data/pascal/VOCdevkit';
+  elseif strcmp(dataset, 'coco')
+    VOC_root_folder = '/rmt/data/coco';
+  else
+    error('Wrong dataset');
+  end
 else
+  if strcmp(dataset, 'voc12')  
     VOC_root_folder = '~/dataset/PASCAL/VOCdevkit';
+  elseif strcmp(dataset, 'coco')
+    VOC_root_folder = '~/dataset/coco';
+  else
+    error('Wrong dataset');
+  end
 end
 
 if has_postprocess
@@ -34,30 +57,37 @@ else
   post_folder = 'post_none';
 end
 
-
-%output_mat_folder = fullfile('/rmt/work/deeplabel/exper/voc12/features', model_name, testset, 'fc8');
-output_mat_folder = fullfile('/rmt/work/deeplabel/exper/voc12', feature_name, model_name, testset, 'fc8');
+output_mat_folder = fullfile('/rmt/work/deeplabel/exper', dataset, feature_name, model_name, testset, feature_type);
 
 if strcmp(feature_name, 'features')
-  save_root_folder = fullfile('/rmt/work/deeplabel/exper/voc12/res', model_name, testset, 'fc8', post_folder);
+  save_root_folder = fullfile('/rmt/work/deeplabel/exper', dataset, 'res', model_name, testset, feature_type, post_folder);
 else 
-  save_root_folder = fullfile('/rmt/work/deeplabel/exper/voc12/res', feature_name, model_name, testset, 'fc8', post_folder);
+  save_root_folder = fullfile('/rmt/work/deeplabel/exper', dataset, 'res', feature_name, model_name, testset, feature_type, post_folder);
 end
 
 fprintf(1, 'Saving to %s\n', save_root_folder);
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% You do not need to chage values below
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-seg_res_dir = [save_root_folder '/results/VOC2012/'];
-save_result_folder = fullfile(seg_res_dir, 'Segmentation', [id '_' testset '_cls']);
 
-seg_root = fullfile(VOC_root_folder, 'VOC2012');
+if strcmp(dataset, 'voc12')
+  seg_res_dir = [save_root_folder '/results/VOC2012/'];
+  seg_root = fullfile(VOC_root_folder, 'VOC2012');
+  gt_dir   = fullfile(VOC_root_folder, 'VOC2012', 'SegmentationClass');
+elseif strcmp(dataset, 'coco')
+  seg_res_dir = [save_root_folder '/results/COCO2014/'];
+  seg_root = fullfile(VOC_root_folder, '');
+  gt_dir   = fullfile(VOC_root_folder, '', 'SegmentationClass');
+end
+
+save_result_folder = fullfile(seg_res_dir, 'Segmentation', [id '_' testset '_cls']);
 
 if ~exist(save_result_folder, 'dir')
     mkdir(save_result_folder);
 end
 
-VOCopts = GetVOCopts(seg_root, seg_res_dir, trainset, testset);
+if strcmp(dataset, 'voc12')
+  VOCopts = GetVOCopts(seg_root, seg_res_dir, trainset, testset, 'VOC2012');
+elseif strcmp(dataset, 'coco')
+  VOCopts = GetVOCopts(seg_root, seg_res_dir, trainset, testset, '');
+end
 
 if is_mat
   % crop the results
@@ -65,8 +95,6 @@ if is_mat
 
   output_dir = dir(fullfile(output_mat_folder, '*.mat'));
 
-  %matlabpool('4');
-  %parfor i = 1 : numel(output_dir)
   for i = 1 : numel(output_dir)
     fprintf(1, 'processing %d (%d)...\n', i, numel(output_dir));
     
@@ -76,17 +104,35 @@ if is_mat
 
     img_fn = output_dir(i).name(1:end-4);
     img_fn = strrep(img_fn, '_blob_0', '');
-    img = imread(fullfile(VOC_root_folder, 'VOC2012', 'JPEGImages', [img_fn, '.jpg']));
+    
+    if strcmp(dataset, 'voc12')
+      img = imread(fullfile(VOC_root_folder, 'VOC2012', 'JPEGImages', [img_fn, '.jpg']));
+    elseif strcmp(dataset, 'coco')
+      img = imread(fullfile(VOC_root_folder, 'JPEGImages', [img_fn, '.jpg']));
+    end
+    
     img_row = size(img, 1);
     img_col = size(img, 2);
     
     result = raw_result(1:img_row, 1:img_col, :);
-    %result = raw_result;
-    [~, result] = max(result, [], 3);
-    result = uint8(result) - 1;
+
+    if ~is_argmax
+      [~, result] = max(result, [], 3);
+      result = uint8(result) - 1;
+    else
+      result = uint8(result);
+    end
+
+    if debug
+        gt = imread(fullfile(gt_dir, [img_fn, '.png']));
+        figure(1), 
+        subplot(221),imshow(img), title('img');
+        subplot(222),imshow(gt, colormap), title('gt');
+        subplot(224), imshow(result,colormap), title('predict');
+    end
+    
     imwrite(result, colormap, fullfile(save_result_folder, [img_fn, '.png']));
   end
-  %matlabpool('close');
 end
 
 % get iou score
