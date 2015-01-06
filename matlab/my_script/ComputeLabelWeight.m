@@ -3,30 +3,47 @@
 %
 clear all; close all;
 
-num = 21;  % number of class
-labelcounts = zeros(1, num);
-count=0;
+dataset = 'coco';  %VOC2012, coco
 
-save_folder = '~/workspace/deeplabeling/examples/segnet';
-save_fn = {'loss_weight_train.txt', ...
+if strcmp(dataset, 'VOC2012')
+    num = 21;  % number of class
+    save_folder = '~/dataset/PASCAL/VOCdevkit/VOC2012/list';
+    save_fn = {'loss_weight_train.txt', ...
           'loss_weight_val.txt', ...
           'loss_weight_train_aug.txt', ...
           'loss_weight_trainval_aug.txt'};
 
-data_folder = '../VOC2012/ImageSets/Segmentation';
-data_fn = {'VOC2012_train.txt', ...
+    data_folder = '~/dataset/PASCAL/VOCdevkit/VOC2012/ImageSets/Segmentation';
+    data_fn = {'VOC2012_train.txt', ...
           'VOC2012_val.txt', ...
           'VOC2012_train_aug.txt', ...
           'VOC2012_trainval_aug.txt'};
 
-img_folder = '../VOC2012/SegmentationClassAug';
+    img_folder = '~/dataset/PASCAL/VOCdevkit/VOC2012/SegmentationClassAug';
+else
+    num = 91;
+    save_folder = '~/dataset/coco/list';
+    save_fn = {'loss_weight_train2014.txt', ...
+        'loss_weight_val2014.txt', ...
+        'loss_weight_trainval2014.txt'};
+    data_folder = '~/dataset/coco/ImageSets/Segmentation';
+    data_fn = {'train2014.txt', ...
+        'val2014.txt',...
+        'trainval2014.txt'};
+    img_folder = '~/dataset/coco/SegmentationClass';
+end
 
 for i = 1 : numel(data_fn)
     list = GetList(fullfile(data_folder, data_fn{i}));
+
+    labelcounts = zeros(1, num);
+    count=0;
     
     % accumulate the label counts
     for j = 1 : numel(list)
-        fprintf(1, 'processing %d (%d) ...\n', j, numel(list));
+        if mod(j, 10000) == 0
+            fprintf(1, 'processing %d (%d) ...\n', j, numel(list));
+        end
         
         gtim = imread(fullfile(img_folder, [list{j} '.png']));
         gtim = double(gtim);
@@ -42,12 +59,20 @@ for i = 1 : numel(data_fn)
     end
 
     % compute the inverse of label counts
-    freqs = labelcounts / count;
+    labelcounts = labelcounts(labelcounts ~= 0);
+    freqs = labelcounts / count;    
     c = num / (sum( 1./ freqs));
     weights = c ./ freqs;
-    
+      
     % save
     fid = fopen(fullfile(save_folder, save_fn{i}), 'w');
-    fprintf(fid, '%1.4f\n', weights);    
+    fprintf(fid, '%1.12f\n', weights);    
     fclose(fid);
+    
+    fn = strrep(save_fn{i}, 'weight', 'freq');
+    fid = fopen(fullfile(save_folder, fn), 'w');
+    fprintf(fid, '%1.12f\n', freqs);
+    fclose(fid);
+    
+    
 end
