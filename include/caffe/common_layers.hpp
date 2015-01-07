@@ -16,6 +16,39 @@
 namespace caffe {
 
 /**
+ * @brief Find the top_k stronger channels of the input blob and output their indices.
+ *
+ * Intended for use to prune class labels who are least promising (score low
+ * across the image). The following criterion is used:
+ * We count at how many image positions each label (channel) is argmax and
+ * sort the channels accordingly.
+ */
+template <typename Dtype>
+class DominantChannelLayer : public Layer<Dtype> {
+ public:
+  explicit DominantChannelLayer(const LayerParameter& param)
+      : Layer<Dtype>(param) {}
+  virtual void LayerSetUp(const vector<Blob<Dtype>*>& bottom,
+      const vector<Blob<Dtype>*>& top);
+  virtual void Reshape(const vector<Blob<Dtype>*>& bottom,
+      const vector<Blob<Dtype>*>& top);
+
+  virtual inline LayerParameter_LayerType type() const {
+    return LayerParameter_LayerType_DOMINANT_CHANNEL;
+  }
+  virtual inline int ExactNumBottomBlobs() const { return 1; }
+  virtual inline int ExactNumTopBlobs() const { return 1; }
+
+ protected:
+  virtual void Forward_cpu(const vector<Blob<Dtype>*>& bottom,
+      const vector<Blob<Dtype>*>& top);
+  virtual void Backward_cpu(const vector<Blob<Dtype>*>& top,
+      const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom);
+  int num_, channels_, height_, width_;
+  size_t top_k_;
+};
+
+/**
  * @brief Compute the index of the @f$ K @f$ max values for each datum across
  *        all dimensions @f$ (C \times H \times W) @f$.
  *

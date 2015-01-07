@@ -206,7 +206,7 @@ message NetStateRule {
 // NOTE
 // Update the next available ID when you add a new LayerParameter field.
 //
-// LayerParameter next available ID: 49 (last added: dense_crf_param)
+// LayerParameter next available ID: 50 (last added: dominant_channel_param)
 message LayerParameter {
   repeated string bottom = 2; // the name of the bottom blobs
   repeated string top = 3; // the name of the top blobs
@@ -227,7 +227,7 @@ message LayerParameter {
   // line above the enum. Update the next available ID when you add a new
   // LayerType.
   //
-  // LayerType next available ID: 46 (last added: DENSE_CRF)
+  // LayerType next available ID: 47 (last added: DOMINANT_CHANNEL)
   enum LayerType {
     // "NONE" layer type is 0th enum element so that we don't cause confusion
     // by defaulting to an existent LayerType (instead, should usually error if
@@ -242,6 +242,7 @@ message LayerParameter {
     CONVOLUTION = 4;
     DATA = 5;
     DENSE_CRF = 45;
+    DOMINANT_CHANNEL = 46;
     DROPOUT = 6;
     DUMMY_DATA = 32;
     EUCLIDEAN_LOSS = 7;
@@ -315,6 +316,7 @@ message LayerParameter {
   optional ConvolutionParameter convolution_param = 10;
   optional DataParameter data_param = 11;
   optional DenseCRFParameter dense_crf_param = 48;
+  optional DominantChannelParameter dominant_channel_param = 49;
   optional DropoutParameter dropout_param = 12;
   optional DummyDataParameter dummy_data_param = 26;
   optional EltwiseParameter eltwise_param = 24;
@@ -501,6 +503,11 @@ message DataParameter {
   // DEPRECATED. See TransformationParameter. Specify if we want to randomly mirror
   // data.
   optional bool mirror = 6 [default = false];
+}
+
+// Message that stores parameters used by DominantChannelLayer
+message DominantChannelParameter {
+  optional int32 top_k = 1 [default = 1];
 }
 
 // Message that stores parameters used by DropoutLayer
