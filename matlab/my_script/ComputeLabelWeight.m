@@ -3,7 +3,7 @@
 %
 clear all; close all;
 
-dataset = 'coco';  %VOC2012, coco
+dataset = 'VOC2012';  %VOC2012, coco
 
 if strcmp(dataset, 'VOC2012')
     num = 21;  % number of class
@@ -12,7 +12,7 @@ if strcmp(dataset, 'VOC2012')
           'loss_weight_val.txt', ...
           'loss_weight_train_aug.txt', ...
           'loss_weight_trainval_aug.txt'};
-
+      
     data_folder = '~/dataset/PASCAL/VOCdevkit/VOC2012/ImageSets/Segmentation';
     data_fn = {'VOC2012_train.txt', ...
           'VOC2012_val.txt', ...
@@ -33,11 +33,20 @@ else
     img_folder = '~/dataset/coco/SegmentationClass';
 end
 
+
+if ~exist(save_folder, 'dir')
+    mkdir(save_folder);
+end
+
+pairwise_cooccur = cell(1, numel(data_fn));
+
 for i = 1 : numel(data_fn)
     list = GetList(fullfile(data_folder, data_fn{i}));
 
     labelcounts = zeros(1, num);
     count=0;
+    
+    pairwise_labelcounts = zeros(num, num);
     
     % accumulate the label counts
     for j = 1 : numel(list)
@@ -56,6 +65,21 @@ for i = 1 : numel(data_fn)
         hs = histc(sumim(locs),1:num); 
         count = count + numel(find(locs));
         labelcounts(:) = labelcounts(:) + hs(:);
+        
+        % assume 1st element is background
+        for m = 1 : num
+            if hs(m) == 0
+                continue;
+            end
+            for n = m+1 : num
+                if hs(n) == 0
+                    continue;
+                end
+                pairwise_labelcounts(m, n) = pairwise_labelcounts(m, n) + 1;                
+                pairwise_labelcounts(n, m) = pairwise_labelcounts(n, m) + 1;                
+                
+            end
+        end        
     end
 
     % compute the inverse of label counts
@@ -74,5 +98,21 @@ for i = 1 : numel(data_fn)
     fprintf(fid, '%1.12f\n', freqs);
     fclose(fid);
     
+    % self compactable
+    pairwise_cooccur{i} = ones(size(pairwise_labelcounts));
+    
+    for kk = 1 : size(pairwise_labelcounts, 1)
+        pairwise_cooccur{i}(kk, kk) = 0;
+        pairwise_labelcounts(kk, kk) = 1;
+    end
+    
+    % inf penalty for no cooccurrence
+    ind = pairwise_labelcounts == 0;
+    pairwise_cooccur{i}(ind) = 1e10;
+    
+    fn = strrep(save_fn{i}, 'loss', 'pairwise');
+    fid = fopen(fullfile(save_folder, fn), 'w');
+    fprintf(fid, '%d\n', pairwise_cooccur{i});
+    fclose(fid);
     
 end
