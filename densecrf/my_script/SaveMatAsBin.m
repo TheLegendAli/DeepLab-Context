@@ -1,29 +1,38 @@
 % save mat score maps as bin file for cpp
-% 
-clear all; 
-
-is_server = 1;
-
-testset = 'test';               %'val', 'test'
-model_name = 'vgg128_ms_pool3';      %vgg128_ms, vgg128_noup, vgg128_noup_glob, vgg128_noup_pool3
-feature_name = 'features2';      %'features', 'features4', 'features2'
-
-if is_server
-  mat_folder  = fullfile('/rmt/work/deeplabel/exper/voc12', feature_name, model_name, testset, 'fc8');
-  img_folder  = '/rmt/data/pascal/VOCdevkit/VOC2012/JPEGImages';
-  save_folder = fullfile(mat_folder, 'bin');
-else
-  mat_folder  = fullfile('~/workspace/deeplabeling/exper/voc12/features4', model_name, testset, 'fc8');
-  img_folder  = '~/dataset/PASCAL/VOCdevkit/VOC2012/JPEGImages';
-  save_folder = fullfile(mat_folder, 'bin');
-end
-
+%
+addpath('/rmt/work/deeplabel/code/matlab/my_script');
+SetupEnv;
+ 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % You do not need to chage values below
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+if is_server
+  mat_folder  = fullfile('/rmt/work/deeplabel/exper', dataset, feature_name, model_name, testset, feature_type);
+  if strcmp(dataset, 'voc12')
+    img_folder  = '/rmt/data/pascal/VOCdevkit/VOC2012/JPEGImages';
+  elseif strcmp(dataset, 'coco')
+    img_folder  = '/rmt/data/coco/JPEGImages';
+  else
+    error('Wrong dataset!');
+  end
+  save_folder = fullfile(mat_folder, 'bin');
+else
+  mat_folder  = fullfile('~/workspace/deeplabeling/exper', dataset, feature_name, model_name, testset, feature_type);
+  if strcmp(dataset, 'voc12')
+    img_folder  = '~/dataset/PASCAL/VOCdevkit/VOC2012/JPEGImages';
+  elseif strcmp(dataset, 'coco')
+    img_folder  = '~/dataset/coco/JPEGImages';
+  else
+    error('Wrong dataset!');
+  end
+  save_folder = fullfile(mat_folder, 'bin');
+end
+
 if ~exist(save_folder, 'dir')
     mkdir(save_folder);
 end
+
+fprintf(1, 'Saving to %s\n', save_folder);
 
 mat_dir = dir(fullfile(mat_folder, '*.mat'));
 

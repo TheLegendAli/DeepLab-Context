@@ -1,33 +1,6 @@
-clear all; close all;
+%clear all; close all;
 
-% change values here
-is_server       = 1;
-is_mat          = 1;   % the results are saved as mat or png
-has_postprocess = 1;   % has done densecrf post processing or not
-is_argmax       = 1;   % the output has been taken argmax already. assume the argmax takes C-convention (i.e., start from 0)
-debug           = 0;   % if debug, show some results
-
-pos_w          = 3;
-pos_x_std      = 3;
-
-bi_w      = 3;    %5;
-bi_x_std  = 95;   %50;
-bi_r_std  = 3;    %10;
-
-dataset = 'coco';  %'voc12', 'coco'
-
-id         = 'comp6';
-%trainset  = 'trainval_aug';
-%trainset   = 'train_aug';
-trainset   = 'train';
-
-testset   = 'val';
-%testset    = 'test';            %'val', 'test'
-
-model_name = 'vgg128_noup_pool3';   %'vgg128_noup', 'vgg128_noup_glob', 'vgg128_ms'
-feature_name = 'features';        %'features', 'features4', 'features2'
-feature_type = 'fc8_crf';   %'fc8', 'crf', 'fc8_crf'
-
+SetupEnv;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % You do not need to chage values below

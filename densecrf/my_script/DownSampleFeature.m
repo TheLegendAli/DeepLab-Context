@@ -6,11 +6,15 @@ down_sample_rate = 8;
 
 is_server = 1;
 
+dataset = 'voc12';   %voc12, coco
+
 testset = 'val';
-model_name = 'vgg128_ms_pool3';  %vgg128_noup, vgg128_ms
+model_name = 'vgg128_noup_pool3_coco';  %vgg128_noup, vgg128_ms
+feature_name = 'features';
+feature_type = 'fc8';
 
 if is_server
-  mat_folder  = fullfile('/rmt/work/deeplabel/exper/voc12/features', model_name, testset, 'fc8');
+  mat_folder  = fullfile('/rmt/work/deeplabel/exper', dataset, feature_name, model_name, testset, feature_type);
   save_folder = fullfile(mat_folder, 'bin');
 else
   mat_folder  = '../feature';
