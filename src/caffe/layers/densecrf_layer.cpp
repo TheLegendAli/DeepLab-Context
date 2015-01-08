@@ -17,39 +17,22 @@ void DenseCRFLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
 				      const vector<Blob<Dtype>*>& top) {
 
   DenseCRFParameter dense_crf_param = this->layer_param_.dense_crf_param();
-
   max_iter_ = dense_crf_param.max_iter();
-  
-  if (dense_crf_param.pos_w_size() > 0) {
-    for (int i = 0; i < dense_crf_param.pos_w_size(); ++i) {
-      pos_w_.push_back(dense_crf_param.pos_w(i));
-    }
+  for (int i = 0; i < dense_crf_param.pos_w_size(); ++i) {
+    pos_w_.push_back(dense_crf_param.pos_w(i));
   }
-
-  if (dense_crf_param.pos_xy_std_size() > 0) {
-    for (int i = 0; i < dense_crf_param.pos_xy_std_size(); ++i) {
-      pos_xy_std_.push_back(dense_crf_param.pos_xy_std(i));
-    }
+  for (int i = 0; i < dense_crf_param.pos_xy_std_size(); ++i) {
+    pos_xy_std_.push_back(dense_crf_param.pos_xy_std(i));
   }
-
-  if (dense_crf_param.bi_w_size() > 0) {
-    for (int i = 0; i < dense_crf_param.bi_w_size(); ++i) {
-      bi_w_.push_back(dense_crf_param.bi_w(i));
-    }
+  for (int i = 0; i < dense_crf_param.bi_w_size(); ++i) {
+    bi_w_.push_back(dense_crf_param.bi_w(i));
   }
-
-  if (dense_crf_param.bi_xy_std_size() > 0) {
-    for (int i = 0; i < dense_crf_param.bi_xy_std_size(); ++i) {
-      bi_xy_std_.push_back(dense_crf_param.bi_xy_std(i));
-    }
+  for (int i = 0; i < dense_crf_param.bi_xy_std_size(); ++i) {
+    bi_xy_std_.push_back(dense_crf_param.bi_xy_std(i));
   }
-
-  if (dense_crf_param.bi_rgb_std_size() > 0) {
-    for (int i = 0; i < dense_crf_param.bi_rgb_std_size(); ++i) {
-      bi_rgb_std_.push_back(dense_crf_param.bi_rgb_std(i));
-    }
+  for (int i = 0; i < dense_crf_param.bi_rgb_std_size(); ++i) {
+    bi_rgb_std_.push_back(dense_crf_param.bi_rgb_std(i));
   }
-
   CHECK_EQ(pos_w_.size(), pos_xy_std_.size())
     << "pos_w and pos_xy_std should have the same size.";
   CHECK_EQ(bi_w_.size(), bi_xy_std_.size())
@@ -59,10 +42,8 @@ void DenseCRFLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
   
   CHECK_GE(bottom.size(), 2) 
     << "bottom must have size larger than 2 (i.e., DCNN output and image dim).";
-  
-  CHECK_LE(bottom.size(), 3)
+    CHECK_LE(bottom.size(), 3)
     << "bottom size is at most three.";
-
   if (bottom.size() == 2) {
     has_image = false;
   } else {
@@ -78,8 +59,7 @@ void DenseCRFLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
   unary_   = NULL;
   current_ = NULL;
   next_    = NULL;
-  tmp_     = NULL;
-  
+  tmp_     = NULL;  
 }
 
 template <typename Dtype>
