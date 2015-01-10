@@ -1,31 +1,9 @@
-clear all; close all;
+addpath('/rmt/work/deeplabel/code/matlab/my_script');
+SetupEnv;
 
-% change values here
-is_server        = 1;
-down_sample_rate = 8;
-
-dataset = 'voc12';  %voc12, coco
-
-id         = 'comp6';
-%trainset  = 'trainval_aug';
-trainset   = 'train_aug';
-
-testset    = 'val';
-
-model_name = 'vgg128_noup_pool3_coco';   %'vgg128_noup' or 'vgg128_ms'
-
-range_bi_w = [5 7 9];
-range_bi_x_std = [63 67];
-range_bi_r_std = [2 3 4];
-
-% default values
-pos_w          = 3;
-pos_x_std      = 3;
-
-bi_w           = 5;
-bi_x_std       = 50;
-bi_r_std       = 10;
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% You do not need to chage values below
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if is_server
     if strcmp(dataset, 'voc12')
         VOC_root_folder = '/rmt/data/pascal/VOCdevkit';
@@ -67,11 +45,8 @@ for w = range_bi_w       %0.5:0.5:6 %[1 5 10 15 20]
       %  post_folder = sprintf('post_densecrf_PosW%1.1f_PosXStd%d_downsampleBy%d', w, x_std, down_sample_rate);
       %end
 
-      save_root_folder = fullfile('/rmt/work/deeplabel/exper', dataset, 'res', model_name, testset, 'fc8', post_folder);
+      save_root_folder = fullfile('/rmt/work/deeplabel/exper', dataset, 'res', model_name, testset, feature_type, post_folder);
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% You do not need to chage values below
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
       if strcmp(dataset, 'voc12')
           seg_res_dir = [save_root_folder '/results/VOC2012/'];
           seg_root = fullfile(VOC_root_folder, 'VOC2012');

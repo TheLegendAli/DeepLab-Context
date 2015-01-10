@@ -1,4 +1,3 @@
-%clear all; close all;
 
 SetupEnv;
 
@@ -69,8 +68,10 @@ if is_mat
   output_dir = dir(fullfile(output_mat_folder, '*.mat'));
 
   for i = 1 : numel(output_dir)
-    fprintf(1, 'processing %d (%d)...\n', i, numel(output_dir));
-    
+    if mod(i, 100) == 0
+        fprintf(1, 'processing %d (%d)...\n', i, numel(output_dir));
+    end
+
     data = load(fullfile(output_mat_folder, output_dir(i).name));
     raw_result = data.data;
     raw_result = permute(raw_result, [2 1 3]);

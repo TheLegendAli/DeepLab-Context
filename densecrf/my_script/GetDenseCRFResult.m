@@ -21,6 +21,8 @@ map_dir = dir(fullfile(map_folder, '*.bin'));
 
 save_root_folder = map_folder;
 
+fprintf(1,' saving to %s\n', save_root_folder);
+
 if strcmp(dataset, 'voc12')
   seg_res_dir = [save_root_folder '/results/VOC2012/'];
 elseif strcmp(dataset, 'coco')

@@ -611,6 +611,7 @@ message ImageDataParameter {
   optional bool mirror = 6 [default = false];
   optional string root_folder = 12 [default = ""];
   optional bool has_label = 13 [default = true];
+  optional int32 max_labels = 14 [default = 1];
 }
 
 // Message that stores parameters InfogainLossLayer

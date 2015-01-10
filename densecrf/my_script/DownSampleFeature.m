@@ -1,17 +1,11 @@
 % downsample the bin files for faster cross-validation and not overfit val set
 % 
-clear all; 
+addpath('/rmt/work/deeplabel/code/matlab/my_script');
+SetupEnv;
 
-down_sample_rate = 8;
-
-is_server = 1;
-
-dataset = 'voc12';   %voc12, coco
-
-testset = 'val';
-model_name = 'vgg128_noup_pool3_coco';  %vgg128_noup, vgg128_ms
-feature_name = 'features';
-feature_type = 'fc8';
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% You do not need to chage values below
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 if is_server
   mat_folder  = fullfile('/rmt/work/deeplabel/exper', dataset, feature_name, model_name, testset, feature_type);

@@ -25,11 +25,17 @@ void ImageDataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom,
   const int new_width  = this->layer_param_.image_data_param().new_width();
   const bool is_color  = this->layer_param_.image_data_param().is_color();
   const bool has_label = this->layer_param_.image_data_param().has_label();
+  max_labels_ = this->layer_param_.image_data_param().max_labels();
   string root_folder = this->layer_param_.image_data_param().root_folder();
 
   CHECK((new_height == 0 && new_width == 0) ||
       (new_height > 0 && new_width > 0)) << "Current implementation requires "
       "new_height and new_width to be set at the same time.";
+
+  CHECK_GE(max_labels_, 0) << "max_labels cannot be negative";
+  if (!has_label) {
+    max_labels_ = 0;
+  }
 
   // Read the file with filenames and labels
   const string& source = this->layer_param_.image_data_param().source();
@@ -41,11 +47,16 @@ void ImageDataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom,
     std::istringstream iss(linestr);
     string filename;
     iss >> filename;
-    int label = 0;
+    std::vector<int> labels;
     if (has_label) {
-      iss >> label;
+      int label;
+      while (iss >> label) {
+	labels.push_back(label);
+      }
     }
-    lines_.push_back(std::make_pair(filename, label));
+    CHECK_LE(labels.size(), max_labels_) <<
+      "label blob cannot fit labels in image " << filename;
+    lines_.push_back(std::make_pair(filename, labels));
   }
 
   if (this->layer_param_.image_data_param().shuffle()) {
@@ -89,8 +100,8 @@ void ImageDataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom,
       << top[0]->channels() << "," << top[0]->height() << ","
       << top[0]->width();
   // label
-  top[1]->Reshape(batch_size, 1, 1, 1);
-  this->prefetch_label_.Reshape(batch_size, 1, 1, 1);
+  top[1]->Reshape(batch_size, max_labels_, 1, 1);
+  this->prefetch_label_.Reshape(batch_size, max_labels_, 1, 1);
 }
 
 template <typename Dtype>
@@ -116,7 +127,6 @@ void ImageDataLayer<Dtype>::InternalThreadEntry() {
   const int batch_size = image_data_param.batch_size();
   const int new_height = image_data_param.new_height();
   const int new_width = image_data_param.new_width();
-  const bool has_label = image_data_param.has_label();
   const bool is_color = image_data_param.is_color();
   string root_folder = image_data_param.root_folder();
 
@@ -138,9 +148,10 @@ void ImageDataLayer<Dtype>::InternalThreadEntry() {
     this->transformed_data_.set_cpu_data(top_data + offset);
     this->data_transformer_.Transform(cv_img, &(this->transformed_data_));
     trans_time += timer.MicroSeconds();
-    // Set the label
-    if (has_label) {
-      top_label[item_id] = lines_[lines_id_].second;
+    // Get the labels (-1 is the void label)
+    for (int l = 0; l < max_labels_; ++l) {
+      top_label[max_labels_ * item_id + l] = (l < lines_[lines_id_].second.size())
+	? lines_[lines_id_].second[l] : -1;
     }
     // go to the next iter
     lines_id_++;
