@@ -105,4 +105,6 @@ STUB_GPU(BiasChannelLayer);
 #endif
 
 INSTANTIATE_CLASS(BiasChannelLayer);
+REGISTER_LAYER_CLASS(BIAS_CHANNEL, BiasChannelLayer);
+
 }  // namespace caffe

@@ -40,13 +40,9 @@ void SoftmaxWithLossLayer<Dtype>::LayerSetUp(
     LOG(INFO) << "Weight_Loss file is not provided. Assign all one to it.";
     loss_weights_.assign(prob_.channels(), 1.0);
   }
-
-  if (softmaxloss_param.ignore_label_size() > 0) {
-    for (int c = 0; c < softmaxloss_param.ignore_label_size(); ++c){
-      ignore_label_.insert(softmaxloss_param.ignore_label(c));
-    }
+  for (int c = 0; c < softmaxloss_param.ignore_label_size(); ++c){
+    ignore_label_.insert(softmaxloss_param.ignore_label(c));
   }
-
 }
 
 template <typename Dtype>
@@ -101,8 +97,11 @@ void SoftmaxWithLossLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
     const vector<bool>& propagate_down,
     const vector<Blob<Dtype>*>& bottom) {
   if (propagate_down[1]) {
+    // Ignore this
+    /*
     LOG(FATAL) << this->type_name()
                << " Layer cannot backpropagate to label inputs.";
+    */
   }
   if (propagate_down[0]) {
     Dtype* bottom_diff = bottom[0]->mutable_cpu_diff();

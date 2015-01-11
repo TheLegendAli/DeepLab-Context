@@ -62,6 +62,68 @@ TYPED_TEST(BiasChannelLayerTest, TestSetup) {
   EXPECT_EQ(this->blob_top_->width(), this->blob_bottom_0->width());
 }
 
+TYPED_TEST(BiasChannelLayerTest, TestCPU) {
+  typedef typename TypeParam::Dtype Dtype;
+  Caffe::set_mode(Caffe::CPU);
+  LayerParameter layer_param;
+  const Dtype bg_bias = 1.5;
+  const Dtype fg_bias = 3.0;
+  layer_param.mutable_bias_channel_param()->set_bg_bias(bg_bias);
+  layer_param.mutable_bias_channel_param()->set_fg_bias(fg_bias);
+  BiasChannelLayer<Dtype> layer(layer_param);
+  layer.SetUp(this->blob_bottom_vec_, this->blob_top_vec_);
+  layer.Forward(this->blob_bottom_vec_, this->blob_top_vec_);
+  for (int n = 0; n < this->blob_bottom_0->num(); ++n) {
+    vector<Dtype> values(this->blob_bottom_0->channels(), 0);
+    values[0] = bg_bias;
+    for (int j = 0; j < this->blob_bottom_1->channels(); ++j) {
+      const int label = *this->blob_bottom_1->cpu_data(n, j);
+      CHECK(label > 0 && label < values.size());
+      values[label] += fg_bias;
+    }
+    for (int c = 0; c < this->blob_bottom_0->channels(); ++c) {
+      for (int h = 0; h < this->blob_bottom_0->height(); ++h) {
+	for (int w = 0; w < this->blob_bottom_0->width(); ++w) {
+	  EXPECT_NEAR(*this->blob_bottom_0->cpu_data(n, c, h, w) + values[c],
+		      *this->blob_top_->cpu_data(n, c, h, w),
+		      1e-5);
+	}
+      }
+    }
+  }
+}
+
+TYPED_TEST(BiasChannelLayerTest, TestGPU) {
+  typedef typename TypeParam::Dtype Dtype;
+  Caffe::set_mode(Caffe::GPU);
+  LayerParameter layer_param;
+  const Dtype bg_bias = 1.5;
+  const Dtype fg_bias = 3.0;
+  layer_param.mutable_bias_channel_param()->set_bg_bias(bg_bias);
+  layer_param.mutable_bias_channel_param()->set_fg_bias(fg_bias);
+  BiasChannelLayer<Dtype> layer(layer_param);
+  layer.SetUp(this->blob_bottom_vec_, this->blob_top_vec_);
+  layer.Forward(this->blob_bottom_vec_, this->blob_top_vec_);
+  for (int n = 0; n < this->blob_bottom_0->num(); ++n) {
+    vector<Dtype> values(this->blob_bottom_0->channels(), 0);
+    values[0] = bg_bias;
+    for (int j = 0; j < this->blob_bottom_1->channels(); ++j) {
+      const int label = *this->blob_bottom_1->cpu_data(n, j);
+      CHECK(label > 0 && label < values.size());
+      values[label] += fg_bias;
+    }
+    for (int c = 0; c < this->blob_bottom_0->channels(); ++c) {
+      for (int h = 0; h < this->blob_bottom_0->height(); ++h) {
+	for (int w = 0; w < this->blob_bottom_0->width(); ++w) {
+	  EXPECT_NEAR(*this->blob_bottom_0->cpu_data(n, c, h, w) + values[c],
+		      *this->blob_top_->cpu_data(n, c, h, w),
+		      1e-5);
+	}
+      }
+    }
+  }
+}
+
 TYPED_TEST(BiasChannelLayerTest, TestGradient) {
   typedef typename TypeParam::Dtype Dtype;
   LayerParameter layer_param;

@@ -18,16 +18,10 @@ void SegAccuracyLayer<Dtype>::LayerSetUp(
   const vector<Blob<Dtype>*>& bottom, const vector<Blob<Dtype>*>& top) {
   confusion_matrix_.clear();
   confusion_matrix_.resize(bottom[0]->channels());
-
   SegAccuracyParameter seg_accuracy_param = this->layer_param_.seg_accuracy_param();
-
-  if (seg_accuracy_param.ignore_label_size() > 0) {
-    for (int c = 0; c < seg_accuracy_param.ignore_label_size(); ++c){
-      ignore_label_.insert(seg_accuracy_param.ignore_label(c));
-    }
+  for (int c = 0; c < seg_accuracy_param.ignore_label_size(); ++c){
+    ignore_label_.insert(seg_accuracy_param.ignore_label(c));
   }
-
-
 }
 
 template <typename Dtype>
