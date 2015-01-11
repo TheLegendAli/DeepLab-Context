@@ -206,7 +206,7 @@ message NetStateRule {
 // NOTE
 // Update the next available ID when you add a new LayerParameter field.
 //
-// LayerParameter next available ID: 50 (last added: dominant_channel_param)
+// LayerParameter next available ID: 51 (last added: bias_channel_param)
 message LayerParameter {
   repeated string bottom = 2; // the name of the bottom blobs
   repeated string top = 3; // the name of the top blobs
@@ -227,7 +227,7 @@ message LayerParameter {
   // line above the enum. Update the next available ID when you add a new
   // LayerType.
   //
-  // LayerType next available ID: 47 (last added: DOMINANT_CHANNEL)
+  // LayerType next available ID: 48 (last added: BIAS_CHANNEL)
   enum LayerType {
     // "NONE" layer type is 0th enum element so that we don't cause confusion
     // by defaulting to an existent LayerType (instead, should usually error if
@@ -237,6 +237,7 @@ message LayerParameter {
     ACCURACY = 1;
     ARGMAX = 30;
     BNLL = 2;
+    BIAS_CHANNEL = 47;
     CONCAT = 3;
     CONTRASTIVE_LOSS = 37;
     CONVOLUTION = 4;
@@ -311,6 +312,7 @@ message LayerParameter {
 
   optional AccuracyParameter accuracy_param = 27;
   optional ArgMaxParameter argmax_param = 23;
+  optional BiasChannelParameter bias_channel_param = 50;
   optional ConcatParameter concat_param = 9;
   optional ContrastiveLossParameter contrastive_loss_param = 40;
   optional ConvolutionParameter convolution_param = 10;
@@ -389,8 +391,7 @@ message SegAccuracyParameter {
     PixelIOU = 2;
   }
   optional AccuracyMetric metric = 1 [default = PixelAccuracy];
-
-  // will ignore pixles with this value when computing accuracy
+  // will ignore pixels with this value when computing accuracy
   repeated int32 ignore_label = 2;
 }
 
@@ -398,8 +399,7 @@ message SegAccuracyParameter {
 message SoftmaxLossParameter {
   // specify the data source for loss_weights_
   optional string weight_source = 16;
-
-  // will ignore pixles with this value when computing accuracy
+  // will ignore pixels with this value when computing accuracy
   repeated int32 ignore_label = 2;
 }
 
@@ -431,6 +431,15 @@ message ArgMaxParameter {
   // If true produce pairs (argmax, maxval)
   optional bool out_max_val = 1 [default = false];
   optional uint32 top_k = 2 [default = 1];
+}
+
+// Message that stores parameters used by BiasChannelLayer
+message BiasChannelParameter {
+  // Used for initializing the bias. Separate values for BG / FG
+  optional float bg_bias = 1 [default = 1.];
+  optional float fg_bias = 2 [default = 2.];
+  // will ignore labels with this value when adding bias
+  repeated int32 ignore_label = 3;
 }
 
 // Message that stores parameters used by ConcatLayer
