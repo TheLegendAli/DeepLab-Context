@@ -15,7 +15,13 @@ else
   save_folder = '../feature_bin';
 end
 
-dest_folder = [save_folder, sprintf('_downsampleBy%d', down_sample_rate)];
+if down_sample_method == 1
+  dest_folder = [save_folder, sprintf('_downsampleBy%d', down_sample_rate)];
+elseif down_sample_method == 2
+  dest_folder = [save_folder, sprintf('_numSample%d', num_sample)];
+else
+   error('Wrong down_sample_method\n');
+end
 
 if ~exist(dest_folder, 'dir')
   mkdir(dest_folder)
@@ -23,7 +29,13 @@ end
 
 save_dir = dir(fullfile(save_folder, '*.bin'));
 
-save_dir = save_dir(1:down_sample_rate:end);
+if down_sample_method == 1
+  save_dir = save_dir(1:down_sample_rate:end);
+elseif down_sample_method == 2
+  ind = randperm(length(save_dir));
+  ind = ind(1:num_sample);
+  save_dir = save_dir(ind);
+end
 
 for i = 1 : numel(save_dir)
   fprintf(1, 'processing %d (%d)...\n', i, numel(save_dir));

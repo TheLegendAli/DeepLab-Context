@@ -34,6 +34,7 @@ void UniqueLabelLayer<Dtype>::Reshape(const vector<Blob<Dtype>*>& bottom,
 template <typename Dtype>
 void UniqueLabelLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top) {
+  // We use the value -1 as the filler to make sure the label list has max_labels members
   caffe_set(top[0]->count(), Dtype(-1), top[0]->mutable_cpu_data());
   for (int n = 0; n < num_; ++n) {
     set<Dtype> vals;

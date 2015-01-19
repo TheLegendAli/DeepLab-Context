@@ -1,4 +1,4 @@
-addpath('/rmt/work/deeplabel/code/matlab/my_script');
+
 SetupEnv;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -37,13 +37,13 @@ for w = range_bi_w       %0.5:0.5:6 %[1 5 10 15 20]
     for r_std = range_bi_r_std  %5:5:10      %[10 20 30 40 50]
       bi_r_std = r_std;
 
-      post_folder = sprintf('post_densecrf_W%d_XStd%d_RStd%d_PosW%d_PosXStd%d_downsampleBy%d', bi_w, bi_x_std, bi_r_std, pos_w, pos_x_std, down_sample_rate);
-
-      %if w==1 || w==2 || w == 3 || w==4 || w==5 || w==6
-      %  post_folder = sprintf('post_densecrf_PosW%d_PosXStd%d_downsampleBy%d', w, x_std, down_sample_rate); 
-      %else
-      %  post_folder = sprintf('post_densecrf_PosW%1.1f_PosXStd%d_downsampleBy%d', w, x_std, down_sample_rate);
-      %end
+      if down_sample_method == 1
+        post_folder = sprintf('post_densecrf_W%d_XStd%d_RStd%d_PosW%d_PosXStd%d_downsampleBy%d', bi_w, bi_x_std, bi_r_std, pos_w, pos_x_std, down_sample_rate);
+      elseif down_sample_method == 2
+        post_folder = sprintf('post_densecrf_W%d_XStd%d_RStd%d_PosW%d_PosXStd%d_numSample%d', bi_w, bi_x_std, bi_r_std, pos_w, pos_x_std, num_sample);
+      else
+        error('wrong down_sample_method')
+      end
 
       save_root_folder = fullfile('/rmt/work/deeplabel/exper', dataset, 'res', model_name, testset, feature_type, post_folder);
 

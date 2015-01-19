@@ -206,7 +206,7 @@ message NetStateRule {
 // NOTE
 // Update the next available ID when you add a new LayerParameter field.
 //
-// LayerParameter next available ID: 52 (last added: unique_label_param)
+// LayerParameter next available ID: 54 (last added: adaptive_bias_channel_param)
 message LayerParameter {
   repeated string bottom = 2; // the name of the bottom blobs
   repeated string top = 3; // the name of the top blobs
@@ -227,7 +227,7 @@ message LayerParameter {
   // line above the enum. Update the next available ID when you add a new
   // LayerType.
   //
-  // LayerType next available ID: 49 (last added: UNIQUE_LABEL)
+  // LayerType next available ID: 51 (last added: CENSOR_LABEL)
   enum LayerType {
     // "NONE" layer type is 0th enum element so that we don't cause confusion
     // by defaulting to an existent LayerType (instead, should usually error if
@@ -235,9 +235,11 @@ message LayerParameter {
     NONE = 0;
     ABSVAL = 35;
     ACCURACY = 1;
+    ADAPTIVE_BIAS_CHANNEL = 50;
     ARGMAX = 30;
     BNLL = 2;
     BIAS_CHANNEL = 47;
+    CENSOR_LABEL = 49;
     CONCAT = 3;
     CONTRASTIVE_LOSS = 37;
     CONVOLUTION = 4;
@@ -312,8 +314,10 @@ message LayerParameter {
   repeated float loss_weight = 35;
 
   optional AccuracyParameter accuracy_param = 27;
+  optional AdaptiveBiasChannelParameter adaptive_bias_channel_param = 53;
   optional ArgMaxParameter argmax_param = 23;
   optional BiasChannelParameter bias_channel_param = 50;
+  optional CensorLabelParameter censor_label_param = 52;
   optional ConcatParameter concat_param = 9;
   optional ContrastiveLossParameter contrastive_loss_param = 40;
   optional ConvolutionParameter convolution_param = 10;
@@ -428,6 +432,15 @@ message AccuracyParameter {
   optional uint32 top_k = 1 [default = 1];
 }
 
+// Message that stores parameters used by AdaptiveBiasChannelLayer
+message AdaptiveBiasChannelParameter {
+  optional int32 num_iter = 1 [default = 1];
+  optional float bg_portion = 2 [default = 0.2];
+  optional float fg_portion = 3 [default = 0.2];
+  optional bool suppress_others = 4 [default = true];
+  optional float margin_others = 5 [default = 1e-5];
+}
+
 // Message that stores parameters used by ArgMaxLayer
 message ArgMaxParameter {
   // If true produce pairs (argmax, maxval)
@@ -442,6 +455,11 @@ message BiasChannelParameter {
   optional float fg_bias = 2 [default = 2.];
   // will ignore labels with this value when adding bias
   repeated int32 ignore_label = 3;
+}
+
+// Message that stores parameters used by CensorLabelLayer
+message CensorLabelParameter {
+  required int32 ignore_label = 1;
 }
 
 // Message that stores parameters used by ConcatLayer
@@ -836,7 +854,7 @@ message WindowDataParameter {
 
 // Message that stores parameters used by UniqueLabelLayer
 message UniqueLabelParameter {
-  optional int32 max_labels = 1 [default = 1];
+  required int32 max_labels = 1;
   repeated float ignore_label = 2;
 }
 

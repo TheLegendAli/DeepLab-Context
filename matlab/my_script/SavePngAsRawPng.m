@@ -1,10 +1,16 @@
 clear all; close all;
 
-dataset = 'VOC2012';
+%dataset = 'VOC2012';
+%orig_folder = fullfile('..', dataset, 'SegmentationClassAug_Visualization');
+%save_folder = ['../', dataset, '/SegmentationClassAug'];
 
-orig_folder = fullfile('..', dataset, 'SegmentationClassAug_Visualization');
+orig_folder = '/rmt/work/deeplabel/exper/voc12/res/erode_gt/post_densecrf_W41_XStd33_RStd4_PosW3_PosXStd3/results/VOC2012/Segmentation/comp6_trainval_aug_cls';
+save_folder = '/rmt/data/pascal/VOCdevkit/VOC2012/SegmentationClassBboxErodeCRFAug';
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% You do not need to change values below
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 imgs_dir = dir(fullfile(orig_folder, '*.png'));
-save_folder = ['../', dataset, '/SegmentationClassAug'];
 
 if ~exist(save_folder, 'dir')
     mkdir(save_folder)
