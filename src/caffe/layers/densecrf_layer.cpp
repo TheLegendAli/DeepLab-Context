@@ -144,13 +144,12 @@ void DenseCRFLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
       // image may be cropped
       H_ = pad_height_;
       W_ = pad_width_;
-      N_ = W_ * H_;
     } else {
       // image is padded with redundant values
       H_ = real_img_height;
       W_ = real_img_width;
-      N_ = W_ * H_;
     }
+    N_ = W_ * H_;
     
     // check if the pre-allocated memory is not enough
     CHECK_LE(N_, map_element_)
@@ -176,7 +175,7 @@ template <typename Dtype>
 void DenseCRFLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
 					const vector<bool>& propagate_down, 
 					const vector<Blob<Dtype>*>& bottom) {
-  NOT_IMPLEMENTED;
+  //NOT_IMPLEMENTED;
 }
 
 template <typename Dtype>

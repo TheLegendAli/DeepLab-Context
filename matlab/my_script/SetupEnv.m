@@ -5,8 +5,8 @@ clear all; close all;
 load('./pascal_seg_colormap.mat');
 
 is_server       = 1;
-is_mat          = 0;   % the results are saved as mat or png
-has_postprocess = 1;   % has done densecrf post processing or not
+is_mat          = 1;   % the results are saved as mat or png
+has_postprocess = 0;   % has done densecrf post processing or not
 is_argmax       = 0;   % the output has been taken argmax already (e.g., coco dataset). 
                        % assume the argmax takes C-convention (i.e., start from 0)
 
@@ -46,25 +46,27 @@ debug           = 0;   % if debug, show some results
 % erode_gt_mask
 % bi_w = 39, bi_x_std = 23, bi_r_std = 4
 
+% erode_gt/bboxErode20
+% bi_w = 45, bi_x_std = 37, bi_r_std = 3, pos_w = 15, pos_x_std = 3
  
 
-pos_w          = 3;
-pos_x_std      = 3;
+pos_w          = 15;    %3
+pos_x_std      = 3;    %3
 
-bi_w           = 35;   %5;   3
-bi_x_std       = 61;  %67;   %50;  95
-bi_r_std       = 10;   %3;    %10;  3
+bi_w           = 45;   %5;   3
+bi_x_std       = 37;  %67;   %50;  95
+bi_r_std       = 3;   %3;    %10;  3
 
 
 dataset    = 'voc12';  %'voc12', 'coco'
 id         = 'comp6';
-trainset   = 'trainval_aug';
+trainset   = 'train_aug';
 testset    = 'val';            %'val', 'test'
 
-model_name = 'vgg128_noup_pool3_adaweak';   %'vgg128_noup', 'vgg128_noup_glob', 'vgg128_ms'
+model_name = 'vgg128_noup_pool3_adaweakcrf2';   %'vgg128_noup', 'vgg128_noup_glob', 'vgg128_ms'
 
-feature_name = 'features2';    %'';    %'features', 'features4', 'features2', ''
-feature_type = 'fc8';   %'fc8', 'crf', 'fc8_crf', 'erode_gt', 'erode_gt_mask'
+feature_name = 'erode_gt';    %'';    %'features', 'features4', 'features2', ''
+feature_type = 'bboxErode20_OccluBias';     %'bboxErode20';   %'fc8', 'crf', 'fc8_crf', 'erode_gt', 'erode_gt_mask'
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% used for cross-validation
@@ -77,8 +79,11 @@ down_sample_rate   = 8;
 num_sample         = 100;     % used for erode_gt 
 
 % ranges for cross-validation
-range_bi_w = 35;
-range_bi_x_std = 61;
-range_bi_r_std = [20:10:50];
+range_pos_w = 3;
+range_pos_x_std = 3;
+
+range_bi_w = 30:10:50;
+range_bi_x_std = 30:10:50;
+range_bi_r_std = [3 5];
 
 

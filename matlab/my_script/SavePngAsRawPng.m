@@ -4,8 +4,12 @@ clear all; close all;
 %orig_folder = fullfile('..', dataset, 'SegmentationClassAug_Visualization');
 %save_folder = ['../', dataset, '/SegmentationClassAug'];
 
-orig_folder = '/rmt/work/deeplabel/exper/voc12/res/erode_gt/post_densecrf_W41_XStd33_RStd4_PosW3_PosXStd3/results/VOC2012/Segmentation/comp6_trainval_aug_cls';
-save_folder = '/rmt/data/pascal/VOCdevkit/VOC2012/SegmentationClassBboxErodeCRFAug';
+%orig_folder = '/rmt/work/deeplabel/exper/voc12/res/erode_gt/post_densecrf_W41_XStd33_RStd4_PosW3_PosXStd3/results/VOC2012/Segmentation/comp6_trainval_aug_cls';
+%save_folder = '/rmt/data/pascal/VOCdevkit/VOC2012/SegmentationClassBboxErodeCRFAug';
+
+orig_folder = '/rmt/data/pascal/VOCdevkit/VOC2012/SegmentationClassBboxErode20CRFAug_Visualization';
+save_folder = '/rmt/data/pascal/VOCdevkit/VOC2012/SegmentationClassBboxErode20CRFAug';
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % You do not need to change values below

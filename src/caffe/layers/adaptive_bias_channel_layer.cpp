@@ -123,6 +123,12 @@ void AdaptiveBiasChannelLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bo
 	}
       }
     }
+    // Find original mean of maximum score
+    double mean_max0 = 0;
+    for (int i = 0; i < spatial_dim; ++i) {
+      mean_max0 += extremum_data[i];
+    }
+    mean_max0 /= spatial_dim;
 
     // Swap over the labels num_iter_ times
     for (int t = 0; t < num_iter_; ++t) {
@@ -147,6 +153,17 @@ void AdaptiveBiasChannelLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bo
 	}
       }
     }
+
+    // Find final mean of maximum score
+    double mean_max1 = 0;
+    for (int i = 0; i < spatial_dim; ++i) {
+      mean_max1 += extremum_data[i];
+    }
+    mean_max1 /= spatial_dim;
+    // Subtract a constant from all channels to make sure that the mean
+    // (over spatial positions) of the maximum score for current image
+    // remains the same with the beginning
+    caffe_add_scalar(channels_ * spatial_dim, static_cast<Dtype>(mean_max0 - mean_max1), top_data);
 
   }
 }
