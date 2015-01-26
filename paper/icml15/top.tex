@@ -1,0 +1,161 @@
+\documentclass{article} % For LaTeX2e
+
+
+
+\usepackage{times}
+\usepackage{hyperref}
+\usepackage{url}
+
+\usepackage{subfigure}
+\usepackage{epsfig}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{bbm}
+\usepackage{epstopdf}
+%\usepackage{caption}
+%\usepackage{subcaption}
+\usepackage{enumitem}
+\usepackage{calc}
+\usepackage{multirow}
+
+% For citations
+\usepackage{natbib}
+
+% For algorithms
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+
+% Packages hyperref and algorithmic misbehave sometimes.  We can fix
+% this with the following command.
+%\newcommand{\theHalgorithm}{\arabic{algorithm}}
+
+% Employ the following version of the ``usepackage'' statement for
+% submitting the draft version of the paper for review.  This will set
+% the note in the first column to ``Under review.  Do not distribute.''
+\usepackage{icml2015} 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\C}{{\cal C}}
+\newcommand{\D}{{\cal D}}
+\newcommand{\Y}{{\cal Y}}
+\newcommand{\X}{{\cal X}}
+\newcommand{\R}{{\cal R}}
+\renewcommand{\H}{{\cal H}}
+\renewcommand{\S}{{\cal S}}
+\newcommand{\bm}[1]{\boldsymbol{#1}}
+
+\newcommand{\specialcell}[2][c]{\begin{tabular}[#1]{@{}c@{}}#2\end{tabular}}
+
+\def\be {\begin{equation}}
+\def\ee {\end{equation}}
+\def\beas {\begin{eqnarray*}}
+\def\eeas {\end{eqnarray*}}
+\def\bea {\begin{eqnarray}}
+\def\eea {\end{eqnarray}}
+\def\bes {\begin{equation*}}
+\def\ees {\end{equation*}}
+\def\ba {\begin{align}}
+\def\ea {\end{align}}
+\def\barr {\begin{array}}
+\def\earr {\end{array}}
+
+\def\tran {\top}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}{Prop}
+\newtheorem{lemma}{Lemma}
+\newtheorem{lemma-ap}{Lemma}
+\newtheorem{definition}{Definition}
+\newtheorem{corollary}{Corollary}
+\newtheorem{claim}{Claim}
+\newtheorem{claim-ap}{Claim}
+\newtheorem{program}{Program}
+\newtheorem{property}{Property}
+
+\makeatletter
+\usepackage{xspace}
+\def\@onedot{\ifx\@let@token.\else.\null\fi\xspace}
+\DeclareRobustCommand\onedot{\futurelet\@let@token\@onedot}
+
+\newcommand{\figref}[1]{Fig\onedot~\ref{#1}}
+\newcommand{\equref}[1]{Eq\onedot~\eqref{#1}}
+\newcommand{\secref}[1]{Sec\onedot~\ref{#1}}
+\newcommand{\tabref}[1]{Tab\onedot~\ref{#1}}
+\newcommand{\thmref}[1]{Theorem~\ref{#1}}
+\newcommand{\prgref}[1]{Program~\ref{#1}}
+\newcommand{\algref}[1]{Alg\onedot~\ref{#1}}
+\newcommand{\clmref}[1]{Claim~\ref{#1}}
+\newcommand{\lemref}[1]{Lemma~\ref{#1}}
+\newcommand{\ptyref}[1]{Property\onedot~\ref{#1}}
+
+\newcommand{\fix}{\marginpar{FIX}}
+\newcommand{\new}{\marginpar{NEW}}
+
+\def\eg{\emph{e.g}\onedot} \def\Eg{\emph{E.g}\onedot}
+\def\ie{\emph{i.e}\onedot} \def\Ie{\emph{I.e}\onedot}
+\def\cf{\emph{cf}\onedot} \def\Cf{\emph{Cf}\onedot}
+\def\etc{\emph{etc}\onedot} \def\vs{\emph{vs}\onedot}
+\def\wrt{w.r.t\onedot} \def\dof{d.o.f\onedot}
+\def\etal{\emph{et al}\onedot}
+
+\makeatother
+
+
+
+%%%%%%%%% TITLE
+% Employ this version of the ``usepackage'' statement after the paper has
+% been accepted, when creating the final version.  This will set the
+% note in the first column to ``Proceedings of the...''
+%\usepackage[accepted]{icml2015}
+
+
+% The \icmltitle you define below is probably too long as a header.
+% Therefore, a short form for the running title is supplied here:
+\icmltitlerunning{Submission for ICML 2015}
+
+\begin{document} 
+
+\twocolumn[
+\icmltitle{Submission for \\ 
+           International Conference on Machine Learning (ICML 2015)}
+
+
+% It is OKAY to include author information, even for blind
+% submissions: the style file will automatically remove it for you
+% unless you've provided the [accepted] option to the icml2015
+% package.
+\icmlauthor{Your Name}{email@yourdomain.edu}
+\icmladdress{Your Fantastic Institute,
+            314159 Pi St., Palo Alto, CA 94306 USA}
+\icmlauthor{Your CoAuthor's Name}{email@coauthordomain.edu}
+\icmladdress{Their Fantastic Institute,
+            27182 Exp St., Toronto, ON M6H 2T1 CANADA}
+
+% You may provide any keywords that you 
+% find helpful for describing your paper; these are used to populate 
+% the "keywords" metadata in the PDF but will not be shown in the document
+\icmlkeywords{boring formatting information, machine learning, ICML}
+
+\vskip 0.3in
+]
+
+
+%%%%%%%%% ABSTRACT
+\input{abstract}
+
+%%%%%%%%% BODY TEXT
+\input{intro}
+\input{related}
+\input{approach}
+\input{results}
+\input{conc}
+
+
+{\small
+\bibliographystyle{icml2015}
+\bibliography{egbib}
+}
+
+\end{document}
