@@ -46,6 +46,9 @@ debug           = 0;   % if debug, show some results
 % vgg128_noup_pool3_strongweak2
 % bi_w = 5, bi_x_std = 81, bi_r_std = 5, pos_w = 3, pos_x_std = 3
 
+% vgg128_noup_pool3_strongweak200
+% bi_w = 10, bi_x_std = 80, bi_r_std = 5, pos_w = 3, pos_x_std = 10
+
 % vgg128_noup_pool3_small
 % bi_w = 5, bi_x_std = 61, bi_r_std = 3, pos_w = 3, pos_x_std = 3
 
@@ -58,21 +61,21 @@ debug           = 0;   % if debug, show some results
 % erode_gt/bboxErode20
 % bi_w = 45, bi_x_std = 37, bi_r_std = 3, pos_w = 15, pos_x_std = 3
  
+%
+bi_w           = 10;   %5;   3
+bi_x_std       = 80;   %67;   %50;  95
+bi_r_std       = 5;    %3;    %10;  3
 
-pos_w          = 3;    %3
-pos_x_std      = 3;    %3
+pos_w          = 3;     %3
+pos_x_std      = 10;    %3
 
-bi_w           = 5;   %5;   3
-bi_x_std       = 61;  %67;   %50;  95
-bi_r_std       = 3;   %3;    %10;  3
-
-
+%
 dataset    = 'voc12';  %'voc12', 'coco'
 id         = 'comp6';
-trainset   = 'trainval_aug';
+trainset   = 'train_aug';
 testset    = 'val';            %'val', 'test'
 
-model_name = 'vgg128_noup_pool3_small';   %'vgg128_noup', 'vgg128_noup_glob', 'vgg128_ms'
+model_name = 'vgg128_noup_pool3_strongweak200';   %'vgg128_noup', 'vgg128_noup_glob', 'vgg128_ms'
 
 feature_name = 'features';
 feature_type = 'fc8';
@@ -91,11 +94,11 @@ down_sample_rate   = 8;
 num_sample         = 100;     % used for erode_gt 
 
 % ranges for cross-validation
-range_pos_w = 1;
-range_pos_x_std = 1;
+range_pos_w = [3];
+range_pos_x_std = [10];
 
-range_bi_w = [5];
-range_bi_x_std = 81;
+range_bi_w = 10;
+range_bi_x_std = 80;
 range_bi_r_std = [5];
 
 

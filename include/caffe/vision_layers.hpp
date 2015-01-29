@@ -278,6 +278,38 @@ class BiasChannelLayer : public Layer<Dtype> {
 };
 
 /**
+ * @brief Aggregates the scores (log-probabilities) from a larger label
+ * space to a smaller label space via a softmax operation.
+ * The mapping between the two label spaces is provided via a text file.
+ */
+template <typename Dtype>
+class ChannelAggregatorLayer : public Layer<Dtype> {
+ public:
+  explicit ChannelAggregatorLayer(const LayerParameter& param)
+      : Layer<Dtype>(param) {}
+  virtual void LayerSetUp(const vector<Blob<Dtype>*>& bottom,
+      const vector<Blob<Dtype>*>& top);
+  virtual void Reshape(const vector<Blob<Dtype>*>& bottom,
+      const vector<Blob<Dtype>*>& top);
+
+  virtual inline LayerParameter_LayerType type() const {
+    return LayerParameter_LayerType_CHANNEL_AGGREGATOR;
+  }
+  virtual inline int ExactNumBottomBlobs() const { return 1; }
+  virtual inline int ExactNumTopBlobs() const { return 1; }
+
+ protected:
+  virtual void Forward_cpu(const vector<Blob<Dtype>*>& bottom,
+      const vector<Blob<Dtype>*>& top);
+  virtual void Backward_cpu(const vector<Blob<Dtype>*>& top,
+      const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom);
+  
+  int num_, channels_in_, height_, width_;
+  int channels_out_;
+  std::vector<std::vector<int> > label_map_;
+};
+
+/**
  * @brief Adds to the input scores (specified in bottom[0]) adaptive biases in the
  * channels (listed in bottom[1]) so as they win on a target pre-defined portion
  * of the image.

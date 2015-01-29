@@ -206,7 +206,7 @@ message NetStateRule {
 // NOTE
 // Update the next available ID when you add a new LayerParameter field.
 //
-// LayerParameter next available ID: 54 (last added: adaptive_bias_channel_param)
+// LayerParameter next available ID: 55 (last added: channel_aggregator_param)
 message LayerParameter {
   repeated string bottom = 2; // the name of the bottom blobs
   repeated string top = 3; // the name of the top blobs
@@ -227,7 +227,7 @@ message LayerParameter {
   // line above the enum. Update the next available ID when you add a new
   // LayerType.
   //
-  // LayerType next available ID: 51 (last added: CENSOR_LABEL)
+  // LayerType next available ID: 52 (last added: CHANNEL_AGGREGATOR)
   enum LayerType {
     // "NONE" layer type is 0th enum element so that we don't cause confusion
     // by defaulting to an existent LayerType (instead, should usually error if
@@ -240,6 +240,7 @@ message LayerParameter {
     BNLL = 2;
     BIAS_CHANNEL = 47;
     CENSOR_LABEL = 49;
+    CHANNEL_AGGREGATOR = 51;
     CONCAT = 3;
     CONTRASTIVE_LOSS = 37;
     CONVOLUTION = 4;
@@ -318,6 +319,7 @@ message LayerParameter {
   optional ArgMaxParameter argmax_param = 23;
   optional BiasChannelParameter bias_channel_param = 50;
   optional CensorLabelParameter censor_label_param = 52;
+  optional ChannelAggregatorParameter channel_aggregator_param = 54;
   optional ConcatParameter concat_param = 9;
   optional ContrastiveLossParameter contrastive_loss_param = 40;
   optional ConvolutionParameter convolution_param = 10;
@@ -460,6 +462,11 @@ message BiasChannelParameter {
 // Message that stores parameters used by CensorLabelLayer
 message CensorLabelParameter {
   required int32 ignore_label = 1;
+}
+
+// Message that stores parameters used by ChannelAggregatorLayer
+message ChannelAggregatorParameter {
+  optional string label_map_file = 1;
 }
 
 // Message that stores parameters used by ConcatLayer
