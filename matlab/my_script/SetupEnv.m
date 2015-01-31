@@ -46,8 +46,20 @@ debug           = 0;   % if debug, show some results
 % vgg128_noup_pool3_strongweak2
 % bi_w = 5, bi_x_std = 81, bi_r_std = 5, pos_w = 3, pos_x_std = 3
 
+% vgg128_noup_pool3_strongweak6
+% bi_w = 35, bi_x_std = 85, bi_r_std = 5, pos_w = 3, pos_x_std = 3
+
 % vgg128_noup_pool3_strongweak200
 % bi_w = 10, bi_x_std = 80, bi_r_std = 5, pos_w = 3, pos_x_std = 10
+
+% vgg128_noup_pool3_strongweak500
+% bi_w = 9, bi_x_std = 77, bi_r_std = 5, pos_w = 5, pos_x_std = 5
+
+% vgg128_noup_pool3_strongweak750
+% bi_w = 9, bi_x_std = 59, bi_r_std = 5, pos_w = 5, pos_x_std = 5
+
+% vgg128_noup_pool3_strongweak1000
+% bi_w = 7, bi_x_std = 75, bi_r_std = 5, pos_w = 3, pos_x_std = 3
 
 % vgg128_noup_pool3_small
 % bi_w = 5, bi_x_std = 61, bi_r_std = 3, pos_w = 3, pos_x_std = 3
@@ -62,12 +74,12 @@ debug           = 0;   % if debug, show some results
 % bi_w = 45, bi_x_std = 37, bi_r_std = 3, pos_w = 15, pos_x_std = 3
  
 %
-bi_w           = 10;   %5;   3
-bi_x_std       = 80;   %67;   %50;  95
-bi_r_std       = 5;    %3;    %10;  3
+bi_w           = 7; 
+bi_x_std       = 75;
+bi_r_std       = 5;
 
-pos_w          = 3;     %3
-pos_x_std      = 10;    %3
+pos_w          = 3;
+pos_x_std      = 3;
 
 %
 dataset    = 'voc12';  %'voc12', 'coco'
@@ -75,7 +87,7 @@ id         = 'comp6';
 trainset   = 'train_aug';
 testset    = 'val';            %'val', 'test'
 
-model_name = 'vgg128_noup_pool3_strongweak200';   %'vgg128_noup', 'vgg128_noup_glob', 'vgg128_ms'
+model_name = 'vgg128_noup_pool3_strongweak1000';   %'vgg128_noup', 'vgg128_noup_glob', 'vgg128_ms'
 
 feature_name = 'features';
 feature_type = 'fc8';
@@ -94,11 +106,11 @@ down_sample_rate   = 8;
 num_sample         = 100;     % used for erode_gt 
 
 % ranges for cross-validation
-range_pos_w = [3];
-range_pos_x_std = [10];
+range_pos_w = [3 5 10];
+range_pos_x_std = [5 10];
 
-range_bi_w = 10;
-range_bi_x_std = 80;
+range_bi_w = [7];
+range_bi_x_std = [75];
 range_bi_r_std = [5];
 
 

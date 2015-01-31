@@ -30,7 +30,7 @@ void ChannelAggregatorLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& botto
     while (iss >> label) {
       labels.push_back(label);
     }
-    CHECK_GT(label_map_.size(), 0);
+    CHECK_GT(labels.size(), 0);
     label_map_.push_back(labels);
   }
   channels_out_ = label_map_.size();
