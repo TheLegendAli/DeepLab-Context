@@ -51,6 +51,26 @@
   \label{tab:strong_weak_annot}
 \end{table}
 
+\begin{table}
+  \centering
+  \caption{{\bf Segmentation estimation within bounding boxes.} Dense CRF is employed to estimate the ground-truth segmentation. Row 1 to Row 3: difficulty of the task in increasing order.} 
+  \begin{tabular}{c c c c}
+    \includegraphics[width=0.21\linewidth]{fig/erode_bbox/img/2010_004063.jpg} & 
+    \includegraphics[width=0.21\linewidth]{fig/erode_bbox/gt/2010_004063.png} & 
+    \includegraphics[width=0.21\linewidth]{fig/erode_bbox/bbox/2010_004063.png} & 
+    \includegraphics[width=0.21\linewidth]{fig/erode_bbox/crf/2010_004063.png} \\    
+    \includegraphics[width=0.21\linewidth]{fig/erode_bbox/img/2009_002382.jpg} & 
+    \includegraphics[width=0.21\linewidth]{fig/erode_bbox/gt/2009_002382.png} & 
+    \includegraphics[width=0.21\linewidth]{fig/erode_bbox/bbox/2009_002382.png} & 
+    \includegraphics[width=0.21\linewidth]{fig/erode_bbox/crf/2009_002382.png} \\    
+    \includegraphics[width=0.21\linewidth]{fig/erode_bbox/img/2008_004339.jpg} & 
+    \includegraphics[width=0.21\linewidth]{fig/erode_bbox/gt/2008_004339.png} & 
+    \includegraphics[width=0.21\linewidth]{fig/erode_bbox/bbox/2008_004339.png} & 
+    \includegraphics[width=0.21\linewidth]{fig/erode_bbox/crf/2008_004339.png} \\    
+    Image & G.T. & Bbox & Est. G.T.
+  \end{tabular}
+\end{table}
+
 
 \begin{table}
   \centering
@@ -81,6 +101,97 @@
     \end{tabular}
   \label{tb:bbox_annot}
 \end{table}
+
+
+\begin{figure*}[!htbp]
+  \centering
+  %\vspace{-1.cm}
+  \scalebox{0.82} {
+  \begin{tabular}{c c c c c c}
+    %\addtolength{\tabcolsep}{-6.5pt}
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/img/2007_000042.jpg} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/adaweak/2007_000042.png} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/bbox/2007_000042.png} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/bbox_crf/2007_000042.png} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/strongweak/2007_000042.png} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/cocomix/2007_000042.png} \\
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/img/2007_002852.jpg} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/adaweak/2007_002852.png} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/bbox/2007_002852.png} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/bbox_crf/2007_002852.png} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/strongweak/2007_002852.png} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/cocomix/2007_002852.png} \\
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/img/2007_003022.jpg} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/adaweak/2007_003022.png} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/bbox/2007_003022.png} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/bbox_crf/2007_003022.png} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/strongweak/2007_003022.png} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/cocomix/2007_003022.png} \\
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/img/2008_003546.jpg} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/adaweak/2008_003546.png} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/bbox/2008_003546.png} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/bbox_crf/2008_003546.png} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/strongweak/2008_003546.png} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/cocomix/2008_003546.png} \\
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/img/2008_004363.jpg} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/adaweak/2008_004363.png} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/bbox/2008_004363.png} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/bbox_crf/2008_004363.png} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/strongweak/2008_004363.png} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/cocomix/2008_004363.png} \\
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/img/2009_001299.jpg} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/adaweak/2009_001299.png} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/bbox/2009_001299.png} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/bbox_crf/2009_001299.png} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/strongweak/2009_001299.png} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/cocomix/2009_001299.png} \\
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/img/2010_004994.jpg} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/adaweak/2010_004994.png} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/bbox/2010_004994.png} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/bbox_crf/2010_004994.png} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/strongweak/2010_004994.png} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/cocomix/2010_004994.png} \\
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/img/2011_002322.jpg} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/adaweak/2011_002322.png} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/bbox/2011_002322.png} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/bbox_crf/2011_002322.png} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/strongweak/2011_002322.png} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/cocomix/2011_002322.png} \\
+    \includegraphics[height=0.13\linewidth]{fig/val_crf_vis/img/2007_001630.jpg} &
+    \includegraphics[height=0.13\linewidth]{fig/val_crf_vis/adaweak/2007_001630.png} &
+    \includegraphics[height=0.13\linewidth]{fig/val_crf_vis/bbox/2007_001630.png} &
+    \includegraphics[height=0.13\linewidth]{fig/val_crf_vis/bbox_crf/2007_001630.png} &
+    \includegraphics[height=0.13\linewidth]{fig/val_crf_vis/strongweak/2007_001630.png} &
+    \includegraphics[height=0.13\linewidth]{fig/val_crf_vis/cocomix/2007_001630.png} \\
+    \includegraphics[height=0.15\linewidth]{fig/val_crf_vis/img/2007_005331.jpg} &
+    \includegraphics[height=0.15\linewidth]{fig/val_crf_vis/adaweak/2007_005331.png} &
+    \includegraphics[height=0.15\linewidth]{fig/val_crf_vis/bbox/2007_005331.png} &
+    \includegraphics[height=0.15\linewidth]{fig/val_crf_vis/bbox_crf/2007_005331.png} &
+    \includegraphics[height=0.15\linewidth]{fig/val_crf_vis/strongweak/2007_005331.png} &
+    \includegraphics[height=0.15\linewidth]{fig/val_crf_vis/cocomix/2007_005331.png} \\
+\hline \hline
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/img/2007_000830.jpg} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/adaweak/2007_000830.png} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/bbox/2007_000830.png} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/bbox_crf/2007_000830.png} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/strongweak/2007_000830.png} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/cocomix/2007_000830.png} \\
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/img/2007_001175.jpg} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/adaweak/2007_001175.png} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/bbox/2007_001175.png} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/bbox_crf/2007_001175.png} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/strongweak/2007_001175.png} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/cocomix/2007_001175.png} \\
+    Image & adaweak & bbox & bbox-crf & strongweak & cocomix \\
+  \end{tabular}
+  }
+  %\vspace{-0.3cm}
+  \caption{Visualization results on VOC 2012-val. For each row, we show the input image, the segmentation result delivered by adaweak, bbox, bbox-crf, strongweak, coco. The results are refined by DenseCRF. We show difficult examples in the last two rows.} 
+  \label{fig:ValResults}
+\end{figure*}
+
+
+
 
 
 {\color{blue} REMEMBER to put the links (test results) in the supplementary material if main paper has no space.}
