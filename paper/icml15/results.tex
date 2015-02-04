@@ -82,6 +82,7 @@ The evaluations of our proposed models are mainly conducted on the PASCAL offici
 \end{table}
 
 \paragraph{Image Annotatins}
+
 \paragraph{Pixel+Image Annotations}
 
 \paragraph{Comparison with State-of-art} We herein compare our proposed models with other state-of-art methods in the context of weakly supervised learning. We list in Tab.~\ref{tab:weak_state_of_art_val} the comparable methods side-by-side. The methods proposed by \citet{pinheiro2014weakly} are prefixed by ``Idiap-''. Our proposed methods consistently outperformed their methods. Our DeepLab-Weak is comparable to their Idiap-base, which are trained with only weak labels. Image-Level-Prior (ILP) is incorporated into their base model, similar to our DeepLab-Adaweak which dynamically weights DCNN score maps w.r.t. weak labels. To smooth the prediction results, they proposed to use (1) superpixels (denoted as sppxl) or (2) region proposals (denoted as seg). The superpixel smoothing is similar to the Dense CRF we employed, both trying to model the long-range correlation between pixels. The region proposal algorithm (MCG \citep{arbelaez2014multiscale}) they employed are elaborate smoothing method, which has been trained on thousands of fully annotated images. On the other hand, our proposed method Deeplab-CRF-StrongWeak shows that our model can attain much better results by directly training the models with both strong and weak annotations.
@@ -91,6 +92,7 @@ Note that the method proposed by \citet{pathak2014fully} achieves $20.46\%$ on P
 \paragraph{Training time} Fine-tuning our network on PASCAL VOC 2012 takes about 10
 hours on a NVIDIA Tesla K40 GPU. All our implementations are based on the public available source Caffe \citep{jia2014caffe}.
 
+\paragraph{Qualitative results} We provide visual comparisons between our proposed models in Fig.~\ref{fig:ValResults}. The results with exploiting only weak labels (DeepLab-CRF-Adaweak) are relatively noisy compared to other methods. Training the model with only Bbox-Baseline (DeepLab-CRF-Bbox-Baseline) gives very crude results, while the results from the model (DeepLab-CRF-Bbox-DenseCRF) trained with the estimated segmentation by Bbox-DenseCRF are visually better. Jointly training the model (DeepLab-CRF-StrongWeak) with a small number of full annotations and many weak annotations can further improve the results qualitatively. The results from the model (DeepLab-CRF-COCO) trained with both strong annotations from PASCAL and MS-COCO are the best.
 
 \begin{table}
   \centering
@@ -114,7 +116,17 @@ hours on a NVIDIA Tesla K40 GPU. All our implementations are based on the public
 \end{table}
 
 \subsection{Evaluation on Test set}
-After setting the model choices on the validation set, we evaluate our variant models on the PASCAL VOC 2012 official test set.
+After setting the model choices on the validation set, we evaluate our variant models on the PASCAL VOC 2012 official test set. The results from our models along with other state-of-art models are listed in Tab.~\ref{tab:voc2012}. 
+
+Given only weak labels, our DeepLab-CRF-Adaweak is better than Idiap-base+ILP+sppxl \citep{pinheiro2014weakly}. 
+
+In the context of bounding box annotations, training our models with the segmentation inferred by Bbox-DenseCRF is $6.2\%$ better than with crude segmentation from Bbox-Baseline. Note that our DeepLab-CRF-Bbox-DenseCRF is comparable to other fully supervised models, such as Hypercolumn-SDS \citep{hariharan2014hypercolumns}.
+
+Our DeepLab-CRF-StrongWeak takes use of both strong and weak annotations during training. DeepLab-CRF-StrongWeak1 exploits 1464 fully annotated images (PASCAL train set), while DeepLab-CRF-StrongWeak2 uses 2913 fully annotated images (PASCAL trainval set). DeepLab-CRF-StrongWeak1 has better performance (absolute $22.9\%$ improvement) than Idap-base+ILP+reg, showing that directly leveraging fully annotated images during training is better than resorting to some region proposal algorithms. Note that DeepLab-CRF-StrongWeak2 delivers the same performance as DeepLab-CRF \citep{chen2014semantic}, which is trained with about 12K fully annotated images. Furthermore, our DeepLab-CRF-StrongWeak2 outperforms many fully supervised models, including TTI-Zoomout-16 \citep{mostajabi2014feedforward}, FCN-8s \citep{long2014fully}, and MSRA-CFM \citep{dai2014convolutional}.
+
+Last, our DeepLab-CRF-COCO is fine-tuned on MS-COCO dataset before fine-tuning on PASCAL augmented trainval set. This model sets a new state-of-art result.
+
+
 
 \begin{table}[t]
   \centering
