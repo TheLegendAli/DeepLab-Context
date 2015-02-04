@@ -1,5 +1,22 @@
 \section{Experimental Evaluation}
+\paragraph{Dataset} Our proposed models are evaluated on the PASCAL VOC 2012 segmentation benchmark \citep{everingham2014pascal}, consisting of 20 foreground object classes and one background class. The original dataset contains $1,464$, $1,449$, and $1,456$ images for training, validation, and test, respectively. We use the extra annotations provided by \citet{hariharan2011semantic}, resulting in $10,582$ training images. The performance is measured in terms of pixel intersection-over-union (IOU) averaged across the 21 classes. 
 
+\paragraph{Training} Our proposed models are built on top of the ``DeepLab'' and ``DeepLab-CRF'' models proposed by \citep{chen2014semantic}, which is composed of two main components: DCNN and Dense Conditional Random Field (DenseCRF) \citep{krahenbuhl2011efficient}. Similarly, we adopt piecewise training, decoupling the DCNN and CRF training stages, assuming the unary terms provided by the DCNN are fixed during CRF training. 
+
+For DCNN training we employ the VGG-16 netwok which has been pre-trained on ImageNet. We fine-tuned the VGG-16 network on the VOC 21-way classification task by stochastic gradient descent on the cross-entropy loss function. We use a mini-batch of 20 images and initial learning rate of $0.001$ ($0.01$ for the final classifier layer), multiplying the learning rate by 0.1 at every 3000 iterations. We use momentum of $0.9$ and a weight decay of $0.0005$.
+
+After the DCNN has been fine-tuned, we cross-validate the parameters of the Dense CRF model. The cross-validation is performed on a small subset of the validation set (we use 100 images). We use 10 iterations for the efficient mean field inference algorithm \citep{krahenbuhl2011efficient}. 
+
+\subsection{Evaluation on Validation set}
+The evaluations of our proposed models are mainly conducted on the PASCAL official validation set. 
+
+\paragraph{Pixel Annotations}
+\paragraph{Image Annotatins}
+\paragraph{Pixel+Image Annotations}
+\paragraph{Bounding Box (Bbox) Annotations}
+
+\subsection{Evaluation on Test set}
+After setting the model choices on the validation set, we evaluate our variant models on the PASCAL VOC 2012 official test set.
 
 \begin{table}
   \centering
