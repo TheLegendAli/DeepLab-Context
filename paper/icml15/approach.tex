@@ -1,4 +1,4 @@
-\section{Proposed Method}
+\section{Proposed Methods}
 
 \subsection{The DeepLab CNN + CRF Model for Semantic Image Segmentation}
 
@@ -137,19 +137,79 @@ segmentation and the performance of such models trained on weak labels
 significantly lags their counterparts trained on pixel-level
 annotations, as explained in Section~\ref{sec:experiments}.
 
-\paragraph{Censored Expectation-Maximization for Weakly-Labeled Training}
+\paragraph{Adapting Expectation-Maximization for Weakly-Labeled Training}
 
-We propose an alternative 
+We propose an alternative training procedure based on a modified
+Expectation-Maximization (EM) algorithm adapted to our weakly-labeled
+image segmentation setting.
+
+In this setting, we consider the pixel-level semantic labels
+$\{l_i\}_{i=1}^N$ as latent variables. We incorporate the image-level
+semantic labels as side-information that biases the E-step of the EM
+algorithm, as detailed in Algorithm~\ref{algo:em_fixed_bias} and
+illustrated in Figure~\ref{fig:model_train_image}. The positive
+foreground and background biases $c_f$ and $c_b$ favor the score maps
+corresponding to labels present in the image according to the
+image-level weak annotation. We have obtained better results by
+choosing $c_f > c_b$, slightly favoring foreground objects over the
+background.
+
+\begin{algorithm}[!htbp]
+  \centering
+  \begin{algorithmic}[1]
+    \algrenewcommand\algorithmicrequire{\textbf{Input:}}
+    \Require CNN parameters $\theta$ and biases $c_f, c_b > 0$.
+    \algrenewcommand\algorithmicrequire{\textbf{E-Step:}}
+    \Require For each image position $i$
+    \State $\hat{f}_i (x; \theta) = f_i(x; \theta) + c_f$, if label $x$ present \Comment{FG bias}
+    \State $\hat{f}_i (x; \theta) = f_i(x; \theta) + c_b$, if $x$ is BG label \Comment{BG bias}
+    \State $\hat{f}_i (x; \theta) = f_i(x; \theta)$, if label $x$ not present
+    \State $\hat{l}_i = \argmax_i \hat{f}_i (x; \theta)$ \Comment{Hard assignments}
+    \algrenewcommand\algorithmicrequire{\textbf{M-Step:}}
+    \Require
+    \State $\hat{L}(\theta) = \frac{1}{N} \sum_{i = 1}^N \log P_i(\hat{l}_i; \theta)$ \Comment{Expected loss}
+    \State Update $\theta$ by SGD with momentum on $\hat{L}(\theta)$
+    \end{algorithmic}
+  \caption{Weakly-Supervised EM (fixed bias version)}
+  \label{algo:em_fixed_bias}
+\end{algorithm}
 
 \begin{figure}[htbp!]
   \centering
   \includegraphics[width=0.9\linewidth]{fig/model_train_image.pdf} 
   \caption{DeepLab model training using image-level labels by
-    censored Expectation-Maximization.}
+    biased Expectation-Maximization.}
   \label{fig:model_train_image}
 \end{figure}
 
-\subsection{Model Training on a Combination of Fully and Weakly Annotated Images}
+We have also experimented with an adaptive variant of
+Algorithm~\ref{algo:em_fixed_bias} in which the biases are chosen
+adaptively per image so as a pre-defined proportion of the image area
+is assigned to the foreground object class. This acts as a hard
+constraint that explicitly prevents the background score from
+prevailing in the whole image. As reported in the experimental
+section, we have found this adaptive variant to perform better in the
+purely weakly supervised scenario, whereas the fixed bias variant
+works best in the presense of both weak and strong annotations
+discussed next.
+
+\subsection{Model Training with a Combination of Fully and Weakly Annotated Images}
+
+In engineering practice, we often have access to a large number of
+weakly image-level annotated images and can only afford to procure
+detailed pixel-level annotations for a small fraction of these
+images. We propose to handle this hybrid training scenario by
+combining the methods presented in the previous sections, as
+illustrated in Figure~\ref{fig:model_illustrations_twoEnd}. In SGD
+training of our deep CNN models, we bundle to each mini-batch a fixed
+proportion of strongly/ weakly annotated images, and employ our
+fixed-bias EM algorithm in estimating at each iteration the latent
+semantic segmentations for the weakly annotated images. We demonstrate
+in Section~\ref{sec:experiments} that one needs to annotate in
+detail at the pixel-level only a fraction of the dataset and use
+image-level labels for the rest of it to achieve the same level of
+performance with a DeepLab model trained with the whole dataset fully
+annotated.
 
 \begin{figure}[htbp!]
   \centering
@@ -161,7 +221,23 @@ We propose an alternative
 
 \subsection{Exploiting Annotations Across Datasets}
 
-
+Finally, we discuss how we can exploit annotations across different
+datasets, also allowing for the possibility annotations to be in part
+weak and in part strong. For concreteness, consider also leveraging
+the 81-label MS COCO dataset in learning the DeepLab model for
+21-label Pascal VOC 2012 segmentation. We have experimented with the
+following scenarios:
+\begin{enumerate}
+\item Pre-train DeepLab on MS-COCO, then replace the top-level
+  classifiers weights and fine-tune on Pascal VOC 2012, using strong
+  labels in both datasets.
+\item Jointly train DeepLab on MS-COCO and Pascal VOC 2012 sharing
+  the top-level classifier weights for the common classes, using
+  strong labels in both datasets.
+\item Jointly train DeepLab on MS-COCO and Pascal VOC 2012 sharing
+  the top-level classifier weights for the common classes, using a
+  combination of strong and weak labels.
+\end{enumerare}
 
  %%% Local Variables:
  %%% mode: latex
