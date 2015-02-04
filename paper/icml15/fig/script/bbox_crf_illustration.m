@@ -1,27 +1,31 @@
+clear all; close all;
+
 addpath('~/workspace/ext/export_fig');
 
 load('pascal_seg_colormap.mat');
 
-img_fn = '2010_002137';
+img_fn = '2009_002382';
 
 jpeg_folder = '~/dataset/PASCAL/VOCdevkit/VOC2012/JPEGImages';
-bbox_folder = '~/dataset/PASCAL/VOCdevkit/VOC2012/SegmentationClass';
+seg_cls_folder = '~/dataset/PASCAL/VOCdevkit/VOC2012/SegmentationClass';
+seg_ins_folder = '~/dataset/PASCAL/VOCdevkit/VOC2012/SegmentationObject';
 
 img   = imread(fullfile(jpeg_folder, [img_fn, '.jpg']));
-bbox = imread(fullfile(bbox_folder, [img_fn '.png']));
+seg_cls = imread(fullfile(seg_cls_folder, [img_fn '.png']));
+seg_ins = imread(fullfile(seg_ins_folder, [img_fn '.png']));
 
-labels = unique(bbox(:));
+[inst_label, ~, ~] = unique([seg_ins(:), seg_cls(:)], 'rows');
 
 figure(1), imshow(img), hold on;
 
-for i = 1 : length(labels)
-    label = labels(i);
+for i = 1 : size(inst_label, 1)
+    label = inst_label(i, 2);
     
     if label == 0 || label == 255
         continue;
     end
     
-    [row col] = find(bbox == label);
+    [row col] = find(seg_ins == i-1);
     
     min_row = min(row);
     max_row = max(row);
@@ -37,5 +41,5 @@ for i = 1 : length(labels)
     
 end
 
-fn = fullfile('..', 'bbox_crf_illustration.jpg');
+fn = fullfile('..', [img_fn '.jpg']);
 export_fig(fn);

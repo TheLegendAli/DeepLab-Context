@@ -1,5 +1,5 @@
 \section{Experimental Evaluation}
-\paragraph{Dataset} Our proposed models are evaluated on the PASCAL VOC 2012 segmentation benchmark \citep{everingham2014pascal}, consisting of 20 foreground object classes and one background class. The performance is measured in terms of pixel intersection-over-union (IOU) averaged across the 21 classes. The original PASCAL VOC 2012 dataset contains $1,464$, $1,449$, and $1,456$ images for training, validation, and test, respectively. We use the extra annotations provided by \citet{hariharan2011semantic}, resulting in $10,582$ training images. We also take use of the abundant annotations provided by the MS-COCO dataset \citep{lin2014microsoft}, which contains $123,287$ images in the trainval set. MS-COCO dataset currently has $80$ foreground object classes and one background class.
+\paragraph{Dataset} Our proposed models are evaluated on the PASCAL VOC 2012 segmentation benchmark \citep{everingham2014pascal}, consisting of 20 foreground object classes and one background class. The performance is measured in terms of pixel intersection-over-union (IOU) averaged across the 21 classes. The original PASCAL VOC 2012 dataset contains $1464$, $1449$, and $1456$ images for training, validation, and test, respectively. We use the extra annotations provided by \citet{hariharan2011semantic}, resulting in $10,582$ training images. We also take use of the abundant annotations provided by the MS-COCO dataset \citep{lin2014microsoft}, which contains $123,287$ images in the trainval set. MS-COCO dataset currently has $80$ foreground object classes and one background class.
 
 \paragraph{Training} Our proposed models are built on top of the ``DeepLab'' and ``DeepLab-CRF'' models proposed by \citep{chen2014semantic}, which is composed of two main components: DCNN and Dense Conditional Random Field (DenseCRF) \citep{krahenbuhl2011efficient}. Similarly, we adopt piecewise training, decoupling the DCNN and CRF training stages, assuming the unary terms provided by the DCNN are fixed during CRF training. 
 
@@ -60,7 +60,7 @@ The evaluations of our proposed models are mainly conducted on the PASCAL offici
     \includegraphics[width=0.21\linewidth]{fig/erode_bbox/gt/2009_002382.png} & 
     \includegraphics[width=0.21\linewidth]{fig/erode_bbox/bbox/2009_002382.png} & 
     \includegraphics[width=0.21\linewidth]{fig/erode_bbox/crf/2009_002382.png} \\    
-    {\scriptsize Image} & {\scriptsize Ground-Truth} & {\scriptsize Bbox-Baseline} & {\scriptsize Bbox-DenseCRF}
+    {\scriptsize Image with Bbox} & {\scriptsize Ground-Truth} & {\scriptsize Bbox-Baseline} & {\scriptsize Bbox-DenseCRF}
   \end{tabular}
   \caption{{\bf Segmentation estimation for bounding box annotations.} We show three examples from easy to hard.}
   \label{fig:bbox_illustration}
@@ -84,7 +84,13 @@ The evaluations of our proposed models are mainly conducted on the PASCAL offici
 \paragraph{Image Annotatins}
 \paragraph{Pixel+Image Annotations}
 
-\paragraph{Comparison with State-of-art} We herein compare our proposed models with other state-of-art methods in the context of weakly supervised learning. We list in Tab.~\ref{tab:weak_state_of_art_val} the comparable methods side-by-side. The methods proposed by \citet{pinheiro2014weakly} are prefixed by ``Idiap-''. Note that the method proposed by \citet{pathak2014fully} achieves $20.46\%$ on PASCAL VOC 2011 validation set (a subset of VOC 2012).
+\paragraph{Comparison with State-of-art} We herein compare our proposed models with other state-of-art methods in the context of weakly supervised learning. We list in Tab.~\ref{tab:weak_state_of_art_val} the comparable methods side-by-side. The methods proposed by \citet{pinheiro2014weakly} are prefixed by ``Idiap-''. Our proposed methods consistently outperformed their methods. Our DeepLab-Weak is comparable to their Idiap-base, which are trained with only weak labels. Image-Level-Prior (ILP) is incorporated into their base model, similar to our DeepLab-Adaweak which dynamically weights DCNN score maps w.r.t. weak labels. To smooth the prediction results, they proposed to use (1) superpixels (denoted as sppxl) or (2) region proposals (denoted as seg). The superpixel smoothing is similar to the Dense CRF we employed, both trying to model the long-range correlation between pixels. The region proposal algorithm (MCG \citep{arbelaez2014multiscale}) they employed are elaborate smoothing method, which has been trained on thousands of fully annotated images. On the other hand, our proposed method Deeplab-CRF-StrongWeak shows that our model can attain much better results by directly training the models with both strong and weak annotations.
+
+Note that the method proposed by \citet{pathak2014fully} achieves $20.46\%$ on PASCAL VOC 2011 validation set (a subset of VOC 2012).
+
+\paragraph{Training time} Fine-tuning our network on PASCAL VOC 2012 takes about 10
+hours on a NVIDIA Tesla K40 GPU. All our implementations are based on the public available source Caffe \citep{jia2014caffe}.
+
 
 \begin{table}
   \centering
@@ -94,14 +100,14 @@ The evaluations of our proposed models are mainly conducted on the PASCAL offici
     Idiap-base   & 17.8 \\
     DeepLab-Weak & 20.3 \\
     \hline \hline
-    Idiap-base+ILP & 32.6 \\
+    Idiap-base+ILP  & 32.6 \\
     DeepLab-Adaweak & 34.2 \\
     \hline \hline
     Idiap-base+ILP+sppxl & 36.6 \\
     DeepLab-CRF-Adaweak  & 38.2 \\
     \hline \hline
-    Idia-base+ILP+seg    & 42.0 \\
-    DeepLabe-CRF-StrongWeak & 61.9 \\
+    Idiap-base+ILP+seg       & 42.0 \\
+    DeepLab-CRF-StrongWeak   & 61.9 \\
     \hline
   \end{tabular}
   \label{tab:weak_state_of_art_val}
@@ -133,11 +139,11 @@ After setting the model choices on the validation set, we evaluate our variant m
     \hline
     9,582    &  1,000  & 56.79  & 60.48   \\
     \hline
-    9,118    &  1,464  & {\bf 58.30}  & {\bf 61.90}   \\
+      0      &  1,464  & 54.77  & 57.62   \\
     \hline
     5,000    &  1,464  & 57.02  & 60.48   \\
     \hline
-      0      &  1,464  & 54.77  & 57.62   \\
+    9,118    &  1,464  & {\bf 58.30}  & {\bf 61.90}   \\
     \hline
   \end{tabular}  
   }
@@ -250,7 +256,7 @@ After setting the model choices on the validation set, we evaluate our variant m
     \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/bbox_crf/2007_001175.png} &
     \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/strongweak/2007_001175.png} &
     \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/cocomix/2007_001175.png} \\
-    Image & adaweak & bbox & bbox-crf & strongweak & cocomix \\
+    {\scriptsize Image} & {\scriptsize DeepLab-CRF-Adaweak} & {\scriptsize DeepLab-CRF-Bbox-Baseline} & {\scriptsize DeepLab-CRF-Bbox-DenseCRF} & {\scriptsize DeepLab-CRF-StrongWeak} & {\scriptsize DeepLab-CRF-COCO} \\
   \end{tabular}
   }
   %\vspace{-0.3cm}
