@@ -3,25 +3,26 @@
 \subsection{The DeepLab CNN + CRF Model for Semantic Image Segmentation}
 
 Our starting point is the recently proposed DeepLab model for semantic
-image segmentation \cite{chen2014semantic}, illustrated in
-Figure~\ref{fig:model_test}. This model applies a deep CNN in a
-sliding window fashion to generate for each image dense segmentation
-score maps 
+image segmentation of \citet{chen2014semantic}, illustrated in
+Figure~\ref{fig:model_test}. This model applies a deep CNN to an image
+in a sliding window fashion to generate score maps for each pixel
+location $i = 1, \dots, N$
 \begin{equation}
   \label{eq:scores}
-  f_i(x_i; \theta) \,,
+  f_i(x; \theta) \,,
   \quad \mathrm{with} \quad
-  P_i(x_i; \theta) \propto \exp \left( f_i(x_i; \theta) \right)
+  P_i(x; \theta) \propto \exp \left( f_i(x; \theta) \right)
 \end{equation}
-where $x_i \in \mathcal{L}$ is the assignment of the $i$-th pixel to
-the discrete candidate semantic label set $\mathcal{L}$, $\theta$
-is the vector of CNN model parameters, and normalization ensures
-that $\sum_{l \in \mathcal{L}} P_i(l; \theta) = 1$. Score map
-post-processing by means of a fully-connected CRF (Dense CRF)
+where $x \in \mathcal{L}$ is the assignment to the discrete candidate
+semantic label set $\mathcal{L}$, $\theta$ is the vector of CNN model
+parameters, and normalization ensures that $\sum_{x \in  \mathcal{L}}
+P_i(x; \theta) = 1$ for every pixel $i$. Score map post-processing by
+means of a fully-connected CRF (Dense CRF)
 \cite{krahenbuhl2011efficient} significantly improves segmentation
 performance near object boundaries. Computation sharing in the
 convolutional layers by means of the hole algorithm and careful
-network crafting make the method computationally efficient.
+network crafting as detailed in \citet{chen2014semantic} make the
+method computationally efficient.
 
 \begin{figure}[htbp!]
   \centering
@@ -34,7 +35,7 @@ network crafting make the method computationally efficient.
 \label{sec:train_pixel}
 
 The network parameters $\theta$ are initialized from an
-Imagenet-pretrained deep CNN model \cite{simonyan2014very} and
+Imagenet-pretrained deep CNN model \citep{simonyan2014very} and
 fine-tuned by stochastic gradient descent so as to minimize the
 average log-loss 
 \begin{equation}
@@ -44,7 +45,7 @@ average log-loss
 between the model predictions and the pixel-wise ground truth
 labels $\{l_i\}_{i = 1}^N$, as illustrated in
 Figure~\ref{fig:model_train_pixel}. Similarly to
-\cite{chen2014semantic}, we do not include the Dense CRF module into
+\citet{chen2014semantic}, we do not include the Dense CRF module into
 the training pipeline for simplicity and speed during training.
 
 Learning the DeepLab model on fully annotated images works very well
@@ -53,7 +54,7 @@ challenging PASCAL VOC 2012 image segmentation benchmark. However, the
 need for such detailed annotations makes it harder to gather very
 large training datasets and makes it difficult to train the model
 for new domains, especially when the number of candidate labels
-(cardinality of the label set $\mathcal{L}$) is big.
+(\ie, the cardinality of the label set $\mathcal{L}$) is large.
 
 \begin{figure}[htbp!]
   \centering
@@ -92,7 +93,53 @@ multiple bounding boxes to the one that has the smallest area.
 
 \subsection{Model Training Using Weak Image-Level Labels}
 
+Training the DeepLab segmentation model using only image-level labels
+is significantly more challenging.
 
+\paragraph{Previous MIL Approaches and their Limitations}
+
+Previous related CNN literature employs multiple instance learning
+variants to address the weak supervision problem, but has demonstrated
+limited success in learning accurate segmentation models. 
+
+In particular, recent work by \citet{pathak2014fully} attempts to
+learn the CNN parameters for the segmentation model by adapting an MIL
+formulation previously employed for image classification tasks
+\citep{oquab2014weakly, papandreou2014untangling}. More specifically,
+during training they compute an aggregate image-level response for
+each class $x$ as the maximum class score across all pixel positions
+$i$
+\begin{equation}
+  \label{eq:mil}
+  \bar{f}(x; \theta) = \max_i f_i(x; \theta) \,
+  \quad \mathrm{and} \quad
+  \bar{P}(x; \theta) \propto \exp \left( \bar{f}(x; \theta) \right)
+\end{equation}
+which is then combined with the image-level ground-truth label $l$ to
+compute the whole-image loss $\bar{L}(\theta) = \log \bar{P}(l;
+\theta)$.
+
+There are several limitations to this MIL-based approach to the image
+segmentation problem. \emph{First}, the model does not explicitly
+encourage good localization during training, since it suffices to give
+strong response for the correct class anywhere within the
+image. \emph{Second}, this MIL formulation does not promote good
+object coverage. For example, it is often sufficient to learn a good
+face detector to reliably determine whether an image contains a
+person. However, this face detector will give low false-negative
+responses on the rest of the human body and is thus not appropriate
+for segmenting whole persons. \emph{Third}, network back-propagation
+only activates a single path per label through the maximally
+responding pixel position ignoring a large portion of the image
+content, thus slowing down training. These issues have severely
+undermined the success of previous CNN/MIL approaches to image
+segmentation and the performance of such models trained on weak labels
+significantly lags their counterparts trained on pixel-level
+annotations, as explained in Section~\ref{sec:experiments}.
+
+\paragraph{Censored Expectation-Maximization for Weakly-Labeled Training}
+
+We propose an alternative 
 
 \begin{figure}[htbp!]
   \centering
@@ -111,6 +158,8 @@ multiple bounding boxes to the one that has the smallest area.
     and image-level (weak labels) annotations.}
   \label{fig:model_illustrations_twoEnd}
 \end{figure}
+
+\subsection{Exploiting Annotations Across Datasets}
 
 
 
