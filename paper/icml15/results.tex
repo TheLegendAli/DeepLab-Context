@@ -84,7 +84,28 @@ The evaluations of our proposed models are mainly conducted on the PASCAL offici
 \paragraph{Image Annotatins}
 \paragraph{Pixel+Image Annotations}
 
-\paragraph{Comparison with State-of-art} We herein compare our proposed models with other state-of-art methods in the context of weakly supervised learning. We list in Tab.~\ref{tab:weak_state_of_art_val} the comparable methods side-by-side. The method proposed by \citet{pathak2014fully} is denoted by ``Berkeley-MIL'', while the methods proposed by \citet{pinheiro2014weakly} are prefixed by ``Idiap-''.
+\paragraph{Comparison with State-of-art} We herein compare our proposed models with other state-of-art methods in the context of weakly supervised learning. We list in Tab.~\ref{tab:weak_state_of_art_val} the comparable methods side-by-side. The methods proposed by \citet{pinheiro2014weakly} are prefixed by ``Idiap-''. Note that the method proposed by \citet{pathak2014fully} achieves $20.46\%$ on PASCAL VOC 2011 validation set (a subset of VOC 2012).
+
+\begin{table}
+  \centering
+  \caption{{\bf Comparison with state-of-art methods on val set.}}
+  \begin{tabular}{|l|c|}
+    \hline
+    Idiap-base   & 17.8 \\
+    DeepLab-Weak & 20.3 \\
+    \hline \hline
+    Idiap-base+ILP & 32.6 \\
+    DeepLab-Adaweak & 34.2 \\
+    \hline \hline
+    Idiap-base+ILP+sppxl & 36.6 \\
+    DeepLab-CRF-Adaweak  & 38.2 \\
+    \hline \hline
+    Idia-base+ILP+seg    & 42.0 \\
+    DeepLabe-CRF-StrongWeak & 61.9 \\
+    \hline
+  \end{tabular}
+  \label{tab:weak_state_of_art_val}
+\end{table}
 
 \subsection{Evaluation on Test set}
 After setting the model choices on the validation set, we evaluate our variant models on the PASCAL VOC 2012 official test set.
@@ -251,8 +272,8 @@ After setting the model choices on the validation set, we evaluate our variant m
 \hline 
 Method          & bkg &  aero & bike & bird & boat & bottle& bus & car  &  cat & chair& cow  &table & dog  & horse & mbike& person& plant&sheep& sofa &train & tv   & mean \\
 \hline \hline
-Idiap-sppxl      & 74.7 & 38.8 & 19.8 & 27.5 & 21.7 & 32.8 & 40.0 & 50.1 & 47.1 & 7.2 & 44.8 & 15.8 & 49.4 & 47.3 & 36.6 & 36.4 & 24.3 & 44.5 & 21.0 & 31.5 & 41.3 & 35.8 \\
-Idiap-seg        & 78.7 & 48.0 & 21.2 & 31.1 & 28.4 & 35.1 & 51.4 & 55.5 & 52.8 & 7.8 & 56.2 & 19.9 & 53.8 & 50.3 & 40.0 & 38.6 & 27.8 & 51.8 & 24.7 & 33.3 & 46.3 & 40.6 \\
+Idiap-base+ILP+sppxl      & 74.7 & 38.8 & 19.8 & 27.5 & 21.7 & 32.8 & 40.0 & 50.1 & 47.1 & 7.2 & 44.8 & 15.8 & 49.4 & 47.3 & 36.6 & 36.4 & 24.3 & 44.5 & 21.0 & 31.5 & 41.3 & 35.8 \\
+Idiap-base+ILP+seg        & 78.7 & 48.0 & 21.2 & 31.1 & 28.4 & 35.1 & 51.4 & 55.5 & 52.8 & 7.8 & 56.2 & 19.9 & 53.8 & 50.3 & 40.0 & 38.6 & 27.8 & 51.8 & 24.7 & 33.3 & 46.3 & 40.6 \\
 \hline \hline
 Hypercolumn-SDS & 88.9 & 68.4 & 27.2 & 68.2 & 47.6 & 61.7 & 76.9 & 72.1 & 71.1 & 24.3 & 59.3 & 44.8 & 62.7 & 59.4 & 73.5 & 70.6 & 52.1 & 63.0 & 38.1 & 60.0 & 54.1 & 59.2 \\   
 MSRA-CFM        & -    & 75.7 & 26.7 & 69.5 & 48.8 & 65.6 & 81.0 & 69.2 & 73.3 & 30.0 & 68.7 & 51.5 & 69.1 & 68.1 & 71.7 & 67.5 & 50.4 & 66.5 & 44.4 & 58.9 & 53.5 & 61.8 \\
@@ -260,7 +281,7 @@ FCN-8s          & -    & 76.8 & 34.2 & 68.9 & 49.4 & 60.3 & 75.3 & 74.7 & 77.6 &
 TTI-Zoomout-16  & 89.8 & 81.9 & 35.1 & 78.2 & 57.4 & 56.5 & 80.5 & 74.0 & 79.8 & 22.4 & 69.6 & 53.7 & 74.0 & 76.0 & 76.6 & 68.8 & 44.3 & 70.2 & 40.2 & 68.9 & 55.3 & 64.4 \\
 DeepLab-CRF     & 92.1 & 78.4 & 33.1 & 78.2 & 55.6 & 65.3 & 81.3 & 75.5 & 78.6 & 25.3 & 69.2 & 52.7 & 75.2 & 69.0 & 79.1 & 77.6 & 54.7 & 78.3 & 45.1 & 73.3 & 56.2 & 66.4 \\ 
 \hline \hline
-DeepLab-CRF-Weak & 76.4 & 37.0 & 17.6 & 38.2 & 26.6 & 37.1 & 51.9 & 43.3 & 48.1 & 16.8 & 44.6 & 27.9 & 46.5 & 46.2 & 46.6 & 30.3 & 28.9 & 42.0 & 30.0 & 43.8 & 39.3 & 39.0 \\
+DeepLab-CRF-Adaweak & 76.4 & 37.0 & 17.6 & 38.2 & 26.6 & 37.1 & 51.9 & 43.3 & 48.1 & 16.8 & 44.6 & 27.9 & 46.5 & 46.2 & 46.6 & 30.3 & 28.9 & 42.0 & 30.0 & 43.8 & 39.3 & 39.0 \\
 DeepLab-CRF-Bbox-Baseline    & 82.9 & 43.6 & 22.5 & 50.5 & 45.0 & 62.5 & 76.0 & 66.5 & 61.2 & 25.3 & 55.8 & 52.1 & 56.6 & 48.1 & 60.1 & 58.2 & 49.5 & 58.3 & 40.7 & 62.3 & 61.1 & 54.2 \\
 DeepLab-CRF-Bbox-DenseCRF    & 89.9 & 69.3 & 28.2 & 71.9 & 43.4 & 59.7 & 74.3 & 69.0 & 76.7 & 23.5 & 64.6 & 47.1 & 71.0 & 64.0 & 72.8 & 72.4 & 50.4 & 72.0 & 40.2 & 63.4 & 44.5 & 60.4 \\
 DeepLab-CRF-StrongWeak1(1.5K) & 91.4 & 77.3 & 38.2 & 73.9 & 47.6 & 57.9 & 80.0 & 76.4 & 74.7 & 22.8 & 70.0 & 42.0 & 70.9 & 71.9 & 79.1 & 70.7 & 47.8 & 77.1 & 36.1 & 68.1 & 59.8 & 63.5 \\
