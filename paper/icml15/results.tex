@@ -1,4 +1,22 @@
 \section{Experimental Evaluation}
+\paragraph{Dataset} Our proposed models are evaluated on the PASCAL VOC 2012 segmentation benchmark \citep{everingham2014pascal}, consisting of 20 foreground object classes and one background class. The original dataset contains $1,464$, $1,449$, and $1,456$ images for training, validation, and test, respectively. We use the extra annotations provided by \citet{hariharan2011semantic}, resulting in $10,582$ training images. The performance is measured in terms of pixel intersection-over-union (IOU) averaged across the 21 classes. 
+
+\paragraph{Training} Our proposed models are built on top of the ``DeepLab'' and ``DeepLab-CRF'' models proposed by \citep{chen2014semantic}, which is composed of two main components: DCNN and Dense Conditional Random Field (DenseCRF) \citep{krahenbuhl2011efficient}. Similarly, we adopt piecewise training, decoupling the DCNN and CRF training stages, assuming the unary terms provided by the DCNN are fixed during CRF training. 
+
+For DCNN training we employ the VGG-16 netwok which has been pre-trained on ImageNet. We fine-tuned the VGG-16 network on the VOC 21-way classification task by stochastic gradient descent on the cross-entropy loss function. We use a mini-batch of 20 images and initial learning rate of $0.001$ ($0.01$ for the final classifier layer), multiplying the learning rate by 0.1 at every 3000 iterations. We use momentum of $0.9$ and a weight decay of $0.0005$.
+
+After the DCNN has been fine-tuned, we cross-validate the parameters of the Dense CRF model. The cross-validation is performed on a small subset of the validation set (we use 100 images). We use 10 iterations for the efficient mean field inference algorithm \citep{krahenbuhl2011efficient}. 
+
+\subsection{Evaluation on Validation set}
+The evaluations of our proposed models are mainly conducted on the PASCAL official validation set. 
+
+\paragraph{Pixel Annotations}
+\paragraph{Image Annotatins}
+\paragraph{Pixel+Image Annotations}
+\paragraph{Bounding Box (Bbox) Annotations}
+
+\subsection{Evaluation on Test set}
+After setting the model choices on the validation set, we evaluate our variant models on the PASCAL VOC 2012 official test set.
 
 \begin{table}
   \centering
@@ -6,8 +24,6 @@
   \begin{tabular}{| c | c | c | c |}
     \hline
     \# PASCAL & \# MSCOCO & DeepLab & DeepLab-CRF \\
-    \hline
-    1,464  &   0     & 54.77 & 57.62  \\
     \hline
     10,582 &   0     & 59.85 & 63.93  \\
     \hline
@@ -22,33 +38,79 @@
   \caption{{\bf Pixel+Image Annotations.} }
   \scalebox{0.8}{
   %\addtolength{\tabcolsep}{-2.0pt}
-  \begin{tabular}{|c|c|c|c|c|}
+  \begin{tabular}{|c|c|c|c|}
     \hline
-    \multicolumn{2}{|c|}{{\bf Weak}} & {\bf Strong} & \multirow{2}{*}{DeepLab} & \multirow{2}{*}{DeepLab-CRF}\\
-    \cline{1-3}
-    \# PASCAL & \# MSCOCO & \# PASCAL & & \\
+    {\bf Weak} & {\bf Strong} & \multirow{2}{*}{DeepLab} & \multirow{2}{*}{DeepLab-CRF}\\
+    \cline{1-2}
+    \# PASCAL & \# PASCAL & & \\
     \hline
-    10,582   &    0    &   0    & 20.25  & 20.77   \\
+    10,582   &    0    & 20.25  & 20.77   \\
     \hline
-    10,582   &    0    &   0    & 34.22* & 38.23*  \\
-  %  \hline
-  %    0      &    0    & 1,464  & 54.77  & 57.62   \\
+    10,582   &    0    & 34.22* & 38.23*  \\
     \hline
-    10,382   &    0    & 200    & 44.05  & 47.57   \\
+    10,382   &  200    & 44.05  & 47.57   \\
     \hline
-    10,082   &    0    & 500    & 52.52  & 56.89   \\
+    10,082   &  500    & 52.52  & 56.89   \\
     \hline
-    9,832    &    0    & 750    & 55.04  & 58.82   \\
+    9,832    &  750    & 55.04  & 58.82   \\
     \hline
-    9,582    &    0    & 1,000  & 56.79  & 60.48   \\
+    9,582    &  1,000  & 56.79  & 60.48   \\
     \hline
-    9,118    &    0    & 1,464  & 58.30  & 61.90   \\
+    9,118    &  1,464  & {\bf 58.30}  & {\bf 61.90}   \\
     \hline
-    5,000    &    0    & 1,464  & 57.02  & 60.48   \\      
+    5,000    &  1,464  & 57.02  & 60.48   \\
+    \hline
+      0      &  1,464  & 54.77  & 57.62   \\
     \hline
   \end{tabular}  
   }
   \label{tab:strong_weak_annot}
+\end{table}
+
+\begin{table}[t]
+  \centering
+  \caption{{\bf Pixel+Image Annotations with MSCOCO.} }
+  \scalebox{0.77}{
+  %\addtolength{\tabcolsep}{-2.0pt}
+  \begin{tabular}{|c|c|c|c|c|}
+    \hline
+    {\bf Weak} & \multicolumn{2}{c|}{\bf Strong} & \multirow{2}{*}{DeepLab} & \multirow{2}{*}{DeepLab-CRF}\\
+    \cline{1-3}
+    \# MSCOCO & \# PASCAL & \# MSCOCO & & \\
+    \hline
+      0       & 10,582 & 0       & 59.85 & 63.93 \\
+    \hline
+      123,287 & 10,582 & 0       & 60.41 & 64.44 \\
+    \hline
+      0       & 10,582 & 5,000   & ?     &  ?    \\
+    \hline
+      118,287 & 10,582 & 5,000   & ?     &  ?    \\
+    \hline    
+      0       & 10,582 & 123,287 & 64.51 & 67.98 \\
+    \hline
+  \end{tabular}  
+  }
+  \label{tab:strong_weak_annot_coco}
+\end{table}
+
+\begin{table}
+  \centering
+  \caption{{\bf Segmentation estimation within bounding boxes.} Dense CRF is employed to estimate the ground-truth segmentation. Row 1 to Row 3: difficulty of the task in increasing order.} 
+  \begin{tabular}{c c c c}
+    \includegraphics[width=0.21\linewidth]{fig/erode_bbox/img/2010_004063.jpg} & 
+    \includegraphics[width=0.21\linewidth]{fig/erode_bbox/gt/2010_004063.png} & 
+    \includegraphics[width=0.21\linewidth]{fig/erode_bbox/bbox/2010_004063.png} & 
+    \includegraphics[width=0.21\linewidth]{fig/erode_bbox/crf/2010_004063.png} \\    
+    \includegraphics[width=0.21\linewidth]{fig/erode_bbox/img/2009_002382.jpg} & 
+    \includegraphics[width=0.21\linewidth]{fig/erode_bbox/gt/2009_002382.png} & 
+    \includegraphics[width=0.21\linewidth]{fig/erode_bbox/bbox/2009_002382.png} & 
+    \includegraphics[width=0.21\linewidth]{fig/erode_bbox/crf/2009_002382.png} \\    
+    \includegraphics[width=0.21\linewidth]{fig/erode_bbox/img/2008_004339.jpg} & 
+    \includegraphics[width=0.21\linewidth]{fig/erode_bbox/gt/2008_004339.png} & 
+    \includegraphics[width=0.21\linewidth]{fig/erode_bbox/bbox/2008_004339.png} & 
+    \includegraphics[width=0.21\linewidth]{fig/erode_bbox/crf/2008_004339.png} \\    
+    Image & G.T. & Bbox & Est. G.T.
+  \end{tabular}
 \end{table}
 
 
@@ -81,6 +143,97 @@
     \end{tabular}
   \label{tb:bbox_annot}
 \end{table}
+
+
+\begin{figure*}[!htbp]
+  \centering
+  %\vspace{-1.cm}
+  \scalebox{0.82} {
+  \begin{tabular}{c c c c c c}
+    %\addtolength{\tabcolsep}{-6.5pt}
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/img/2007_000042.jpg} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/adaweak/2007_000042.png} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/bbox/2007_000042.png} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/bbox_crf/2007_000042.png} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/strongweak/2007_000042.png} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/cocomix/2007_000042.png} \\
+    \includegraphics[height=0.122\linewidth]{fig/val_crf_vis/img/2007_002852.jpg} &
+    \includegraphics[height=0.122\linewidth]{fig/val_crf_vis/adaweak/2007_002852.png} &
+    \includegraphics[height=0.122\linewidth]{fig/val_crf_vis/bbox/2007_002852.png} &
+    \includegraphics[height=0.122\linewidth]{fig/val_crf_vis/bbox_crf/2007_002852.png} &
+    \includegraphics[height=0.122\linewidth]{fig/val_crf_vis/strongweak/2007_002852.png} &
+    \includegraphics[height=0.122\linewidth]{fig/val_crf_vis/cocomix/2007_002852.png} \\
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/img/2007_003022.jpg} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/adaweak/2007_003022.png} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/bbox/2007_003022.png} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/bbox_crf/2007_003022.png} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/strongweak/2007_003022.png} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/cocomix/2007_003022.png} \\
+    \includegraphics[height=0.123\linewidth]{fig/val_crf_vis/img/2008_003546.jpg} &
+    \includegraphics[height=0.123\linewidth]{fig/val_crf_vis/adaweak/2008_003546.png} &
+    \includegraphics[height=0.123\linewidth]{fig/val_crf_vis/bbox/2008_003546.png} &
+    \includegraphics[height=0.123\linewidth]{fig/val_crf_vis/bbox_crf/2008_003546.png} &
+    \includegraphics[height=0.123\linewidth]{fig/val_crf_vis/strongweak/2008_003546.png} &
+    \includegraphics[height=0.123\linewidth]{fig/val_crf_vis/cocomix/2008_003546.png} \\
+    \includegraphics[height=0.123\linewidth]{fig/val_crf_vis/img/2008_004363.jpg} &
+    \includegraphics[height=0.123\linewidth]{fig/val_crf_vis/adaweak/2008_004363.png} &
+    \includegraphics[height=0.123\linewidth]{fig/val_crf_vis/bbox/2008_004363.png} &
+    \includegraphics[height=0.123\linewidth]{fig/val_crf_vis/bbox_crf/2008_004363.png} &
+    \includegraphics[height=0.123\linewidth]{fig/val_crf_vis/strongweak/2008_004363.png} &
+    \includegraphics[height=0.123\linewidth]{fig/val_crf_vis/cocomix/2008_004363.png} \\
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/img/2009_001299.jpg} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/adaweak/2009_001299.png} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/bbox/2009_001299.png} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/bbox_crf/2009_001299.png} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/strongweak/2009_001299.png} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/cocomix/2009_001299.png} \\
+    \includegraphics[height=0.123\linewidth]{fig/val_crf_vis/img/2010_004994.jpg} &
+    \includegraphics[height=0.123\linewidth]{fig/val_crf_vis/adaweak/2010_004994.png} &
+    \includegraphics[height=0.123\linewidth]{fig/val_crf_vis/bbox/2010_004994.png} &
+    \includegraphics[height=0.123\linewidth]{fig/val_crf_vis/bbox_crf/2010_004994.png} &
+    \includegraphics[height=0.123\linewidth]{fig/val_crf_vis/strongweak/2010_004994.png} &
+    \includegraphics[height=0.123\linewidth]{fig/val_crf_vis/cocomix/2010_004994.png} \\
+    \includegraphics[height=0.122\linewidth]{fig/val_crf_vis/img/2011_002322.jpg} &
+    \includegraphics[height=0.122\linewidth]{fig/val_crf_vis/adaweak/2011_002322.png} &
+    \includegraphics[height=0.122\linewidth]{fig/val_crf_vis/bbox/2011_002322.png} &
+    \includegraphics[height=0.122\linewidth]{fig/val_crf_vis/bbox_crf/2011_002322.png} &
+    \includegraphics[height=0.122\linewidth]{fig/val_crf_vis/strongweak/2011_002322.png} &
+    \includegraphics[height=0.122\linewidth]{fig/val_crf_vis/cocomix/2011_002322.png} \\
+    \includegraphics[height=0.13\linewidth]{fig/val_crf_vis/img/2007_001630.jpg} &
+    \includegraphics[height=0.13\linewidth]{fig/val_crf_vis/adaweak/2007_001630.png} &
+    \includegraphics[height=0.13\linewidth]{fig/val_crf_vis/bbox/2007_001630.png} &
+    \includegraphics[height=0.13\linewidth]{fig/val_crf_vis/bbox_crf/2007_001630.png} &
+    \includegraphics[height=0.13\linewidth]{fig/val_crf_vis/strongweak/2007_001630.png} &
+    \includegraphics[height=0.13\linewidth]{fig/val_crf_vis/cocomix/2007_001630.png} \\
+    \includegraphics[height=0.15\linewidth]{fig/val_crf_vis/img/2007_005331.jpg} &
+    \includegraphics[height=0.15\linewidth]{fig/val_crf_vis/adaweak/2007_005331.png} &
+    \includegraphics[height=0.15\linewidth]{fig/val_crf_vis/bbox/2007_005331.png} &
+    \includegraphics[height=0.15\linewidth]{fig/val_crf_vis/bbox_crf/2007_005331.png} &
+    \includegraphics[height=0.15\linewidth]{fig/val_crf_vis/strongweak/2007_005331.png} &
+    \includegraphics[height=0.15\linewidth]{fig/val_crf_vis/cocomix/2007_005331.png} \\
+\hline \hline
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/img/2007_000830.jpg} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/adaweak/2007_000830.png} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/bbox/2007_000830.png} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/bbox_crf/2007_000830.png} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/strongweak/2007_000830.png} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/cocomix/2007_000830.png} \\
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/img/2007_001175.jpg} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/adaweak/2007_001175.png} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/bbox/2007_001175.png} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/bbox_crf/2007_001175.png} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/strongweak/2007_001175.png} &
+    \includegraphics[height=0.11\linewidth]{fig/val_crf_vis/cocomix/2007_001175.png} \\
+    Image & adaweak & bbox & bbox-crf & strongweak & cocomix \\
+  \end{tabular}
+  }
+  %\vspace{-0.3cm}
+  \caption{Visualization results on VOC 2012-val. For each row, we show the input image, the segmentation result delivered by adaweak, bbox, bbox-crf, strongweak, coco. The results are refined by DenseCRF. We show difficult examples in the last two rows.} 
+  \label{fig:ValResults}
+\end{figure*}
+
+
+
 
 
 {\color{blue} REMEMBER to put the links (test results) in the supplementary material if main paper has no space.}
