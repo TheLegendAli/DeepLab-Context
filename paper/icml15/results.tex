@@ -1,4 +1,6 @@
 \section{Experimental Evaluation}
+\label{sec:experiments}
+
 \paragraph{Dataset} Our proposed models are evaluated on the PASCAL VOC 2012 segmentation benchmark \citep{everingham2014pascal}, consisting of 20 foreground object classes and one background class. The performance is measured in terms of pixel intersection-over-union (IOU) averaged across the 21 classes. The original PASCAL VOC 2012 dataset contains $1464$, $1449$, and $1456$ images for training, validation, and test, respectively. We use the extra annotations provided by \citet{hariharan2011semantic}, resulting in $10,582$ training images. We also take use of the abundant annotations provided by the MS-COCO dataset \citep{lin2014microsoft}, which contains $123,287$ images in the trainval set. MS-COCO dataset currently has $80$ foreground object classes and one background class.
 
 \paragraph{Training} Our proposed models are built on top of the ``DeepLab'' and ``DeepLab-CRF'' models proposed by \citep{chen2014semantic}, which is composed of two main components: DCNN and Dense Conditional Random Field (DenseCRF) \citep{krahenbuhl2011efficient}. Similarly, we adopt piecewise training, decoupling the DCNN and CRF training stages, assuming the unary terms provided by the DCNN are fixed during CRF training. 
@@ -309,3 +311,8 @@ DeepLabe-CRF-COCO & {\bf 93.2} & {\bf 85.3} & 36.2 & {\bf 84.8} & {\bf 61.2} & {
  \end{tabular}
 } \label{tab:voc2012}
 \end{table*}
+
+ %%% Local Variables:
+ %%% mode: latex
+ %%% TeX-master: "top.tex"
+ %%% End:
