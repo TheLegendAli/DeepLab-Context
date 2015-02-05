@@ -1,6 +1,83 @@
 \section{Introduction}
+\label{sec:intro}
 
-This is introduction.
+Deep Convolutional Neural Networks (DCNNs) have been successfully
+applied to semantic image segmentation tasks
+\citep{farabet2013learning, pinheiro2014recurrent,
+  eigen2014predicting}, recently demonstrating state-of-the-art
+performance on the challenging Pascal VOC 2012 segmentation benchmark
+\citep{chen2014semantic, mostajabi2014feedforward,
+  long2014fully}. Typically, the last few fully connected layers in
+the network are replaced with convolutional layers followed by
+upsampling \citep{long2014fully, papandreou2014untangling} to give
+dense pixel classification. The network parameters are tuned to
+optimize the pixel-wise segmentation accuracy and typically full,
+pixel-wise annotations are required to learn the models. However, it
+is very labor-intensive to collect the full annotations for thousands
+or millions of images. On the other hand, it is relatively easy to
+collect weak annotations, such as image-level labels (i.e.,
+information about which object classes are present) or bounding boxes
+(i.e., coarse object locations).
+
+Training classifiers with only image-level labels for semantic image
+segmentation has been a challenging problem in the
+literature. \citet{duygulu2002object} learned the mapping between
+image regions and image labels by an EM-type
+algorithm. \citet{verbeek2007region} combined Probabilistic Latent
+Semantic Analysis and Markov Random Field to assign labels to square
+patches. A generalized framework to exploit label correlations between
+different images has been introduced in a series of papers
+\citep{vezhnevets2010towards, vezhnevets2011weakly,
+  vezhnevets2012weakly}. \citet{xu2014tell} formulated the problem of
+segmentation using image-level labels as structured prediction with
+latent variables. Our model is most related to \citet{pathak2014fully,
+  pinheiro2014weakly}, which also employ fully convolutional networks
+for weakly supervised semantic segmentation. They both employed
+Multiple Instance Learning (MIL) to leverage the fact that there must
+be at least one pixel that assumes the weak
+annotation. \citet{pathak2014fully} estimated the particular pixel
+from the DCNN output by taking the maximum operation over image
+positions, while \citet{pinheiro2014weakly} adopted Log-Sum-Exp (LSE)
+function to approximate the max function. In contrast, our model
+employs a modified EM algorithm, featuring a censored E-step which
+takes into account the weak labels when inferring the latent image
+segmentations. Moreover, \citet{pinheiro2014weakly} proposed to smooth
+the prediction results by region proposal algorithms (e.g., MCG
+\citep{arbelaez2014multiscale}), which have been trained with fully
+annotated images. Instead of exploiting fully annotated images via
+some region proposal algorithms, we show that directly training our
+model with a combination of few strongly labeled and many weakly
+labeled images can achieve state-of-the-art results.
+
+Another form of weak supervision, bounding box annotations, has been
+utilized for semantic segmentation as well. \citet{xia2013semantic}
+generated segment hypotheses by CPMC \citep{carreira2012cpmc} within
+bounding boxes from object detectors, and graph-cut were employed to
+refine the final segment. \citet{guillaumin2014imagenet} proposed a
+recursive scheme to propagate segmentation by exploiting both
+image-level labels and bounding box annotations in ImageNet
+\citep{deng2009imagenet}. \citet{chen2014beat} attained human-level
+accuracy for car segmentation by taking use of 3D bounding
+boxes. \citet{zhu2014learning} proposed latent expectation loss
+Support Vector Machine to score the positiveness of region proposals
+within bounding boxes. On the other hand, bounding box annotations are
+common in the community of interactive segmentation
+\citep{lempitsky2009image, rother2004grabcut, WuMilcut}. In this work,
+we show that given bounding box annotations, our model is able to
+reach the accuracy with model trained by fully annotated images. 
+
+From the aspect of weakly supervised learning, our work also bears
+similarity to several works. To name a few, \citet{oquab2014weakly}
+fine-tuned an ImageNet-pretrained DCNN on PASCAL VOC image
+classification task. Their method is able to localize objects without
+any strong supervision. \citet{Hoffman14Lsda} proposed to learn the
+adaptation from image classification to object detection for classes
+without bounding box annotations. \citet{cour2011learning} proposed a
+convex learning algorithm by extending multi-class loss functions to
+handle problems with partial labels, in which instance label is not
+available (but only a candidate set of labels). \citet{Lu2013sports}
+proposed an EM algorithm to train a model with weak labels for
+tracking and identifying sports players in videos.
 
  %%% Local Variables:
  %%% mode: latex
