@@ -81,7 +81,7 @@ The evaluations of our proposed models are mainly conducted on the PASCAL offici
   \label{tb:bbox_annot}
 \end{table}
 
-\paragraph{Image Annotatins}
+\paragraph{Image Annotatins} 
 
 \paragraph{Pixel+Image Annotations}
 
@@ -92,7 +92,7 @@ Note that the method proposed by \citet{pathak2014fully} achieves $20.46\%$ on P
 \paragraph{Training time} Fine-tuning our network on PASCAL VOC 2012 takes about 10
 hours on a NVIDIA Tesla K40 GPU. All our implementations are based on the public available source Caffe \citep{jia2014caffe}.
 
-\paragraph{Qualitative results} We provide visual comparisons between our proposed models in Fig.~\ref{fig:ValResults}. The results with exploiting only weak labels (DeepLab-CRF-Adaweak) are relatively noisy compared to other methods. Training the model with only Bbox-Baseline (DeepLab-CRF-Bbox-Baseline) gives very crude results, while the results from the model (DeepLab-CRF-Bbox-DenseCRF) trained with the estimated segmentation by Bbox-DenseCRF are visually better. Jointly training the model (DeepLab-CRF-StrongWeak) with a small number of full annotations and many weak annotations can further improve the results qualitatively. The results from the model (DeepLab-CRF-COCO) trained with both strong annotations from PASCAL and MS-COCO are the best.
+\paragraph{Qualitative results} We provide visual comparisons between our proposed models in Fig.~\ref{fig:ValResults}. The results with exploiting only weak labels (DeepLab-CRF-Adaweak) are relatively noisy compared to other methods. Training the model with only Bbox-Baseline (DeepLab-CRF-Bbox-Baseline) gives very crude results, while the results from the model (DeepLab-CRF-Bbox-DenseCRF) trained with the estimated segmentation by Bbox-DenseCRF are visually better. Jointly training the model (DeepLab-CRF-StrongWeak) with a small number of full annotations and many weak annotations can further improve the results qualitatively. The results from the model (DeepLab-CRF-COCO) trained with both strong annotations from PASCAL and MS-COCO are the best. {\color{blue} Maybe we can put this paragraph and Fig.~\ref{fig:ValResults} to the sup. material if not enough space.}
 
 \begin{table}
   \centering
