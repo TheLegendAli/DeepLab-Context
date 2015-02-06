@@ -98,21 +98,20 @@ We assume that we also have access to 100 fully-annotated PASCAL VOC
 2012 \textsl{val} images which we have used to cross-validate the
 value of the single \textsl{Bbox-Seg} parameter $\alpha$ (percentage
 of the center bounding box area constrained to be foreground). We
-varied $\alpha$ from 20\% to 80\%, as shown in
-\tabref{tb:bbox_erosion}. We found that using $\alpha = 20\%$
+varied $\alpha$ from 20\% to 80\%, finding that using $\alpha = 20\%$
 maximizes the accuracy in terms of IOU in recovering the ground truth
 foreground from the bounding box.
 
-\begin{table}
-  \centering
-  \caption{\textsl{Bbox-Seg} parameter cross-validation.}
-  \begin{tabular}{c | c c c c}
-    $\alpha$ (\%)    &  80   &  60   &  40   &  20   \\
-    \hline
-    Pixel IOU (\%) & 65.6  & 68.8  & 71.8  & {\bf 72.6}
-    \end{tabular}
-  \label{tb:bbox_erosion}
-\end{table}
+%% \begin{table}
+%%   \centering
+%%   \caption{\textsl{Bbox-Seg} parameter cross-validation.}
+%%   \begin{tabular}{c | c c c c}
+%%     $\alpha$ (\%)    &  80   &  60   &  40   &  20   \\
+%%     \hline
+%%     Pixel IOU (\%) & 65.6  & 68.8  & 71.8  & {\bf 72.6}
+%%     \end{tabular}
+%%   \label{tb:bbox_erosion}
+%% \end{table}
 
 The PASCAL VOC 2012 \textsl{val} performance achieved after training
 the DeepLab-CRF model on the segmentations obtained by the
@@ -325,7 +324,7 @@ significant benefits of the semi-supervised setting.
 
 Finally, we present experiments leveraging the 81-label MS-COCO
 dataset as an additional source of data in learning the DeepLab model
-for the 21-label PASCAL VOC 2012 segmentation task. We have considered
+for the 21-label PASCAL VOC 2012 segmentation task. We consider
 three scenarios:
 \begin{itemize}
 \item \textsl{Strong-Cross-Pretrain}: Pre-train DeepLab on MS-COCO,
@@ -415,7 +414,7 @@ semi-supervised setting suffices to reap most of this benefit.
 %% \end{table}
 
 
-\subsection{Qualitative results} 
+\subsection{Qualitative Segmentation Results} 
 \label{sec:test_qualitative}
 
 We provide in \figref{fig:ValResults} visual comparisons of the
@@ -555,10 +554,10 @@ strongly annotated images.
 We achieve our best result in the cross-dataset training scenario,
 using all available PASCAL and MS-COCO pixel-level annotations. This
 \textsl{Strong-Cross-Joint} result sets the new state-of-art on the
-official PASCAL VOC 2012 benchmark with 70.4\% IOU, outperforming the
-previous best publicly reported methods by more than 3\%.
+official PASCAL VOC 2012 benchmark with 70.4\% IOU, outperforming all
+previous publicly reported results by more than 3\%.
 
-\begin{table*}[ht]\scriptsize
+\begin{table*}[htb!]\scriptsize
  \caption{Benchmark IOU (\%) results on PASCAL VOC 2012
    \textsl{test}. Links to the PASCAL evaluation server are 
    included in the PDF.}
