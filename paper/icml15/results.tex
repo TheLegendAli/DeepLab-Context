@@ -70,6 +70,21 @@ PASCAL VOC 2012 \textsl{val}, we have achieved a
 \textsl{DeepLab-CRF(Strong)} IOU score of \textbf{63.93}\% (they
 report a score of 63.74 in their Table~1a).
 
+%% \begin{table}
+%%   \centering
+%%   \caption{{\bf{Pixel Annotations.}} Performance on the PASCAL VOC 2012 `val' set. First column, and second column show the number of strongly labeled images from PASCAL and MS-COCO. }
+%%   \begin{tabular}{| c | c | c | c |}
+%%     \hline
+%%     \# PASCAL & \# MS-COCO & DeepLab & DeepLab-CRF \\
+%%     \hline
+%%     10,582 &   0     & 59.85 & 63.93  \\
+%%     \hline
+%%     10,582 & 123,287 & 64.51 & 67.98 \\
+%%     \hline
+%%     \end{tabular}
+%%   \label{tb:pixel_annot}
+%% \end{table}
+
 \subsection{Model Training Using Bounding Box Weak Annotations}
 \label{sec:test_bbox}
 
@@ -110,11 +125,13 @@ to training with the strong pixel-level annotation.
   \centering
   \caption{DeepLab-CRF VOC 2012 \textsl{val} performance using
     bounding box weak annotations \vs strong annotation in training.}
+  \scalebox{0.9}{
   \begin{tabular}{c | c || c}
     Bbox-Baseline & Bbox-Seg & Strong \\
     \hline
     52.52         & 58.45    & 63.93
-    \end{tabular}
+  \end{tabular}
+  }
   \label{tb:bbox_annot}
 \end{table}
 
@@ -170,18 +187,20 @@ image-level classification scores during training. Our
 \textsl{EM-Adapt} method performed considerably better by explicitly
 enforcing both background and foreground labels to emerge in the
 estimation process. However, its performance at 38.2\% significantly
-lags the target 63.93\% performance of the strongly-supervised
-model trained on pixel-level annotations.
+lags the target 63.93\% goal of the strongly-supervised model trained
+on pixel-level annotations.
 
 \begin{table}
   \centering
   \caption{DeepLab-CRF VOC 2012 \textsl{val} performance using
     image-level weak annotations in training compared to previous methods.}
+  \scalebox{0.9}{
   \begin{tabular}{c | c | c || c | c}
     MIL1  & MIL2 & MIL2-ILP & EM-Fixed & EM-Adapt \\
     \hline
     20.46 & 17.8 & 32.6     & 20.77    & 38.2
-    \end{tabular}
+  \end{tabular}
+  }
   \label{tb:weak_annot}
 \end{table}
 
@@ -211,6 +230,94 @@ model trained on pixel-level annotations.
 \subsection{Semi-Supervised Model Training Using Both Fully and Weakly Annotated Images}
 \label{sec:test_semi}
 
+We next examine to what extent weak image-level annotations can
+complement strong pixel-level annotations in training the DeepLab-CRF
+model, using the semi-supervised learning methods of
+\secref{sec:train_semi}. In this experiment we employ the strong
+annotations of a subset of PASCAL VOC 2012 \textsl{train} set and
+use just the weak image-level labels from another non-overlapping
+subset of the \textsl{train\_aug} set. We perform segmentation
+inference for the images that only have image-level labels by means of
+\textsl{EM-Fixed}. In \tabref{tab:strong_weak_annot} we report the 
+results obtained by varying the sizes of the strong and weak
+annotation sets, also including for comparison the results of pure
+weakly-supervised and strongly-supervised learning.
+
+We observe that including even a few hundreds of strongly annotated
+images in the semi-supervised setting significantly improves the 
+performance compared to the pure weakly-supervised baseline. We also
+observe that using just 1,464 strongly annotated images (13.8\% of the
+\textsl{train\_aug} set) along with the remaining weakly annotated
+images suffices to reach performance 61.90\%, only 2\% lower than the
+pure strongly-supervised target. Note that only using the 1,464
+strongly annotated images and no weakly annotated images performs
+significantly worse at 57.62\%, demonstrating the significant benefits
+of the semi-supervised setting.
+
+\begin{table}[t]
+  \centering
+  \caption{DeepLab-CRF VOC 2012 \textsl{val} performance using
+    both strong pixel-level and weak image-level annotations.}
+  \scalebox{0.8}{
+  \begin{tabular}{|c|c|c|}
+    \hline
+    Strong & Weak & DeepLab-CRF\\
+    \hline
+    0        &  10,582 & 20.77 (\textsl{EM-Fixed}) \\
+    0        &  10,582 & 38.23 (\textsl{EM-Adapt}) \\
+    \hline\hline
+    200      &  10,382 & 47.57   \\
+    500      &  10,082 & 56.89   \\
+    750      &  9,832  & 58.82   \\
+    1,000    &  9,582  & 60.48   \\
+    \hline
+    1,464    &  0      & 57.62   \\
+    1,464    &  5,000  & 60.48   \\
+    1,464    &  9,118  & 61.90   \\
+    \hline\hline
+    10,582   &  0      & 63.93 (\textsl{Strong}) \\
+    \hline
+  \end{tabular}  
+  }
+  \label{tab:strong_weak_annot}
+\end{table}
+
+
+%% \begin{table}[t]
+%%   \centering
+%%   \caption{{\bf Pixel+Image Annotations.} }
+%%   \scalebox{0.8}{
+%%   %\addtolength{\tabcolsep}{-2.0pt}
+%%   \begin{tabular}{|c|c|c|c|}
+%%     \hline
+%%     {\bf Weak} & {\bf Strong} & \multirow{2}{*}{DeepLab} & \multirow{2}{*}{DeepLab-CRF}\\
+%%     \cline{1-2}
+%%     \# PASCAL & \# PASCAL & & \\
+%%     \hline
+%%     10,582   &    0    & 20.25  & 20.77   \\
+%%     \hline
+%%     10,582   &    0    & 34.22* & 38.23*  \\
+%%     \hline
+%%     10,382   &  200    & 44.05  & 47.57   \\
+%%     \hline
+%%     10,082   &  500    & 52.52  & 56.89   \\
+%%     \hline
+%%     9,832    &  750    & 55.04  & 58.82   \\
+%%     \hline
+%%     9,582    &  1,000  & 56.79  & 60.48   \\
+%%     \hline
+%%       0      &  1,464  & 54.77  & 57.62   \\
+%%     \hline
+%%     5,000    &  1,464  & 57.02  & 60.48   \\
+%%     \hline
+%%     9,118    &  1,464  & {\bf 58.30}  & {\bf 61.90}   \\
+%%     \hline
+%%   \end{tabular}  
+%%   }
+%%   \label{tab:strong_weak_annot}
+%% \end{table}
+
+
 \subsection{Exploiting Annotations Across Datasets}
 \label{sec:cross_dataset}
 
@@ -238,21 +345,6 @@ dataset: the models are fine-tuned on PASCAL VOC after fine-tuning on
 MS-COCO. As shown in Tab.~\ref{tb:pixel_annot}, training the models
 with a large amount of full annotations further improves both DeepLab
 and DeepLab-CRF by about $4\%$ on the validation set.
-
-\begin{table}
-  \centering
-  \caption{{\bf{Pixel Annotations.}} Performance on the PASCAL VOC 2012 `val' set. First column, and second column show the number of strongly labeled images from PASCAL and MS-COCO. }
-  \begin{tabular}{| c | c | c | c |}
-    \hline
-    \# PASCAL & \# MS-COCO & DeepLab & DeepLab-CRF \\
-    \hline
-    10,582 &   0     & 59.85 & 63.93  \\
-    \hline
-    10,582 & 123,287 & 64.51 & 67.98 \\
-    \hline
-    \end{tabular}
-  \label{tb:pixel_annot}
-\end{table}
 
 \subsection{Qualitative results} 
 \label{sec:test_qualitative}
@@ -286,39 +378,6 @@ Our DeepLab-CRF-StrongWeak takes use of both strong and weak annotations during 
 
 Last, our DeepLab-CRF-COCO is fine-tuned on MS-COCO dataset before fine-tuning on PASCAL augmented trainval set. This model sets a new state-of-art result.
 
-\begin{table}[t]
-  \centering
-  \caption{{\bf Pixel+Image Annotations.} }
-  \scalebox{0.8}{
-  %\addtolength{\tabcolsep}{-2.0pt}
-  \begin{tabular}{|c|c|c|c|}
-    \hline
-    {\bf Weak} & {\bf Strong} & \multirow{2}{*}{DeepLab} & \multirow{2}{*}{DeepLab-CRF}\\
-    \cline{1-2}
-    \# PASCAL & \# PASCAL & & \\
-    \hline
-    10,582   &    0    & 20.25  & 20.77   \\
-    \hline
-    10,582   &    0    & 34.22* & 38.23*  \\
-    \hline
-    10,382   &  200    & 44.05  & 47.57   \\
-    \hline
-    10,082   &  500    & 52.52  & 56.89   \\
-    \hline
-    9,832    &  750    & 55.04  & 58.82   \\
-    \hline
-    9,582    &  1,000  & 56.79  & 60.48   \\
-    \hline
-      0      &  1,464  & 54.77  & 57.62   \\
-    \hline
-    5,000    &  1,464  & 57.02  & 60.48   \\
-    \hline
-    9,118    &  1,464  & {\bf 58.30}  & {\bf 61.90}   \\
-    \hline
-  \end{tabular}  
-  }
-  \label{tab:strong_weak_annot}
-\end{table}
 
 \begin{table}[t]
   \centering
