@@ -117,20 +117,21 @@ smallest area.
 
 The bounding boxes fully surround objects but also contain background
 pixels that contaminate the training set with false positive examples
-for the respective object classes. To discard these background pixels,
-we have also explored a second \textsl{Bbox-Seg} method in which we
-perform automatic foreground/background segmentation in the spirit of
-\citet{rother2004grabcut}. We assign to pixels in the foreground
-segment the label of the bounding box and to pixels in the background 
-segment the background label. For the foreground/background
+for the respective object classes. To filter out these background
+pixels, we have also explored a second \textsl{Bbox-Seg} method in
+which we perform automatic foreground/background segmentation in the
+spirit of \citet{rother2004grabcut}. We assign to pixels in the
+foreground segment the label of the bounding box and to pixels in the
+background segment the background label. For the foreground/background
 segmentation we employ once more the Dense CRF model. More
-specifically, we constrain the center area of the bounding box ($K\%$
-of pixels within the box) to be foreground, while we constrain pixels
-outside the bounding box to be background. We implement this by
-appropriately setting the unary terms of \equref{eq:fully_crf}. The
-Dense CRF is then applied to infer the label for pixels in between. We
-cross-validate the Dense CRF parameters so as to maximize segmentation
-accuracy in a small held-out set of fully-annotated images.
+specifically, we constrain the center area of the bounding box
+($\alpha\%$ of pixels within the box) to be foregroundx, while we
+constrain pixels outside the bounding box to be background. We
+implement this by appropriately setting the unary terms of
+\equref{eq:fully_crf}. The Dense CRF is then applied to infer the
+label for pixels in between. We cross-validate the Dense CRF
+parameters so as to maximize segmentation accuracy in a small held-out
+set of fully-annotated images.
 
 Examples of estimated segmentations with the two methods are
 shown in \figref{fig:bbox_illustration}.
@@ -220,16 +221,17 @@ In this setting, we consider the pixel-level semantic labels
 $\{l_i\}_{i=1}^N$ as latent variables. We incorporate the image-level
 semantic labels as side-information that biases the E-step of the EM
 algorithm, as detailed in Algorithm~\ref{algo:em_fixed_bias} and
-illustrated in \figref{fig:model_train_image}. The positive
-foreground and background biases $c_f$ and $c_b$ favor the score maps
-corresponding to labels present in the image, incorporating the prior
-information carried by the image-level weak annotation. A similar
-approach has been employed before by \citet{Lu2013sports}. We have
-obtained better results by choosing $c_f > c_b$, slightly favoring
-foreground objects over the background to encourage higher foreground
-object coverage. Notably, the E-step assigns a label to every image
-pixel and thus the model parameters are updated during the M-step to
-better explain the whole image content.
+illustrated in \figref{fig:model_train_image}. The fixed positive
+foreground and background biases $c_f$ and $c_b$ in this
+\textsl{EM-Fixed} algorithm favor the score maps corresponding to
+labels present in the image, incorporating the prior information
+carried by the image-level weak annotation. A similar approach has
+been employed before by \citet{Lu2013sports}. We have obtained better
+results by choosing $c_f > c_b$, slightly favoring foreground objects
+over the background to encourage higher foreground object
+coverage. Notably, the E-step assigns a label to every image pixel and
+thus the model parameters are updated during the M-step to better
+explain the whole image content.
 
 \begin{algorithm}[!htbp]
   \centering
@@ -259,7 +261,7 @@ better explain the whole image content.
   \label{fig:model_train_image}
 \end{figure}
 
-We have also experimented with an adaptive variant of
+We have also experimented with an adaptive \textsl{EM-Adapt} variant of
 Algorithm~\ref{algo:em_fixed_bias} in which the biases are chosen
 adaptively per image so as a pre-defined proportion of the image area
 is assigned to the foreground object class, similarly to
