@@ -3,6 +3,13 @@
 
 \subsection{The DeepLab-CRF Model for Semantic Image Segmentation}
 
+\begin{figure}[tbp!]
+  \centering
+  \includegraphics[width=0.9\linewidth]{fig/model_test.pdf} 
+  \caption{Overview of the DeepLab-CRF model.}
+  \label{fig:model_test}
+\end{figure}
+
 Our starting point is the recently proposed DeepLab model for semantic
 image segmentation of \citet{chen2014semantic}, illustrated in
 Figure~\ref{fig:model_test}. This model applies a deep CNN to an image
@@ -49,18 +56,21 @@ position and color terms, specifically:
 \end{multline}
 where the first kernel depends on both pixel positions (denoted as $p$) and
 pixel color intensities (denoted as $I$), and the second kernel only depends
-on pixel positions. The hyper parameters $\sigma_\alpha$, $\sigma_\beta$ and
-$\sigma_\gamma$ control the ``scale'' of the Gaussian kernels.
-
-\begin{figure}[tbp!]
-  \centering
-  \includegraphics[width=0.9\linewidth]{fig/model_test.pdf} 
-  \caption{Overview of the DeepLab-CRF model.}
-  \label{fig:model_test}
-\end{figure}
+on pixel positions. The Gaussian form of potentials allows for rapid
+mean-field inference \citep{krahenbuhl2011efficient}, despite the full
+connectivity of the model's factor graph. The parameters
+$\sigma_\alpha$, $\sigma_\beta$ and $\sigma_\gamma$ control the
+``scale'' of the Gaussian kernels.
 
 \subsection{Model Training Using Fully Annotated Images}
 \label{sec:train_pixel}
+
+\begin{figure}[tbp!]
+  \centering
+  \includegraphics[width=0.7\linewidth]{fig/model_train_pixel.pdf} 
+  \caption{DeepLab model training from fully annotated images.}
+  \label{fig:model_train_pixel}
+\end{figure}
 
 The network parameters $\thetav$ are trained by stochastic gradient
 descent (SGD) so as to minimize the average log-loss 
@@ -77,20 +87,21 @@ the training pipeline for simplicity and speed during training.
 Learning the DeepLab-CRF model on fully annotated images works very
 well in practice, yielding state-of-art performance (66.4\% IOU) in
 the challenging PASCAL VOC 2012 image segmentation benchmark. However,
-the need for such detailed annotations makes it harder to gather very
+the need for detailed annotations makes it harder to gather very
 large training datasets and makes it difficult to train the model
 for new domains, especially when the number of candidate labels
 (\ie, the cardinality of the label set $\mathcal{L}$) is large.
 
-\begin{figure}[htbp!]
-  \centering
-  \includegraphics[width=0.9\linewidth]{fig/model_train_pixel.pdf} 
-  \caption{DeepLab model training from fully annotated images.}
-  \label{fig:model_train_pixel}
-\end{figure}
-
 \subsection{Model Training Using Bounding Box Weak Annotations}
 \label{sec:train_bbox}
+
+\begin{figure}[tbp!]
+  \centering
+  \includegraphics[width=0.9\linewidth]{fig/model_train_bbox.pdf} 
+  \caption{DeepLab model training using bounding box data and
+    automated foreground/ background segmentation.}
+  \label{fig:model_train_bbox}
+\end{figure}
 
 Collecting bounding box annotations is significantly easier compared
 to pixel-level ground truth segmentations. We have explored two
@@ -100,14 +111,6 @@ dense segmentation maps from the bounding box annotation as a
 pre-processing step, then employ the training procedure of
 \secref{sec:train_pixel} treating these estimated labels as
 ground-truth, as illustrated in \figref{fig:model_train_bbox}.
-
-\begin{figure}[htbp!]
-  \centering
-  \includegraphics[width=0.9\linewidth]{fig/model_train_bbox.pdf} 
-  \caption{DeepLab model training using bounding box data and
-    automated foreground/ background segmentation.}
-  \label{fig:model_train_bbox}
-\end{figure}
 
 The first \textsl{Bbox-Baseline} method amounts to simply considering
 each pixel within the bounding box as positive example for the
@@ -128,7 +131,7 @@ specifically, we constrain the center area of the bounding box
 ($\alpha\%$ of pixels within the box) to be foregroundx, while we
 constrain pixels outside the bounding box to be background. We
 implement this by appropriately setting the unary terms of
-\equref{eq:fully_crf}. The Dense CRF is then applied to infer the
+\equref{eq:scores}. The Dense CRF is then applied to infer the
 label for pixels in between. We cross-validate the Dense CRF
 parameters so as to maximize segmentation accuracy in a small held-out
 set of fully-annotated images.
@@ -139,21 +142,22 @@ shown in \figref{fig:bbox_illustration}.
 \begin{figure}
   \centering
   \begin{tabular}{c c c c}
-    \includegraphics[width=0.21\linewidth]{fig/erode_bbox/img/2010_004063.jpg} & 
-    \includegraphics[width=0.21\linewidth]{fig/erode_bbox/gt/2010_004063.png} & 
-    \includegraphics[width=0.21\linewidth]{fig/erode_bbox/bbox/2010_004063.png} & 
-    \includegraphics[width=0.21\linewidth]{fig/erode_bbox/crf/2010_004063.png} \\    
-    \includegraphics[width=0.21\linewidth]{fig/erode_bbox/img/2009_000219.jpg} & 
-    \includegraphics[width=0.21\linewidth]{fig/erode_bbox/gt/2009_000219.png} & 
-    \includegraphics[width=0.21\linewidth]{fig/erode_bbox/bbox/2009_000219.png} & 
-    \includegraphics[width=0.21\linewidth]{fig/erode_bbox/crf/2009_000219.png} \\        \includegraphics[width=0.21\linewidth]{fig/erode_bbox/img/2009_002382.jpg} & 
+    %% \includegraphics[width=0.21\linewidth]{fig/erode_bbox/img/2010_004063.jpg} & 
+    %% \includegraphics[width=0.21\linewidth]{fig/erode_bbox/gt/2010_004063.png} & 
+    %% \includegraphics[width=0.21\linewidth]{fig/erode_bbox/bbox/2010_004063.png} & 
+    %% \includegraphics[width=0.21\linewidth]{fig/erode_bbox/crf/2010_004063.png} \\    
+    %% \includegraphics[width=0.21\linewidth]{fig/erode_bbox/img/2009_000219.jpg} & 
+    %% \includegraphics[width=0.21\linewidth]{fig/erode_bbox/gt/2009_000219.png} & 
+    %% \includegraphics[width=0.21\linewidth]{fig/erode_bbox/bbox/2009_000219.png} & 
+    %% \includegraphics[width=0.21\linewidth]{fig/erode_bbox/crf/2009_000219.png} \\       
+    \includegraphics[width=0.21\linewidth]{fig/erode_bbox/img/2009_002382.jpg} & 
     \includegraphics[width=0.21\linewidth]{fig/erode_bbox/gt/2009_002382.png} & 
     \includegraphics[width=0.21\linewidth]{fig/erode_bbox/bbox/2009_002382.png} & 
     \includegraphics[width=0.21\linewidth]{fig/erode_bbox/crf/2009_002382.png} \\    
     {\scriptsize Image with Bbox} & {\scriptsize Ground-Truth} & {\scriptsize Bbox-Baseline} & {\scriptsize Bbox-Seg}
   \end{tabular}
-  \caption{Segmentation estimation for bounding box annotations. We
-    show three examples from easy to hard.}
+  \caption{Estimated segmentation from bounding box annotation.% used for training.% We show three examples (easy to hard).
+  }
   \label{fig:bbox_illustration}
 \end{figure}
 
@@ -213,7 +217,15 @@ on pixel-level annotations, as explained in \secref{sec:experiments}.
 
 \paragraph{Weakly Supervised Expectation-Maximization}
 
-We propose an alternative training procedure based on a modified
+\begin{figure}[tbp!]
+  \centering
+  \includegraphics[width=0.9\linewidth]{fig/model_train_image.pdf} 
+  \caption{DeepLab model training using image-level labels by
+    weakly-supervised Expectation-Maximization.}
+  \label{fig:model_train_image}
+\end{figure}
+
+We propose an alternative training procedure based on the
 Expectation-Maximization (EM) algorithm adapted to our weakly-labeled
 image segmentation setting.
 
@@ -226,14 +238,14 @@ foreground and background biases $c_f$ and $c_b$ in this
 \textsl{EM-Fixed} algorithm favor the score maps corresponding to
 labels present in the image, incorporating the prior information
 carried by the image-level weak annotation. A similar approach has
-been employed before by \citet{Lu2013sports}. We have obtained better
-results by choosing $c_f > c_b$, slightly favoring foreground objects
-over the background to encourage higher foreground object
-coverage. Notably, the E-step assigns a label to every image pixel and
-thus the model parameters are updated during the M-step to better
-explain the whole image content.
+been employed before \citep{Lu2013sports, cour2011learning}. We have
+obtained better results by choosing $c_f > c_b$, slightly favoring
+foreground objects over the background to encourage higher foreground
+object coverage. Notably, the E-step assigns a label to every image
+pixel and thus the model parameters are updated during the M-step to
+better explain the whole image content.
 
-\begin{algorithm}[!htbp]
+\begin{algorithm}[tbp!]
   \centering
   \begin{algorithmic}[1]
     \algrenewcommand\algorithmicrequire{\textbf{Input:}}
@@ -253,25 +265,16 @@ explain the whole image content.
   \label{algo:em_fixed_bias}
 \end{algorithm}
 
-\begin{figure}[htbp!]
-  \centering
-  \includegraphics[width=0.9\linewidth]{fig/model_train_image.pdf} 
-  \caption{DeepLab model training using image-level labels by
-    weakly-supervised Expectation-Maximization.}
-  \label{fig:model_train_image}
-\end{figure}
-
 We have also experimented with an adaptive \textsl{EM-Adapt} variant of
 Algorithm~\ref{algo:em_fixed_bias} in which the biases are chosen
 adaptively per image so as a pre-defined proportion of the image area
 is assigned to the foreground object class, similarly to
 \citet{kuck2005individuals}. This acts as a hard constraint that
 explicitly prevents the background score from prevailing in the whole
-image, also promoting higher foreground object coverage. As reported
-in the experimental section, we have found this adaptive variant to
-perform better in the purely weakly supervised scenario, whereas the
-fixed bias variant works best in the semi-supervised training scenario
-discussed next.
+image, also promoting higher foreground object coverage. We have found
+this adaptive variant to perform better in the purely weakly
+supervised scenario, whereas the fixed bias variant works best in the
+semi-supervised training scenario discussed next.
 
 \subsection{Semi-Supervised Model Training Using Both Fully and Weakly Annotated Images}
 \label{sec:train_semi}
@@ -292,12 +295,13 @@ the dataset and use image-level labels for the remaining part to
 achieve the same level of performance with a DeepLab model trained
 with the whole dataset fully annotated.
 
-\begin{figure}[htbp!]
+\begin{figure}[tbp!]
   \centering
-  \includegraphics[width=0.9\linewidth]{fig/model_train_twoEnd.pdf} 
+  \includegraphics[width=0.8\linewidth]{fig/model_train_twoEnd.pdf} 
   \caption{DeepLab model training on a union of full (strong labels) 
     and image-level (weak labels) annotations.}
   \label{fig:model_illustrations_twoEnd}
+  \vspace{-0.5cm}
 \end{figure}
 
 
