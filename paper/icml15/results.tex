@@ -493,7 +493,7 @@ all PASCAL \textsl{trainval\_aug} strong pixel-level annotations is
 the current state-of-art with 66.4\% IOU performance, which we aim to
 reach with weaker annotation during training. Using only the weak
 image-level PASCAL \textsl{trainval\_aug} labels, the proposed
-\textsl{Weak-EM-Adapt} method yields only 39.0\%. When we have access
+\textsl{Weak-EM-Adapt} method yields 39.0\%. When we have access
 to weak bounding box annotation, we can do much better, achieving
 54.2\% with \textsl{Weak-Bbox-Baseline} and 60.4\% with
 \textsl{Weak-Bbox-Seg}, only 6\% worse than the target
@@ -504,7 +504,7 @@ images in the semi-supervised learning setting: 63.5\% with 1,464
 strong annotations and 66.4\% with 2,913 strong
 annotations. Remarkably, in this last \textsl{Semi (2,913)} experiment
 we exactly match the performance of the model trained with all
-strongly annotated images.
+12,031 \textsl{trainval\_aug} images strongly annotated.
 
 We achieve our best result in the cross-dataset training scenario,
 using all available PASCAL and MS-COCO pixel-level annotations. This

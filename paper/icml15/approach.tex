@@ -237,8 +237,9 @@ illustrated in \figref{fig:model_train_image}. The fixed positive
 foreground and background biases $c_f$ and $c_b$ in this
 \textsl{EM-Fixed} algorithm favor the score maps corresponding to
 labels present in the image, incorporating the prior information
-carried by the image-level weak annotation. A similar approach has
-been employed before \citep{Lu2013sports, cour2011learning}. We have
+carried by the image-level weak annotation. A similar method has
+been employed before \citep{Lu2013sports}. Also see
+\citet{cour2011learning} for an alternative approach. We have
 obtained better results by choosing $c_f > c_b$, slightly favoring
 foreground objects over the background to encourage higher foreground
 object coverage. Notably, the E-step assigns a label to every image
