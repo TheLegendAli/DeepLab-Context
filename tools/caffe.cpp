@@ -10,6 +10,7 @@
 using caffe::Blob;
 using caffe::Caffe;
 using caffe::Net;
+using caffe::NetParameter;
 using caffe::Layer;
 using caffe::shared_ptr;
 using caffe::Timer;
@@ -27,6 +28,8 @@ DEFINE_string(snapshot, "",
 DEFINE_string(weights, "",
     "Optional; the pretrained weights to initialize finetuning. "
     "Cannot be set simultaneously with snapshot.");
+DEFINE_string(out_weights, "",
+    "Optional; the file where to dump weights.");
 DEFINE_int32(iterations, 50,
     "The number of iterations to run.");
 
@@ -282,6 +285,23 @@ int time() {
 }
 RegisterBrewFunction(time);
 
+// Save: read the weights and save a model specified by a model definition file.
+int save() {
+  CHECK_GT(FLAGS_model.size(), 0) << "Need a model definition that specifies the arch for the model to save.";
+  CHECK_GT(FLAGS_weights.size(), 0) << "Need model weights to get the parameters from.";
+  CHECK_GT(FLAGS_out_weights.size(), 0) << "Give filename where to save the network parameters + weights.";
+  // Instantiate the caffe net.
+  Net<float> caffe_net(FLAGS_model);
+  caffe_net.CopyTrainedLayersFrom(FLAGS_weights);
+  // Extract and save the network parameters
+  NetParameter net_param;
+  caffe_net.ToProto(&net_param);
+  LOG(INFO) << "Snapshotting to " << FLAGS_out_weights;
+  WriteProtoToBinaryFile(net_param, FLAGS_out_weights.c_str());
+  return 0;
+}
+RegisterBrewFunction(save);
+
 int main(int argc, char** argv) {
   // Print output to stderr (while still logging).
   FLAGS_alsologtostderr = 1;
@@ -292,7 +312,8 @@ int main(int argc, char** argv) {
       "  train           train or finetune a model\n"
       "  test            score a model\n"
       "  device_query    show GPU diagnostic information\n"
-      "  time            benchmark model execution time");
+      "  time            benchmark model execution time\n"
+      "  save            load and save model");
   // Run tool or show usage.
   caffe::GlobalInit(&argc, &argv);
   if (argc == 2) {

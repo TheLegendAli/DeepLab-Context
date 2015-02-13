@@ -5,7 +5,7 @@ clear all; close all;
 load('./pascal_seg_colormap.mat');
 
 is_server       = 1;
-is_mat          = 0;   % the results are saved as mat or png
+is_mat          = 1;   % the results are saved as mat or png
 has_postprocess = 1;   % has done densecrf post processing or not
 is_argmax       = 0;   % the output has been taken argmax already (e.g., coco dataset). 
                        % assume the argmax takes C-convention (i.e., start from 0)
@@ -61,8 +61,29 @@ debug           = 0;   % if debug, show some results
 % vgg128_noup_pool3_strongweak1000
 % bi_w = 7, bi_x_std = 75, bi_r_std = 5, pos_w = 3, pos_x_std = 3
 
+% vgg128_noup_pool3_strongweak5K
+% bi_w = 5, bi_x_std = 100, bi_r_std = 5, pos_w = 3, pos_x_std = 3
+
 % vgg128_noup_pool3_small
 % bi_w = 5, bi_x_std = 61, bi_r_std = 3, pos_w = 3, pos_x_std = 3
+
+% vgg128_noup_pool3_cocomap2
+% bi_w = 5, bi_x_std = 57, bi_r_std = 5, pos_w = 3, pos_x_std = 3
+
+% vgg128_noup_pool3_strongweak_cocomapbg
+% bi_w = 5, bi_x_std = 63, bi_r_std = 5, pos_w = 3, pos_x_std = 3
+
+% vgg128_noup_pool3_strongstrong5K_cocomapbg
+% bi_w = 5, bi_x_std = 63, bi_r_std = 5, pos_w = 3, pos_x_std = 3
+
+% vgg128_noup_pool3_strongstrongweak_cocomapbg3
+% bi_w = 5, bi_x_std = 73, bi_r_std = 5, pos_w = 3, pos_x_std = 3
+
+% vgg128_noup_pool3_strongstrongweak_cocomapbg4
+% bi_w = 5, bi_x_std = 71, bi_r_std = 3, pos_w = 3, pos_x_std = 3
+
+% vgg128_noup_pool3_20M (not xvaled)
+% bi_w = 5, bi_x_std = 71, bi_r_std = 3, pos_w = 3, pos_x_std = 3
 
 % erode_gt (bbox)
 % bi_w = 41, bi_x_std = 33, bi_r_std = 4
@@ -74,9 +95,9 @@ debug           = 0;   % if debug, show some results
 % bi_w = 45, bi_x_std = 37, bi_r_std = 3, pos_w = 15, pos_x_std = 3
  
 %
-bi_w           = 7; 
-bi_x_std       = 75;
-bi_r_std       = 5;
+bi_w           = 5; 
+bi_x_std       = 71;
+bi_r_std       = 3;
 
 pos_w          = 3;
 pos_x_std      = 3;
@@ -85,12 +106,12 @@ pos_x_std      = 3;
 dataset    = 'voc12';  %'voc12', 'coco'
 id         = 'comp6';
 trainset   = 'train_aug';
-testset    = 'val';            %'val', 'test'
+testset    = 'test';            %'val', 'test'
 
-model_name = 'vgg128_noup_pool3_strongweak1000';   %'vgg128_noup', 'vgg128_noup_glob', 'vgg128_ms'
+model_name = 'vgg128_noup_pool3_20M';
 
-feature_name = 'features';
-feature_type = 'fc8';
+feature_name = 'features2';
+feature_type = 'crf'; % fc8 / crf
 
 % feature_name = 'erode_gt';     % 'erode_gt', 'features', 'features4', 'features2', ''
 % feature_type = 'bboxErode20_OccluBias';        %'bboxErode20', 'fc8', 'crf', 'fc8_crf'
@@ -106,11 +127,11 @@ down_sample_rate   = 8;
 num_sample         = 100;     % used for erode_gt 
 
 % ranges for cross-validation
-range_pos_w = [3 5 10];
-range_pos_x_std = [5 10];
+range_pos_w = [5];
+range_pos_x_std = [5];
 
-range_bi_w = [7];
-range_bi_x_std = [75];
+range_bi_w = [5];
+range_bi_x_std = [71];
 range_bi_r_std = [5];
 
 
