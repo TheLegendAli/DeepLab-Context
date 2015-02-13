@@ -3,9 +3,10 @@
 
 
 \usepackage{times}
-\usepackage{hyperref}
+\usepackage{hyperref}  % will crash pdflatex when references are cross pages
 \usepackage{url}
 
+\usepackage{placeins}
 \usepackage{subfigure}
 \usepackage{epsfig}
 \usepackage{graphicx}
@@ -24,7 +25,8 @@
 
 % For algorithms
 \usepackage{algorithm}
-\usepackage{algorithmic}
+\usepackage{algpseudocode}
+%\usepackage{algorithmic}
 
 
 % Packages hyperref and algorithmic misbehave sometimes.  We can fix
@@ -34,7 +36,12 @@
 % Employ the following version of the ``usepackage'' statement for
 % submitting the draft version of the paper for review.  This will set
 % the note in the first column to ``Under review.  Do not distribute.''
-\usepackage{icml2015} 
+%\usepackage{icml2015} 
+
+% Employ this version of the ``usepackage'' statement after the paper has
+% been accepted, when creating the final version.  This will set the
+% note in the first column to ``Proceedings of the...''
+\usepackage[accepted]{icml2015}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newcommand{\C}{{\cal C}}
@@ -45,6 +52,9 @@
 \renewcommand{\H}{{\cal H}}
 \renewcommand{\S}{{\cal S}}
 \newcommand{\bm}[1]{\boldsymbol{#1}}
+\newcommand{\argmax}{\ensuremath{\mathop{\mathrm{argmax}}}}
+
+\newcommand{\thetav}{\ensuremath{\bm{\theta}}}
 
 \newcommand{\specialcell}[2][c]{\begin{tabular}[#1]{@{}c@{}}#2\end{tabular}}
 
@@ -85,7 +95,7 @@
 \newcommand{\tabref}[1]{Tab\onedot~\ref{#1}}
 \newcommand{\thmref}[1]{Theorem~\ref{#1}}
 \newcommand{\prgref}[1]{Program~\ref{#1}}
-\newcommand{\algref}[1]{Alg\onedot~\ref{#1}}
+%\newcommand{\algref}[1]{Alg\onedot~\ref{#1}}
 \newcommand{\clmref}[1]{Claim~\ref{#1}}
 \newcommand{\lemref}[1]{Lemma~\ref{#1}}
 \newcommand{\ptyref}[1]{Property\onedot~\ref{#1}}
@@ -105,38 +115,33 @@
 
 
 %%%%%%%%% TITLE
-% Employ this version of the ``usepackage'' statement after the paper has
-% been accepted, when creating the final version.  This will set the
-% note in the first column to ``Proceedings of the...''
-%\usepackage[accepted]{icml2015}
-
 
 % The \icmltitle you define below is probably too long as a header.
 % Therefore, a short form for the running title is supplied here:
-\icmltitlerunning{Submission for ICML 2015}
+\icmltitlerunning{Weakly- and Semi-Supervised Learning of a DCNN for Semantic Image Segmentation}
 
 \begin{document} 
 
 \twocolumn[
-\icmltitle{Submission for \\ 
-           International Conference on Machine Learning (ICML 2015)}
-
+\icmltitle{Weakly- and Semi-Supervised Learning of a Deep Convolutional Network for Semantic Image Segmentation}
 
 % It is OKAY to include author information, even for blind
 % submissions: the style file will automatically remove it for you
 % unless you've provided the [accepted] option to the icml2015
 % package.
-\icmlauthor{Your Name}{email@yourdomain.edu}
-\icmladdress{Your Fantastic Institute,
-            314159 Pi St., Palo Alto, CA 94306 USA}
-\icmlauthor{Your CoAuthor's Name}{email@coauthordomain.edu}
-\icmladdress{Their Fantastic Institute,
-            27182 Exp St., Toronto, ON M6H 2T1 CANADA}
+\icmlauthor{George Papandreou}{gpapan@google.com}
+\icmladdress{Google, Inc.}
+\icmlauthor{Liang-Chieh Chen}{lcchen@cs.ucla.edu}
+\icmladdress{Univ. of California, Los Angeles}
+\icmlauthor{Kevin Murphy}{kpmurphy@google.com}
+\icmladdress{Google, Inc.}
+\icmlauthor{Alan L. Yuille}{yuille@stat.ucla.edu}
+\icmladdress{Univ. of California, Los Angeles}
 
 % You may provide any keywords that you 
 % find helpful for describing your paper; these are used to populate 
 % the "keywords" metadata in the PDF but will not be shown in the document
-\icmlkeywords{boring formatting information, machine learning, ICML}
+\icmlkeywords{Deep Convolutional Networks, Semantic Image Segmentation, Weak Supervision}
 
 \vskip 0.3in
 ]
@@ -147,11 +152,12 @@
 
 %%%%%%%%% BODY TEXT
 \input{intro}
-\input{related}
+%\input{related}
 \input{approach}
 \input{results}
 \input{conc}
 
+%\FloatBarrier
 
 {\small
 \bibliographystyle{icml2015}

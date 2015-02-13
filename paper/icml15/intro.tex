@@ -1,3 +1,80 @@
 \section{Introduction}
+\label{sec:intro}
 
-This is introduction.
+Semantic image segmentation refers to the problem of assigning a
+semantic label to every pixel in the image and is a significant
+component of scene understanding systems. Deep Convolutional Neural
+Networks (DCNNs) have been successfully applied to this task
+\citep{farabet2013learning, pinheiro2014recurrent,
+  eigen2014predicting}, recently demonstrating state-of-the-art
+performance on the challenging Pascal VOC 2012 segmentation benchmark
+\citep{chen2014semantic, mostajabi2014feedforward,
+  long2014fully}. The network parameters are tuned to
+optimize the pixel-wise segmentation accuracy and typically strong,
+pixel-wise annotations are employed to learn the models. However, it
+is very labor-intensive to collect the full annotations for thousands
+or millions of images. We study the problem of harnessing weaker
+annotations in learning DCNN segmentation models, focusing on the
+state-of-art DeepLab-CRF model of \citet{chen2014semantic}. Weak
+annotations, such as image-level labels (\ie, information about which
+object classes are present) or bounding boxes (\ie, coarse object
+locations) are far easier to collect than detailed pixel-level
+annotations.
+
+\paragraph{Related Work}
+
+Training semantic image segmentation models using solely image-level
+labels for  is a challenging problem that has attracted much interest 
+in the literature \citep{duygulu2002object, verbeek2007region,
+  vezhnevets2010towards, vezhnevets2011weakly, vezhnevets2012weakly,
+  xu2014tell}. These earlier works have shown encouraging results
+on some datasets but have not been demonstrated on the challenging
+PASCAL VOC 2012 benchmark. Some recent works use modern DCNN
+architectures and develop Multiple Instance Learning (MIL) based
+methods appropriate for the image-level weakly-supervised setting, but
+report results far lagging the strongly-supervised state-of-art
+\citep{pathak2014fully, pinheiro2014weakly}. Similar MIL-based
+approaches have also been employed in training image classification
+models but their localization performance has not been directly
+evaluated \citep{oquab2014weakly, papandreou2014untangling}. 
+
+Several previous works have harnessed bounding box annotations as
+another source of weak supervision in training image segmentation
+models \citet{xia2013semantic, guillaumin2014imagenet, chen2014beat,
+  zhu2014learning}. Bounding box annotations are also
+commonly used in foreground/background image segmentation
+\citep{lempitsky2009image, rother2004grabcut}. 
+Combining few strong annotations and a large number of
+weak annotations in a semi-supervised setting is another emerging
+research direction \citep{Hoffman14Lsda}. 
+
+\paragraph{Contributions}
+
+Our paper develops new methods and presents systematic experimental
+evaluations in harnessing weak annotations for training a DCNN
+semantic image segmentation model. In particular:
+\begin{enumerate}
+\item We present an EM algorithm for training with
+  image-level labels, applicable to both pure weakly-supervised
+  and semi-supervised settings. This EM algorithm
+  performs better than the MIL methods.
+\item We develop a method to estimate foreground object segments from
+  bounding boxes. Models trained with this inferred segmentations
+  yield significantly better results than models trained with the
+  whole bounding box area as object annotation.
+\item We develop a semi-supervised training method integrating our EM
+  algorithm and demonstrate excellent performance when combining a
+  small number of pixel-level annotated images with a large number of
+  image-level annotated images, nearly matching the results achieved
+  when all training images have pixel-level annotations.
+\item We show that combining weak or strong annotations across
+  datasets yields significantly better results. In particular, we set
+  the new state-of-art in the PASCAL VOC 2012 segmentation benchmark
+  with 70.4\% IOU performance by combining annotations from the PASCAL
+  and MS-COCO datasets.
+\end{enumerate}
+
+ %%% Local Variables:
+ %%% mode: latex
+ %%% TeX-master: "top.tex"
+ %%% End:
