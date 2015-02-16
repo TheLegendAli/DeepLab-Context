@@ -46,7 +46,7 @@ TYPED_TEST_CASE(ChannelAggregatorLayerTest, TestDtypesAndDevices);
 TYPED_TEST(ChannelAggregatorLayerTest, TestSetup) {
   typedef typename TypeParam::Dtype Dtype;
   LayerParameter layer_param;
-  layer_param.mutable_channel_aggregator_param()->set_label_map_file("/rmt/work/deeplabel/code/src/caffe/test/label_map_file.txt");
+  layer_param.mutable_channel_aggregator_param()->set_label_map_file("src/caffe/test/label_map_file.txt");
   ChannelAggregatorLayer<Dtype> layer(layer_param);
   layer.SetUp(this->blob_bottom_vec_, this->blob_top_vec_);
   EXPECT_EQ(this->blob_top_->num(), this->blob_bottom_->num());
@@ -91,7 +91,7 @@ TYPED_TEST(ChannelAggregatorLayerTest, TestCPU) {
 TYPED_TEST(ChannelAggregatorLayerTest, TestGradient) {
   typedef typename TypeParam::Dtype Dtype;
   LayerParameter layer_param;
-  layer_param.mutable_channel_aggregator_param()->set_label_map_file("/rmt/work/deeplabel/code/src/caffe/test/label_map_file.txt");
+  layer_param.mutable_channel_aggregator_param()->set_label_map_file("src/caffe/test/label_map_file.txt");
   ChannelAggregatorLayer<Dtype> layer(layer_param);
   GradientChecker<Dtype> checker(1e-2, 1e-2);
   checker.CheckGradientExhaustive(&layer, this->blob_bottom_vec_,
