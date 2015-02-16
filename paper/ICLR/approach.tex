@@ -87,7 +87,7 @@ speed during training is 3 frames/sec. Using smaller networks such as
 \citet{KrizhevskyNIPS2013} could allow video-rate test-time dense feature
 computation even on light-weight GPUs.
 
-\section{Detailed Boundary Recovery: Fully-Connected Conditional Random Fields}
+\section{Detailed Boundary Recovery: Fully-Connected Conditional Random Fields and Multi-scale Prediction}
 \label{sec:boundary-recovery}
 
 \subsection{Deep Convolutional Networks and the Localization Challenge}
@@ -97,7 +97,7 @@ As illustrated in Figure~\ref{fig:score-maps}, DCNN score maps can
 reliably predict the presense and rough position of objects in an image but
 are less well suited for pin-pointing their exact outline. There is a natural
 trade-off between classification accuracy and localization accuracy with
-convolutional networks: Deeper moders with multiple max-pooling layers have
+convolutional networks: Deeper models with multiple max-pooling layers have
 proven most successful in classification tasks, however their increased
 invariance and large receptive fields make the problem of inferring position
 from the scores at their top output levels more challenging.
@@ -142,7 +142,7 @@ detail that is well beyond the reach of existing methods.
     \includegraphics[width=0.16\linewidth]{fig/mean_field_illustration/Belief_Class1_Itr10.pdf} \\
     Image/G.T. & DCNN output & CRF Iteration 1 & CRF Iteration 2 & CRF Iteration 10 \\
   \end{tabular}
-  \caption{Score map (input before softmax function) and belief map (output of softmax function) for Aeroplane. We show the score (1st row) and belief (2nd row) maps after each mean field iteration. The output of the last DCNN layer is used as input to the mean field inference method.}
+  \caption{Score map (input before softmax function) and belief map (output of softmax function) for Aeroplane. We show the score (1st row) and belief (2nd row) maps after each mean field iteration. The output of last DCNN layer is used as input to the mean field inference. Best viewed in color.}
   \label{fig:score-maps}
 \end{figure}
 
@@ -193,7 +193,7 @@ Crucially, this model is amenable to efficient approximate probabilistic
 inference \citep{krahenbuhl2011efficient}. The message passing updates under a
 fully decomposable mean field approximation $b(\boldsymbol{x}) = \prod_i
 b_i(x_i)$ can be expressed as convolutions with a Gaussian kernel in feature
-space. High-dimensional filtering algorihtms \citep{adams2010fast}
+space. High-dimensional filtering algorithms \citep{adams2010fast}
 significantly speed-up this computation resulting in an algorithm that is very
 fast in practice, less that 0.5 sec on average for Pascal VOC images using the
 publicly available implementation of \citep{krahenbuhl2011efficient}.
@@ -202,7 +202,19 @@ publicly available implementation of \citep{krahenbuhl2011efficient}.
   \centering
   \includegraphics[width=0.7\linewidth]{fig/model_illustration3.pdf}
   \caption{Model Illustration. The coarse score map from Deep Convolutional Neural Network (with fully convolutional layers) is upsampled by bi-linear
-    interpolation. A fully connected CRF is applied to refine the segmentation result.}
+    interpolation. A fully connected CRF is applied to refine the segmentation result. Best viewed in color.}
   \label{fig:ModelIllustration}
 \end{figure}
 
+\subsection{Multi-Scale Prediction}
+\label{sec:multiscale}
+
+Following the promising recent results of \cite{hariharan2014hypercolumns,
+  long2014fully} we have also explored a multi-scale prediction method to
+increase the boundary localization accuracy. Specifically, we attach to the input image and each of the first four max pooling layers a two-layer MLP (first layer: 128 3x3 convolutional filters, second layer: 128 1x1 convolutional filters) whose score map is concatenated to the VGG final layer score map. The final score map fed into the softmax layer thus consists of 4,096 + 5 * 128 = 4,736 channels. We
+only adjust the newly added weights, keeping the other network parameters to
+the values learned by the method of Section~\ref{sec:convnets}. As
+discussed in the experimental section, introducing these extra direct
+connections from fine-resolution layers improves localization performance, yet
+the effect is not as dramatic as the one obtained with the fully-connected
+CRF. 

@@ -5,26 +5,31 @@
 
 \paragraph{Training} We adopt the simplest form of piecewise training, decoupling the DCNN and CRF training stages, assuming the unary terms provided by the DCNN are fixed during CRF training. 
 
-For DCNN training we employ the VGG-16 netwok which has been pre-trained on ImageNet. We fine-tuned the VGG-16 network on the VOC 21-way classification task by stochastic gradient descent on the cross-entropy loss function, as described in Section~\ref{sec:convnet-hole}. We use a mini-batch of 20 images and initial learning rate of $0.001$ ($0.01$ for the final classifier layer), multiplying the learning rate by 0.1 at every 2000 iterations. We use momentum of $0.9$ and a weight decay of $0.0005$.
+For DCNN training we employ the VGG-16 network which has been pre-trained on ImageNet. We fine-tuned the VGG-16 network on the VOC 21-way classification task by stochastic gradient descent on the cross-entropy loss function, as described in Section~\ref{sec:convnet-hole}. We use a mini-batch of 20 images and initial learning rate of $0.001$ ($0.01$ for the final classifier layer), multiplying the learning rate by 0.1 at every 2000 iterations. We use momentum of $0.9$ and a weight decay of $0.0005$.
 
 %a DCNN is first fine-tuned on the training set and then, as in the work of \citet{krahenbuhl2011efficient}  we cross-validate the 
 After the DCNN has been fine-tuned, we cross-validate the parameters of the fully connected CRF model in \equref{eq:fully_crf} along the lines of \citet{krahenbuhl2011efficient};
  to avoid overfitting the validation set, the parameters $w_2$ and $\sigma_\gamma$ are fixed to be $3$ and the best values of $w_1$, $\sigma_\alpha$, and $\sigma_\beta$ are cross-validated on a small subset of the validation set (we use 200 images). We use 10 iterations for the efficient mean field inference algorithm \citep{krahenbuhl2011efficient}. 
 
-\paragraph{Evaluation on Validation set} We conduct the majority of our evaluations on the PASCAL `val' set, training our model on the augmented PASCAL `train' set. As shown in \tabref{tb:valIOU}, incorporating the fully connected CRF to our model (denoted by DeepLab-CRF) yields a substantial performance boost, about 4\% improvement. We note that the original work of \citet{krahenbuhl2011efficient} improved the $27.6\%$
+\paragraph{Evaluation on Validation set} We conduct the majority of our evaluations on the PASCAL `val' set, training our model on the augmented PASCAL `train' set. As shown in \tabref{tb:valIOU} (a), incorporating the fully connected CRF to our model (denoted by DeepLab-CRF) yields a substantial performance boost, about 4\% improvement over DeepLab. We note that the work of \citet{krahenbuhl2011efficient} improved the $27.6\%$
 result of TextonBoost \citep{shotton2009textonboost} to $29.1\%$, which makes the  improvement we report here (from $59.8\%$ to $63.7\%$) all the more impressive.
 
 Turning to qualitative results, we provide visual comparisons between DeepLab and DeepLab-CRF in \figref{fig:ValResults}. Employing a fully connected CRF significantly improves the results, allowing the model to accurately capture intricate object boundaries. 
 
-\begin{table}
+We also exploit the features from the intermediate layers (\ie multi-scale features), similar to \citet{hariharan2014hypercolumns, long2014fully}. As shown in \tabref{tb:valIOU} (a), adding the multi-scale features to our base model (denoted as DeepLab-MSc) improves about $1.5\%$ performance, and incorporating the fully connected CRF (denoted as DeepLab-MSc-CRF) also yields about 4\% furhter improvement. The qualitative comparisons between DeepLab and DeepLab-MSc are shown in \figref{fig:msBoundary}. Leveraging the multi-scale features can slightly refine the object boundaries.
+
+\begin{table}[t]
   \centering
   \begin{tabular}{c c}
-    \raisebox{0.4cm}{
+    \raisebox{0.2cm}{
     \begin{tabular}{c | c}
       Method      & mean IOU (\%) \\
       \hline \hline
       DeepLab     & 59.80 \\
-      DeepLab-CRF & 63.74
+      DeepLab-CRF & 63.74 \\
+      \hline
+      DeepLab-MSc & 61.30 \\
+      DeepLab-MSc-CRF & 65.21
     \end{tabular}
     }
     &
@@ -35,20 +40,38 @@ Turning to qualitative results, we provide visual comparisons between DeepLab an
       FCN-8s      & 62.2 \\
       TTI-Zoomout-16 & 64.4 \\
       \hline
-      DeepLab-CRF (our) & 66.4
+      DeepLab-CRF (our) & 66.4 \\
+      DeepLab-MSc-CRF (our) & 67.1
     \end{tabular}
     \\
     (a) & (b)
   \end{tabular}
-  \caption{(a) Performance of our proposed models on the PASCAL VOC 2012 'val' set (with training in the augmented 'train' set). (b) Performance of our best DeepLab-CRF model compared to other state-of-art methods on the PASCAL VOC 2012 'test' set.}
+  \caption{(a) Performance of our proposed models on the PASCAL VOC 2012 'val' set (with training in the augmented 'train' set). (b) Performance of our DeepLab-CRF and DeepLab-MSc-CRF model compared to other state-of-art methods on the PASCAL VOC 2012 'test' set.}
   \label{tb:valIOU}
 \end{table}
 
+\begin{figure}[ht]
+  \centering
+  \begin{tabular}{c c c c c}
+    \includegraphics[height=0.11\linewidth]{fig/boundary_refine/vgg128noup_2007_003022.png} &
+    \includegraphics[height=0.11\linewidth]{fig/boundary_refine/vgg128noup_2007_001284.png} &
+    \includegraphics[height=0.11\linewidth]{fig/boundary_refine/vgg128noup_2007_001289.png} &
+    \includegraphics[height=0.11\linewidth]{fig/boundary_refine/vgg128noup_2007_001311.png} &
+    \includegraphics[height=0.11\linewidth]{fig/boundary_refine/vgg128noup_2009_000573.png} \\
+    \includegraphics[height=0.11\linewidth]{fig/boundary_refine/vgg128ms_2007_003022.png} &
+    \includegraphics[height=0.11\linewidth]{fig/boundary_refine/vgg128ms_2007_001284.png} &
+    \includegraphics[height=0.11\linewidth]{fig/boundary_refine/vgg128ms_2007_001289.png} &
+    \includegraphics[height=0.11\linewidth]{fig/boundary_refine/vgg128ms_2007_001311.png} &
+    \includegraphics[height=0.11\linewidth]{fig/boundary_refine/vgg128ms_2009_000573.png} \\
+  \end{tabular}
+  \caption{Incorporating multi-scale features improves the boundary segmentation. We show the results obtained by DeepLab and DeepLab-MSc in the first and second row, respectively. Best viewed in color.}
+  \label{fig:msBoundary}
+\end{figure}
 
 %{\bf{Weighted loss: }} In PASCAL VOC 2012 dataset, most of the pixels are labeled as background in the ground truths. Weighting the loss function according to the class frequency has been employed, \eg \citet{farabet2013learning, mostajabi2014feedforward}, to overcome the label imbalance problem. Our experiments on VOC 2012 val set show that using a weighted loss function increases the mean class accuracy (the pixelwise accuracy averaged across classes), but does not improve the mean IOU in our model. 
 
 \paragraph{Mean Pixel IOU along Object Boundaries}
-To quantify the accuracy of the proposed model near object boundaries, we evaluate the segmentation accuracy with an experiment similar to \citet{kohli2009robust, krahenbuhl2011efficient}. Specifically, we  use  the `void' label annotated in val set, which usually occurs around object boundaries. We compute the mean IOU for those pixels that are located within a narrow band (called trimap) of `void' labels. As shown in \figref{fig:IOUBoundary}, refining the segmentation results by a fully connected CRF significantly improves the results around object boundaries. 
+To quantify the accuracy of the proposed model near object boundaries, we evaluate the segmentation accuracy with an experiment similar to \citet{kohli2009robust, krahenbuhl2011efficient}. Specifically, we  use  the `void' label annotated in val set, which usually occurs around object boundaries. We compute the mean IOU for those pixels that are located within a narrow band (called trimap) of `void' labels. As shown in \figref{fig:IOUBoundary}, exploiting the multi-scale features from the intermediate layers and refining the segmentation results by a fully connected CRF significantly improve the results around object boundaries. 
 
 \paragraph{Comparison with State-of-art} In \figref{fig:val_comparison}, we qualitatively compare our proposed model, DeepLab-CRF, with two state-of-art models: FCN-8s \citep{long2014fully} and TTI-Zoomout-16 \citep{mostajabi2014feedforward} on the `val' set (the results are extracted from their papers). Our model is able to capture the intricate object boundaries.
 
@@ -59,12 +82,12 @@ To quantify the accuracy of the proposed model near object boundaries, we evalua
     \includegraphics[height=0.55\linewidth]{fig/comparedWithRoomOut.pdf} \\
     (a) FCN-8s vs. DeepLab-CRF & (b) TTI-Zoomout-16 vs. DeepLab-CRF \\
   \end{tabular}
-  \caption{Comparisons with state-of-the-art models on the val set. First row: images. Second row: ground truths. Third row: other recent models (Left: FCN-8s, Right: TTI-Zoomout-16). Fourth row: our DeepLab-CRF.}
+  \caption{Comparisons with state-of-the-art models on the val set. First row: images. Second row: ground truths. Third row: other recent models (Left: FCN-8s, Right: TTI-Zoomout-16). Fourth row: our DeepLab-CRF. Best viewed in color.}
   \label{fig:val_comparison}
 \end{figure}
 
 
-\paragraph{Test set results} Having set our model choices on the validation set, we evaluate our best model variant, DeepLab-CRF, on the PASCAL VOC 2012 official 'test' set.  As shown in \tabref{tab:voc2012}, our model achieves performance of $66.4\%$ mean IOU\footnote{\url{http://host.robots.ox.ac.uk:8080/leaderboard/displaylb.php?challengeid=11&compid=6}}, outperforming all the other state-of-the-art models (specifically, TTI-Zoomout-16 \citep{mostajabi2014feedforward}, FCN-8s \citep{long2014fully}, and MSRA-CFM \citep{dai2014convolutional}).
+\paragraph{Test set results} Having set our model choices on the validation set, we evaluate our best model variant, DeepLab-CRF, on the PASCAL VOC 2012 official 'test' set.  As shown in \tabref{tab:voc2012}, our DeepLab-CRF and DeepLab-MSc-CRF models achieve performance of $66.4\%$ and $67.1\%$ mean IOU\footnote{\url{http://host.robots.ox.ac.uk:8080/leaderboard/displaylb.php?challengeid=11&compid=6}}, respectively. Our models outperform all the other state-of-the-art models (specifically, TTI-Zoomout-16 \citep{mostajabi2014feedforward}, FCN-8s \citep{long2014fully}, and MSRA-CFM \citep{dai2014convolutional}).
 
 \begin{table*}[ht]\scriptsize
 \setlength{\tabcolsep}{3pt}
@@ -74,11 +97,12 @@ To quantify the accuracy of the proposed model near object boundaries, we evalua
 \hline 
 Method         & bkg &  aero & bike & bird & boat & bottle& bus & car  &  cat & chair& cow  &table & dog  & horse & mbike& person& plant&sheep& sofa &train & tv   & mean \\
 \hline \hline
-MSRA-CFM       & -    & 75.7 & 26.7 & 69.5 & 48.8 & {\bf 65.6} & 81.0 & 69.2 & 73.3 & {\bf 30.0} & 68.7 & 51.5 & 69.1 & 68.1  & 71.7 & 67.5 & 50.4 & 66.5 & 44.4 & 58.9 & 53.5 & 61.8 \\
+MSRA-CFM       & -    & 75.7 & 26.7 & 69.5 & 48.8 & 65.6 & 81.0 & 69.2 & 73.3 & {\bf 30.0} & 68.7 & 51.5 & 69.1 & 68.1  & 71.7 & 67.5 & 50.4 & 66.5 & 44.4 & 58.9 & 53.5 & 61.8 \\
 FCN-8s         & -    & 76.8 & 34.2 & 68.9 & 49.4 & 60.3 & 75.3 & 74.7 & 77.6 & 21.4 & 62.5 & 46.8 & 71.8 & 63.9  & 76.5 & 73.9 & 45.2 & 72.4 & 37.4 & 70.9 & 55.1 & 62.2 \\
-TTI-Zoomout-16 & 89.8 & {\bf 81.9} & {\bf 35.1} & {\bf 78.2} & {\bf 57.4} & 56.5 & 80.5 & 74.0 & {\bf 79.8} & 22.4 & {\bf 69.6} & {\bf 53.7} & 74.0 & {\bf 76.0} & 76.6 & 68.8 & 44.3 & 70.2 & 40.2 & 68.9 & 55.3 & 64.4 \\
+TTI-Zoomout-16 & 89.8 & {\bf 81.9} & 35.1 & {\bf 78.2} & {\bf 57.4} & 56.5 & 80.5 & 74.0 & {\bf 79.8} & 22.4 & {\bf 69.6} & {\bf 53.7} & 74.0 & {\bf 76.0} & 76.6 & 68.8 & 44.3 & 70.2 & 40.2 & 68.9 & 55.3 & 64.4 \\
 \hline
-DeepLab-CRF    &{\bf 92.1} & 78.4 & 33.1 & {\bf 78.2} & 55.6 & 65.3 & {\bf 81.3} & {\bf 75.5} & 78.6 & 25.3 & 69.2 & 52.7 & {\bf 75.2} & 69.0  & {\bf 79.1} & {\bf 77.6} & {\bf 54.7} & {\bf 78.3} & {\bf 45.1} & {\bf 73.3} & {\bf 56.2} & {\bf 66.4} \\ 
+DeepLab-CRF    & 92.1 & 78.4 & 33.1 & {\bf 78.2} & 55.6 & 65.3 & 81.3 & 75.5 & 78.6 & 25.3 & 69.2 & 52.7 & {\bf 75.2} & 69.0  & 79.1 & 77.6 & 54.7 & 78.3 & 45.1 & {\bf 73.3} & 56.2 & 66.4 \\ 
+DeepLab-MSc-CRF & {\bf 92.6} & 80.4 & {\bf 36.8} & 77.4 & 55.2 & {\bf 66.4} & {\bf 81.5} & {\bf 77.5} & 78.9 & 27.1 & 68.2 & 52.7 & 74.3 & 69.6 & {\bf 79.4} & {\bf 79.0} & {\bf 56.9} & {\bf 78.8} & {\bf 45.2} & 72.7 & {\bf 59.3} & {\bf 67.1} \\
 \hline
  \end{tabular}
 }
@@ -211,6 +235,6 @@ DeepLab-CRF    &{\bf 92.1} & 78.4 & 33.1 & {\bf 78.2} & 55.6 & 65.3 & {\bf 81.3}
   \end{tabular}
   }
   %\vspace{-0.3cm}
-  \caption{Visualization results on VOC 2012-val. For each row, we show the input image, the segmentation result delivered by the DCNN (DeepLab), and the refined segmentation result of the Fully Connected CRF (DeepLab-CRF). We show our failure modes in the last three rows.} 
+  \caption{Visualization results on VOC 2012-val. For each row, we show the input image, the segmentation result delivered by the DCNN (DeepLab), and the refined segmentation result of the Fully Connected CRF (DeepLab-CRF). We show our failure modes in the last three rows. Best viewed in color.} 
   \label{fig:ValResults}
 \end{figure}
