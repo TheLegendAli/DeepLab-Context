@@ -306,7 +306,8 @@ void DataTransformer<Dtype>::Transform(const cv::Mat& cv_img,
 }
 
 template<typename Dtype>
-void DataTransformer<Dtype>::TransformImgAndSeg(const std::vector<cv::Mat>& cv_img_seg, Blob<Dtype>* transformed_data_blob, Blob<Dtype>* transformed_label_blob) {
+void DataTransformer<Dtype>::TransformImgAndSeg(const std::vector<cv::Mat>& cv_img_seg,
+  Blob<Dtype>* transformed_data_blob, Blob<Dtype>* transformed_label_blob, const int ignore_label) {
   CHECK(cv_img_seg.size() == 2) << "Input must contain image and seg.";
 
   const int img_channels = cv_img_seg[0].channels();
@@ -382,7 +383,7 @@ void DataTransformer<Dtype>::TransformImgAndSeg(const std::vector<cv::Mat>& cv_i
           cv::Scalar(mean_values_[0], mean_values_[1], mean_values_[2]));
     cv::copyMakeBorder(cv_cropped_seg, cv_cropped_seg, 0, pad_height, 
           0, pad_width, cv::BORDER_CONSTANT, 
-		       cv::Scalar(255));  // 255 is "ambiguous" label
+		       cv::Scalar(ignore_label));
     // update height/width
     img_height   = cv_cropped_img.rows;
     img_width    = cv_cropped_img.cols;

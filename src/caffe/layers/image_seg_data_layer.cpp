@@ -29,7 +29,7 @@ void ImageSegDataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom
   const int new_height = this->layer_param_.image_data_param().new_height();
   const int new_width  = this->layer_param_.image_data_param().new_width();
   const bool is_color  = this->layer_param_.image_data_param().is_color();
-  const bool has_label = this->layer_param_.image_data_param().has_label();
+  const int label_type = this->layer_param_.image_data_param().label_type();
   string root_folder = this->layer_param_.image_data_param().root_folder();
 
   TransformationParameter transform_param = this->layer_param_.transform_param();
@@ -50,7 +50,7 @@ void ImageSegDataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom
     string imgfn;
     iss >> imgfn;
     string segfn = "";
-    if (has_label) {
+    if (label_type != ImageDataParameter_LabelType_NONE) {
       iss >> segfn;
     }
     lines_.push_back(std::make_pair(imgfn, segfn));
@@ -145,11 +145,11 @@ void ImageSegDataLayer<Dtype>::InternalThreadEntry() {
   Dtype* top_data_dim = this->prefetch_data_dim_.mutable_cpu_data();
 
   ImageDataParameter image_data_param    = this->layer_param_.image_data_param();
-  TransformationParameter transorm_param = this->layer_param_.transform_param();
   const int batch_size = image_data_param.batch_size();
   const int new_height = image_data_param.new_height();
   const int new_width  = image_data_param.new_width();
-  const bool has_label = image_data_param.has_label();
+  const int label_type = this->layer_param_.image_data_param().label_type();
+  const int ignore_label = image_data_param.ignore_label();
   const bool is_color  = image_data_param.is_color();
   string root_folder   = image_data_param.root_folder();
 
@@ -175,16 +175,22 @@ void ImageSegDataLayer<Dtype>::InternalThreadEntry() {
     if (!cv_img_seg[0].data) {
       DLOG(INFO) << "Fail to load img: " << root_folder + lines_[lines_id_].first;
     }
-    if (has_label) {
+    if (label_type == ImageDataParameter_LabelType_PIXEL) {
       cv_img_seg.push_back(ReadImageToCVMat(root_folder + lines_[lines_id_].second,
 					    new_height, new_width, false));
       if (!cv_img_seg[1].data) {
 	DLOG(INFO) << "Fail to load seg: " << root_folder + lines_[lines_id_].second;
       }
     }
+    else if (label_type == ImageDataParameter_LabelType_IMAGE) {
+      const int label = atoi(lines_[lines_id_].second.c_str());
+      cv::Mat seg(cv_img_seg[0].rows, cv_img_seg[0].cols, 
+		  CV_8UC1, cv::Scalar(label));
+      cv_img_seg.push_back(seg);      
+    }
     else {
       cv::Mat seg(cv_img_seg[0].rows, cv_img_seg[0].cols, 
-		  CV_8UC1, cv::Scalar(255));
+		  CV_8UC1, cv::Scalar(ignore_label));
       cv_img_seg.push_back(seg);
     }
 
@@ -200,7 +206,8 @@ void ImageSegDataLayer<Dtype>::InternalThreadEntry() {
     this->transformed_label_.set_cpu_data(top_label + offset);
 
     this->data_transformer_.TransformImgAndSeg(cv_img_seg, 
-       &(this->transformed_data_), &(this->transformed_label_));
+	 &(this->transformed_data_), &(this->transformed_label_),
+	 ignore_label);
     trans_time += timer.MicroSeconds();
 
     // go to the next std::vector<int>::iterator iter;

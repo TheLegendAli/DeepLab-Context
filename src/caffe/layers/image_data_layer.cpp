@@ -24,7 +24,7 @@ void ImageDataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom,
   const int new_height = this->layer_param_.image_data_param().new_height();
   const int new_width  = this->layer_param_.image_data_param().new_width();
   const bool is_color  = this->layer_param_.image_data_param().is_color();
-  const bool has_label = this->layer_param_.image_data_param().has_label();
+  const int label_type = this->layer_param_.image_data_param().label_type();
   max_labels_ = this->layer_param_.image_data_param().max_labels();
   string root_folder = this->layer_param_.image_data_param().root_folder();
 
@@ -32,8 +32,10 @@ void ImageDataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom,
       (new_height > 0 && new_width > 0)) << "Current implementation requires "
       "new_height and new_width to be set at the same time.";
 
+  CHECK(label_type != ImageDataParameter_LabelType_NONE) <<
+    "Use IMAGE_SEG_DATA layer if you want pixel-level labels";
   CHECK_GE(max_labels_, 0) << "max_labels cannot be negative";
-  if (!has_label) {
+  if (label_type == ImageDataParameter_LabelType_NONE) {
     max_labels_ = 0;
   }
 
@@ -48,7 +50,7 @@ void ImageDataLayer<Dtype>::DataLayerSetUp(const vector<Blob<Dtype>*>& bottom,
     string filename;
     iss >> filename;
     std::vector<int> labels;
-    if (has_label) {
+    if (label_type == ImageDataParameter_LabelType_IMAGE) {
       int label;
       while (iss >> label) {
 	labels.push_back(label);

@@ -13,11 +13,15 @@ template <typename Dtype>
 void UniqueLabelLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top) {
   UniqueLabelParameter param = this->layer_param_.unique_label_param();
-  max_labels_ = param.max_labels();
-  CHECK_GT(max_labels_, 0) << "At least one label output needs to be provided";
   for (int i = 0; i < param.ignore_label_size(); ++i){
     ignore_label_.insert(param.ignore_label(i));
   }
+  for (int i = 0; i < param.force_label_size(); ++i){
+    force_label_.insert(param.force_label(i));
+  }
+  max_labels_ = param.max_labels();
+  CHECK_GT(max_labels_, force_label_.size()) << 
+    "At least one label more than the forced ones needs to fit";
 }
 
 template <typename Dtype>
@@ -39,17 +43,21 @@ void UniqueLabelLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
   for (int n = 0; n < num_; ++n) {
     set<Dtype> vals;
     const Dtype *bottom_data = bottom[0]->cpu_data(n);
+    // add the vals present in the image
     for (int i = 0; i < height_ * width_; ++i) {
       if (ignore_label_.count(bottom_data[i]) == 0) {
 	vals.insert(bottom_data[i]);
       }
+    }
+    // add the vals in the forced label set
+    for (typename set<Dtype>::iterator it = force_label_.begin(); it != force_label_.end(); ++it) {
+      vals.insert(*it);
     }
     CHECK_LE(vals.size(), max_labels_) << "Too many unique elements, increase capacity of UniqueLabelLayer";
     Dtype *top_data = top[0]->mutable_cpu_data(n);
     int j = 0;
     for (typename set<Dtype>::iterator it = vals.begin(); it != vals.end(); ++it) {
       top_data[j++] = *it;
-      //LOG(INFO) << *it;
     }
   }
 }

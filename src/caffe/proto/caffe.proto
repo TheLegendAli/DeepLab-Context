@@ -206,7 +206,7 @@ message NetStateRule {
 // NOTE
 // Update the next available ID when you add a new LayerParameter field.
 //
-// LayerParameter next available ID: 55 (last added: channel_aggregator_param)
+// LayerParameter next available ID: 57 (last added: histogram_param)
 message LayerParameter {
   repeated string bottom = 2; // the name of the bottom blobs
   repeated string top = 3; // the name of the top blobs
@@ -227,7 +227,7 @@ message LayerParameter {
   // line above the enum. Update the next available ID when you add a new
   // LayerType.
   //
-  // LayerType next available ID: 52 (last added: CHANNEL_AGGREGATOR)
+  // LayerType next available ID: 54 (last added: HISTOGRAM)
   enum LayerType {
     // "NONE" layer type is 0th enum element so that we don't cause confusion
     // by defaulting to an existent LayerType (instead, should usually error if
@@ -256,6 +256,8 @@ message LayerParameter {
     HDF5_DATA = 9;
     HDF5_OUTPUT = 10;
     HINGE_LOSS = 28;
+    HISTOGRAM = 53;
+    IGNORE_OVERLAY = 52;
     IM2COL = 11;
     IMAGE_DATA = 12;
     IMAGE_SEG_DATA = 39;
@@ -333,6 +335,8 @@ message LayerParameter {
   optional HDF5DataParameter hdf5_data_param = 13;
   optional HDF5OutputParameter hdf5_output_param = 14;
   optional HingeLossParameter hinge_loss_param = 29;
+  optional HistogramParameter histogram_param = 56;
+  optional IgnoreOverlayParameter ignore_overlay_param = 55;
   optional ImageDataParameter image_data_param = 15;
   optional InfogainLossParameter infogain_loss_param = 16;
   optional InnerProductParameter inner_product_param = 17;
@@ -616,6 +620,15 @@ message HingeLossParameter {
   optional Norm norm = 1 [default = L1];
 }
 
+message HistogramParameter {
+  required int32 num_labels = 1;
+  repeated int32 ignore_label = 2;
+}
+
+message IgnoreOverlayParameter {
+  optional int32 ignore_label = 1;
+}
+
 // Message that stores parameters used by ImageDataLayer
 message ImageDataParameter {
   // Specify the data source.
@@ -634,6 +647,14 @@ message ImageDataParameter {
   optional uint32 new_width = 10 [default = 0];
   // Specify if the images are color or gray
   optional bool is_color = 11 [default = true];
+  // This is the value set for pixels or images where we don't know the label
+  optional int32 ignore_label = 15 [default = 255];
+  enum LabelType {
+    NONE = 0;
+    IMAGE = 1;
+    PIXEL = 2;
+  }
+  optional LabelType label_type = 16 [default = IMAGE];
   // DEPRECATED. See TransformationParameter. For data pre-processing, we can do
   // simple scaling and subtracting the data mean, if provided. Note that the
   // mean subtraction is always carried out before scaling.
@@ -863,6 +884,7 @@ message WindowDataParameter {
 message UniqueLabelParameter {
   required int32 max_labels = 1;
   repeated float ignore_label = 2;
+  repeated float force_label = 3;
 }
 
 // DEPRECATED: V0LayerParameter is the old way of specifying layer parameters

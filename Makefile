@@ -77,6 +77,7 @@ ifneq ($(MATLAB_DIR),)
 	MAT_SO_EXT := $(shell $(MATLAB_DIR)/bin/mexext)
 endif
 MAT$(PROJECT)_SO := matlab/$(PROJECT)/$(PROJECT).$(MAT_SO_EXT)
+ALL_SRS := ${CXX_SRCS} ${HXX_SRCS} ${CU_SRCS} ${CUH_SRCS} ${EXAMPLE_SRCS} ${PROTO_SRCS} ${PYCAFFE_SRC} ${MATCAFFE_SRC} ${MLPTRAIN_SRC} ${TEST_SRCS} ${TEST_HDRS}
 
 ##############################
 # Derive generated files
@@ -403,6 +404,9 @@ test: $(TEST_ALL_BIN) $(TEST_ALL_DYNLINK_BIN) $(TEST_BINS)
 tools: $(TOOL_BINS) $(TOOL_BIN_LINKS)
 
 examples: $(EXAMPLE_BINS)
+
+etags: ${ALL_SRS} ${TEST_SRCS}
+	etags ${ALL_SRS} ${TEST_SRCS}
 
 py$(PROJECT): py
 

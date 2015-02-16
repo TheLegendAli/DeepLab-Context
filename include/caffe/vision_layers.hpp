@@ -278,6 +278,72 @@ class BiasChannelLayer : public Layer<Dtype> {
 };
 
 /**
+ * @brief Counts the number of occurrences of a given value across
+   spatial positions.
+   Ignores values in the ignore_label list.
+   It assumes that the input is integers in the [0 num_labels) range.
+   Input:  [num 1 height width]
+   Output: [num num_labels 1 1]
+ */
+template <typename Dtype>
+class HistogramLayer : public Layer<Dtype> {
+ public:
+  explicit HistogramLayer(const LayerParameter& param)
+      : Layer<Dtype>(param) {}
+  virtual void LayerSetUp(const vector<Blob<Dtype>*>& bottom,
+      const vector<Blob<Dtype>*>& top);
+  virtual void Reshape(const vector<Blob<Dtype>*>& bottom,
+      const vector<Blob<Dtype>*>& top);
+
+  virtual inline LayerParameter_LayerType type() const {
+    return LayerParameter_LayerType_HISTOGRAM;
+  }
+  virtual inline int ExactNumBottomBlobs() const { return 1; }
+  virtual inline int ExactNumTopBlobs() const { return 1; }
+
+ protected:
+  virtual void Forward_cpu(const vector<Blob<Dtype>*>& bottom,
+      const vector<Blob<Dtype>*>& top);
+  virtual void Backward_cpu(const vector<Blob<Dtype>*>& top,
+     const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom) {}
+  
+  int num_, height_, width_;
+  int num_labels_;
+  // set of ignore labels
+  std::set<int> ignore_label_;
+};
+
+/**
+   @brief The output equals to bottom[1] except for the positions in bottom[0]
+   where the value of bottom[0] equals to ignore_label
+ */
+template <typename Dtype>
+class IgnoreOverlayLayer : public Layer<Dtype> {
+ public:
+  explicit IgnoreOverlayLayer(const LayerParameter& param)
+      : Layer<Dtype>(param) {}
+  virtual void LayerSetUp(const vector<Blob<Dtype>*>& bottom,
+      const vector<Blob<Dtype>*>& top);
+  virtual void Reshape(const vector<Blob<Dtype>*>& bottom,
+      const vector<Blob<Dtype>*>& top);
+
+  virtual inline LayerParameter_LayerType type() const {
+    return LayerParameter_LayerType_IGNORE_OVERLAY;
+  }
+  virtual inline int ExactNumBottomBlobs() const { return 2; }
+  virtual inline int ExactNumTopBlobs() const { return 1; }
+
+ protected:
+  virtual void Forward_cpu(const vector<Blob<Dtype>*>& bottom,
+      const vector<Blob<Dtype>*>& top);
+  virtual void Backward_cpu(const vector<Blob<Dtype>*>& top,
+      const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom) {}
+  
+  int num_, channels_, height_, width_;
+  int ignore_label_;
+};
+
+/**
  * @brief Aggregates the scores (log-probabilities) from a larger label
  * space to a smaller label space via a softmax operation.
  * The mapping between the two label spaces is provided via a text file.
@@ -423,6 +489,8 @@ class UniqueLabelLayer : public Layer<Dtype> {
   int max_labels_;
   // set of ignore labels
   std::set<Dtype> ignore_label_;
+  // set of forced labels
+  std::set<Dtype> force_label_;
 };
 
 /**
