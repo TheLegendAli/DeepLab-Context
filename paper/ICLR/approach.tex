@@ -35,6 +35,14 @@ option to sparsely sample the underlying feature map. This approach is
 generally applicable and allows us to efficiently compute dense CNN feature
 maps at any target subsampling rate without introducing any approximations.
 
+\begin{figure}
+  \centering
+  \includegraphics[width=0.7\linewidth]{fig/atrous.pdf}
+  \caption{Illustration of the hole algorithm.}
+  \label{fig:hole}
+\end{figure}
+
+
 We finetune the model weights of the Imagenet-pretrained VGG-16 network to
 adapt it to the image classification task in a straightforward fashion,
 following the procedure of \citet{long2014fully}. We replace the 1000-way
