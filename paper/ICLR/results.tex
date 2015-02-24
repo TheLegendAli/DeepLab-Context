@@ -8,13 +8,34 @@
 For DCNN training we employ the VGG-16 network which has been pre-trained on ImageNet. We fine-tuned the VGG-16 network on the VOC 21-way classification task by stochastic gradient descent on the cross-entropy loss function, as described in Section~\ref{sec:convnet-hole}. We use a mini-batch of 20 images and initial learning rate of $0.001$ ($0.01$ for the final classifier layer), multiplying the learning rate by 0.1 at every 2000 iterations. We use momentum of $0.9$ and a weight decay of $0.0005$.
 
 %a DCNN is first fine-tuned on the training set and then, as in the work of \citet{krahenbuhl2011efficient}  we cross-validate the 
-After the DCNN has been fine-tuned, we cross-validate the parameters of the fully connected CRF model in \equref{eq:fully_crf} along the lines of \citet{krahenbuhl2011efficient};
- to avoid overfitting the validation set, the parameters $w_2$ and $\sigma_\gamma$ are fixed to be $3$ and the best values of $w_1$, $\sigma_\alpha$, and $\sigma_\beta$ are cross-validated on a small subset of the validation set (we use 200 images). We employ coarse-to-fine search scheme. Specifically, the initial search range of the parameters are $w_1 \in [5, 10, 15]$, $\sigma_\alpha \in [10:10:100]$ and $\sigma_\beta \in [5, 10]$ in the MATLAB format, and then we refine the search step sizes in the promising parameter space. For the efficient mean field inference algorithm \citep{krahenbuhl2011efficient}, we use 10 iterations. 
+After the DCNN has been fine-tuned, we cross-validate the parameters
+of the fully connected CRF model in \equref{eq:fully_crf} along the
+lines of \citet{krahenbuhl2011efficient}. We use the default values of
+$w_2 = 3$ and  $\sigma_\gamma = 3$ and we search for the best values
+of $w_1$, $\sigma_\alpha$, and $\sigma_\beta$ by cross-validation on a
+small subset of the validation set (we use the first 200 images). We
+employ coarse-to-fine search scheme. Specifically, the initial search
+range of the parameters are $w_1 \in [5, 10, 15]$, $\sigma_\alpha \in
+[10:10:100]$ and $\sigma_\beta \in [5:1:10]$ (MATLAB notation), and
+then we refine the search step sizes around the first round's best
+values. We fix the number of mean field iterations to 10 for all
+reported experiments.
 
-\paragraph{Evaluation on Validation set} We conduct the majority of our evaluations on the PASCAL `val' set, training our model on the augmented PASCAL `train' set. As shown in \tabref{tb:valIOU} (a), incorporating the fully connected CRF to our model (denoted by DeepLab-CRF) yields a substantial performance boost, about 4\% improvement over DeepLab. We note that the work of \citet{krahenbuhl2011efficient} improved the $27.6\%$
-result of TextonBoost \citep{shotton2009textonboost} to $29.1\%$, which makes the  improvement we report here (from $59.8\%$ to $63.7\%$) all the more impressive.
+\paragraph{Evaluation on Validation set} We conduct the majority of
+our evaluations on the PASCAL `val' set, training our model on the
+augmented PASCAL `train' set. As shown in \tabref{tb:valIOU} (a),
+incorporating the fully connected CRF to our model (denoted by
+DeepLab-CRF) yields a substantial performance boost, about 4\%
+improvement over DeepLab. We note that the work of
+\citet{krahenbuhl2011efficient} improved the $27.6\%$ result of
+TextonBoost \citep{shotton2009textonboost} to $29.1\%$, which makes
+the  improvement we report here (from $59.8\%$ to $63.7\%$) all the
+more impressive.
 
-Turning to qualitative results, we provide visual comparisons between DeepLab and DeepLab-CRF in \figref{fig:ValResults}. Employing a fully connected CRF significantly improves the results, allowing the model to accurately capture intricate object boundaries. 
+Turning to qualitative results, we provide visual comparisons between
+DeepLab and DeepLab-CRF in \figref{fig:ValResults}. Employing a fully
+connected CRF significantly improves the results, allowing the model
+to accurately capture intricate object boundaries.
 
 We also exploit the features from the intermediate layers (\ie multi-scale features), similar to \citet{hariharan2014hypercolumns, long2014fully}. As shown in \tabref{tb:valIOU} (a), adding the multi-scale features to our base model (denoted as DeepLab-MSc) improves about $1.5\%$ performance, and incorporating the fully connected CRF (denoted as DeepLab-MSc-CRF) also yields about 4\% furhter improvement. The qualitative comparisons between DeepLab and DeepLab-MSc are shown in \figref{fig:msBoundary}. Leveraging the multi-scale features can slightly refine the object boundaries.
 
@@ -46,7 +67,11 @@ We also exploit the features from the intermediate layers (\ie multi-scale featu
     \\
     (a) & (b)
   \end{tabular}
-  \caption{(a) Performance of our proposed models on the PASCAL VOC 2012 'val' set (with training in the augmented 'train' set). (b) Performance of our DeepLab-CRF and DeepLab-MSc-CRF model compared to other state-of-art methods on the PASCAL VOC 2012 'test' set.}
+  \caption{(a) Performance of our proposed models on the PASCAL VOC
+    2012 'val' set (with training in the augmented 'train' set). (b)
+    Performance of our DeepLab-CRF and DeepLab-MSc-CRF model (with
+    training in the augmented 'trainval' set) compared to other
+    state-of-art methods on the PASCAL VOC 2012 'test' set.}
   \label{tb:valIOU}
 \end{table}
 

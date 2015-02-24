@@ -25,20 +25,23 @@ convolutional filters in the layers that follow them by introducing zeros to
 increase their length (\by{2}{} in the last three convolutional layers and
 \by{4}{} in the first fully connected layer). We can implement this more
 efficiently by keeping the filters intact and instead sparsely sample the
-feature maps on which they are applied on using a stride of 2 or 4 pixels,
-respectively. This approach is known as the `hole algorithm' (`atrous
-algorithm') and has been developed before for efficient computation of the
-undecimated wavelet transform \cite{Mall99}. We have implemented this within
-the Caffe framework \citep{jia2014caffe} by adding to the \textsl{im2col}
-function (it converts multi-channel feature maps to vectorized patches) the
-option to sparsely sample the underlying feature map. This approach is
-generally applicable and allows us to efficiently compute dense CNN feature
-maps at any target subsampling rate without introducing any approximations.
+feature maps on which they are applied on using an input stride of 2 or 4 
+pixels, respectively. This approach, illustrated in \figref{fig:hole} is 
+known as the `hole algorithm' (`atrous algorithm') and has been developed 
+before for efficient computation of the undecimated wavelet transform
+\cite{Mall99}. We have implemented this within the Caffe framework
+\citep{jia2014caffe} by adding to the \textsl{im2col} function (it converts
+multi-channel feature maps to vectorized patches) the option to sparsely
+sample the underlying feature map. This approach is generally applicable
+and allows us to efficiently compute dense CNN feature maps at any target
+subsampling rate without introducing any approximations.
 
 \begin{figure}
   \centering
-  \includegraphics[width=0.5\linewidth]{fig/atrous.pdf}
-  \caption{Illustration of the hole algorithm in 1-D, in which the kernel size = 3, and input stride = 2 (\ie, one zero value is introduced).}
+  \includegraphics[width=0.5\linewidth]{fig/atrous2.pdf}
+  \caption{Illustration of the hole algorithm in 1-D, when
+    \textsl{kernel\_size = 3}, \textsl{input\_stride = 2},
+    and \textsl{output\_stride = 1}.}
   \label{fig:hole}
 \end{figure}
 
@@ -209,8 +212,10 @@ publicly available implementation of \citep{krahenbuhl2011efficient}.
 \begin{figure}
   \centering
   \includegraphics[width=0.7\linewidth]{fig/model_illustration3.pdf}
-  \caption{Model Illustration. The coarse score map from Deep Convolutional Neural Network (with fully convolutional layers) is upsampled by bi-linear
-    interpolation. A fully connected CRF is applied to refine the segmentation result. Best viewed in color.}
+  \caption{Model Illustration. The coarse score map from Deep
+    Convolutional Neural Network (with fully convolutional layers) is
+    upsampled by bi-linear interpolation. A fully connected CRF is
+    applied to refine the segmentation result. Best viewed in color.}
   \label{fig:ModelIllustration}
 \end{figure}
 
@@ -219,10 +224,15 @@ publicly available implementation of \citep{krahenbuhl2011efficient}.
 
 Following the promising recent results of \cite{hariharan2014hypercolumns,
   long2014fully} we have also explored a multi-scale prediction method to
-increase the boundary localization accuracy. Specifically, we attach to the input image and each of the first four max pooling layers a two-layer MLP (first layer: 128 3x3 convolutional filters, second layer: 128 1x1 convolutional filters) whose score map is concatenated to the VGG final layer score map. The final score map fed into the softmax layer thus consists of 4,096 + 5 * 128 = 4,736 channels. We
-only adjust the newly added weights, keeping the other network parameters to
-the values learned by the method of Section~\ref{sec:convnets}. As
-discussed in the experimental section, introducing these extra direct
-connections from fine-resolution layers improves localization performance, yet
-the effect is not as dramatic as the one obtained with the fully-connected
-CRF. 
+increase the boundary localization accuracy. Specifically, we attach
+to the input image and the output of each of the first four max
+pooling layers a two-layer MLP (first layer: 128 3x3 convolutional
+filters, second layer: 128 1x1 convolutional filters) whose score map
+is concatenated to the VGG final layer score map. The final score map
+fed into the softmax layer thus consists of 4,096 + 5 * 128 = 4,736
+channels. We only adjust the newly added weights, keeping the other
+network parameters to the values learned by the method of
+Section~\ref{sec:convnets}. As discussed in the experimental section,
+introducing these extra direct connections from fine-resolution layers
+improves localization performance, yet the effect is not as dramatic
+as the one obtained with the fully-connected CRF. 
