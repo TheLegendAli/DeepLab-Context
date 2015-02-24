@@ -37,7 +37,7 @@ DeepLab and DeepLab-CRF in \figref{fig:ValResults}. Employing a fully
 connected CRF significantly improves the results, allowing the model
 to accurately capture intricate object boundaries.
 
-We also exploit the features from the intermediate layers (\ie multi-scale features), similar to \citet{hariharan2014hypercolumns, long2014fully}. As shown in \tabref{tb:valIOU} (a), adding the multi-scale features to our base model (denoted as DeepLab-MSc) improves about $1.5\%$ performance, and incorporating the fully connected CRF (denoted as DeepLab-MSc-CRF) also yields about 4\% furhter improvement. The qualitative comparisons between DeepLab and DeepLab-MSc are shown in \figref{fig:msBoundary}. Leveraging the multi-scale features can slightly refine the object boundaries.
+We also exploit the features from the intermediate layers (\ie multi-scale features), similar to \citet{hariharan2014hypercolumns, long2014fully}. As shown in \tabref{tb:valIOU} (a), adding the multi-scale features to our DeepLab model (denoted as DeepLab-MSc) improves about $1.5\%$ performance, and further incorporating the fully connected CRF (denoted as DeepLab-MSc-CRF) yields about 4\% improvement. The qualitative comparisons between DeepLab and DeepLab-MSc are shown in \figref{fig:msBoundary}. Leveraging the multi-scale features can slightly refine the object boundaries.
 
 \begin{table}[t]
   \centering
@@ -154,7 +154,7 @@ DeepLab-MSc-CRF & {\bf 92.6} & 80.4 & {\bf 36.8} & 77.4 & 55.2 & {\bf 66.4} & {\
 \hline
  \end{tabular}
 }
- \caption{Labeling IoU (\%) on the PASCAL VOC 2012 test set, using the trainval set for training.}
+ \caption{Labeling IOU (\%) on the PASCAL VOC 2012 test set, using the trainval set for training.}
  \label{tab:voc2012}
 \end{table*}
 
