@@ -69,7 +69,7 @@ significantly increasing the complexity and training time of their system:
 Fine-tuning our network on PASCAL VOC 2012 takes about 10 hours, while
 they report a training time of several days (both timings on a modern GPU).
 
-\subsection{Shrinking the Receptive Field and Accelerating Dense Computation
+\subsection{Controlling the Receptive Field Size and Accelerating Dense Computation
   with Convolutional Nets}
 \label{sec:convnet-field}
 
@@ -79,24 +79,33 @@ DCNN-based image recognition methods rely on networks pre-trained on the
 Imagenet large-scale classification task. These networks typically have large
 receptive field size: in the case of the VGG-16 net we consider, its receptive
 field is \by{224}{224} (with zero-padding) and \by{404}{404} pixels if the net
-is applied convolutionally. We consider this receptive field size to be too
-large to allow good localization accuracy (unless one uses heavily zoomed-in
-versions of the image). Moreover, after converting the network to a fully
-convolutional one, the first fully connected layer has 4,096 filters of large
-\by{7}{7} spatial size and becomes the computational bottleneck in our dense
-score map computation.
+is applied convolutionally. After converting the network to a fully
+convolutional one, the first fully connected layer has 4,096 filters
+of large \by{7}{7} spatial size and becomes the computational
+bottleneck in our dense score map computation.
 
-We have addressed both of these serious practical problems by spatially
-subsampling the first FC layer to \by{4}{4} spatial size. This has reduced the
-receptive field of the network down to \by{128}{128} (with zero-padding) or
-\by{308}{308}) (in convolutional mode) and has reduced computation time for
-the first FC layer by 3 times. Using our Caffe-based implementation and a
-Titan GPU, the resulting VGG-derived network is very efficient: Given a
-\by{306}{306} input image, it produces \by{39}{39} dense raw feature scores at
-the top of the network at a rate of about 8 frames/sec during testing. The
-speed during training is 3 frames/sec. Using smaller networks such as
-\citet{KrizhevskyNIPS2013} could allow video-rate test-time dense feature
-computation even on light-weight GPUs.
+%% We consider this receptive field size to be too
+%% large to allow good localization accuracy (unless one uses heavily zoomed-in
+%% versions of the image). Moreover, after converting the network to a fully
+%% convolutional one, the first fully connected layer has 4,096 filters of large
+%% \by{7}{7} spatial size and becomes the computational bottleneck in our dense
+%% score map computation.
+
+%% We have addressed both of these serious practical problems by spatially
+%% subsampling the first FC layer to \by{4}{4} spatial size. 
+
+We have addressed this practical problem by spatially subsampling (by
+simple decimation) the first FC layer to \by{4}{4} spatial size. This
+has reduced the receptive field of the network down to \by{128}{128}
+(with zero-padding) or \by{308}{308} (in convolutional mode) and has
+reduced computation time for the first FC layer by 3 times. Using our
+Caffe-based implementation and a Titan GPU, the resulting VGG-derived
+network is very efficient: Given a \by{306}{306} input image, it
+produces \by{39}{39} dense raw feature scores at the top of the
+network at a rate of about 8 frames/sec during testing. The speed
+during training is 3 frames/sec. Using smaller networks such as
+\citet{KrizhevskyNIPS2013} could allow video-rate test-time dense
+feature computation even on light-weight GPUs.
 
 \section{Detailed Boundary Recovery: Fully-Connected Conditional Random Fields and Multi-scale Prediction}
 \label{sec:boundary-recovery}
