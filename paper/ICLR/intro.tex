@@ -81,15 +81,18 @@ More recently, the segmentation-free techniques of \citep{long2014fully, eigen20
 
 The main difference between our model and other state-of-the-art models is the combination of pixel-level CRFs and DCNN-based `unary terms'. Focusing on the closest works in this direction, \citet{cogswell2014combining} use CRFs as a proposal mechanism for a DCNN-based reranking system, while \citet{farabet2013learning} treat superpixels as  nodes for a local pairwise CRF and use graph-cuts for discrete inference; as such their results can be limited by errors in superpixel computations, while ignoring  long-range superpixel dependencies. Our approach instead treats every pixel as a CRF node, exploits long-range dependencies, and uses  CRF inference to directly optimize a DCNN-driven cost function.
 
-Concurrently to our work, two other groups have independently pursued
-a very similar direction, combining DCNNs and densely connected CRFs
-\citep{bell2014material, zheng2015crfrnn}. There are several
-differences in technical aspects of the respective models. In terms of
-applications, \citet{bell2014material} focus on the problem of material
-classification. Similarly to us, \citet{zheng2015crfrnn} focus on the
-problem of semantic image segmentation but their results are somewhat
-inferior to ours. We refer the interested reader to these papers for
-different perspectives on the interplay of DCNNs and CRFs.
+After the first version of our manuscript was made publicly available,
+it came to our attention that two other groups have independently
+and concurrently pursued a very similar direction, combining DCNNs and
+densely connected CRFs \citep{bell2014material,
+  zheng2015crfrnn}. There are several differences in technical aspects
+of the respective models. In terms of applications,
+\citet{bell2014material} focus on the problem of material
+classification. Similarly to us, \citet{zheng2015crfrnn} evaluate
+their system on the problem of semantic image segmentation but their
+results on the PASCAL VOC 2012 benchmark are somewhat inferior to
+ours. We refer the interested reader to these papers for different
+perspectives on the interplay of DCNNs and CRFs.
 
 % used in our fully-connected CRF. 
  %extract features via DCNN
