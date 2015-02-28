@@ -13,7 +13,7 @@ of the fully connected CRF model in \equref{eq:fully_crf} along the
 lines of \citet{krahenbuhl2011efficient}. We use the default values of
 $w_2 = 3$ and  $\sigma_\gamma = 3$ and we search for the best values
 of $w_1$, $\sigma_\alpha$, and $\sigma_\beta$ by cross-validation on a
-small subset of the validation set (we use the first 200 images). We
+small subset of the validation set (we use 200 images). We
 employ coarse-to-fine search scheme. Specifically, the initial search
 range of the parameters are $w_1 \in [5, 10, 15]$, $\sigma_\alpha \in
 [10:10:100]$ and $\sigma_\beta \in [5:1:10]$ (MATLAB notation), and
