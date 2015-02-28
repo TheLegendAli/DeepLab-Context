@@ -19,15 +19,17 @@ every layer of standard DCNNs \citep{KrizhevskyNIPS2013,
   simonyan2014very, szegedy2014going}. Instead, as in
 \citet{papandreou2014untangling}, we employ the `atrous'
 (with holes) algorithm originally developed for efficiently computing the
-undecimated discrete wavelet transform \cite{Mall99}. This allows efficient dense computation of DCNN responses in a scheme substantially simpler than earlier solutions to this problem \cite{GCMG+13, sermanet2013overfeat}. 
+undecimated discrete wavelet transform \cite{Mall99}. This allows
+efficient dense computation of DCNN responses in a scheme
+substantially simpler than earlier solutions to this problem
+\cite{GCMG+13, sermanet2013overfeat}.
 
 The second problem relates to the fact that obtaining object-centric decisions
-from a classifier inherently requires invariance to spatial
-transformations. For instance, we cannot expect a `bicycle' classifier to
-respond differently to pixels that are placed on the bicycle's support and to
-pixels that are placed in the interior of its holes, e.g. within the bicycle's
-chassis, or rays. {\color{red} We partly alleviate this problem by re-purposing an Imagenet pretrained network to have a smaller receptive field, also accelerating its speed as a by-product}. More importantly, we boost our model's ability to capture fine details by employing a fully-connected Conditional Random Field (CRF).  
-Conditional Random Fields (CRFs) have been broadly used in semantic segmentation to
+from a classifier requires invariance to spatial transformations,
+inherently limiting the spatial accuracy of the DCNN model. We boost
+our model's ability to capture fine details by employing a
+fully-connected Conditional Random Field (CRF). Conditional Random
+Fields have been broadly used in semantic segmentation to 
 combine class scores computed by multi-way classifiers with the low-level
 information captured by the local interactions of pixels and edges
 \citep{rother2004grabcut, shotton2009textonboost} or superpixels
@@ -46,7 +48,14 @@ classifier.
 %invariance that is inherently necessary in order to obtain high-level, 
 %In brief, we treat the first side of the problem by , and the second by coupling DCNNs with Conditional Random Field inference, so as to combine the high-level decisons of DCNNs with the sharp spatial localization of CRFs.
 
-The three main advantages of our ``DeepLab'' system are (i) speed: by virtue of the `atrous' algorithm and the reduced receptive field size, our dense DCNN operates at 8 fps, while Mean Field Inference for the fully-connected CRF requires 0.5 second, (ii) accuracy: we obtain state-of-the-art results on the PASCAL semantic segmentation challenge, outperforming the second-best approach of \citet{mostajabi2014feedforward} by a margin of 2$\%$ and (iii) simplicity: our system is composed of a cascade of two fairly well-established modules, DCNNs and CRFs. 
+The three main advantages of our ``DeepLab'' system are (i) speed: by
+virtue of the `atrous' algorithm, our dense DCNN operates at 8 fps,
+while Mean Field Inference for the fully-connected CRF requires 0.5
+second, (ii) accuracy: we obtain state-of-the-art results on the
+PASCAL semantic segmentation challenge, outperforming the second-best
+approach of \citet{mostajabi2014feedforward} by a margin of 2$\%$ and
+(iii) simplicity: our system is composed of a cascade of two fairly
+well-established modules, DCNNs and CRFs.
 
 %In particular, when compared to a broad pool of works recently developped around the problem of combining DCNNs with semantic segmentation, our system can be understood as being substantially simpler, relying on a minimal number of components, while at the same time delivering state-of-the-art results.
 
@@ -70,7 +79,17 @@ More recently, the segmentation-free techniques of \citep{long2014fully, eigen20
 
 %Another recent work that also attempts to combine the effectiveness of graphical model and DCNNs for segmentation is \citet{cogswell2014combining}, where the authors employ CRFs to propose diverse region proposals, an extension of \citet{yadollahpour2013discriminative}.
 
-The main difference between our model and other state-of-the-art models is the combination of pixel-level CRFs and DCNN-based `unary terms'. Focusing on the closest works in this direction, \citet{cogswell2014combining} use CRFs as a proposal mechanism for a DCNN-based reranking system, while \citet{farabet2013learning} treat superpixels as  nodes for a local pairwise CRF and use graph-cuts for discrete inference; as such their results can be limited by errors in superpixel computations, while ignoring  long-range superpixel dependencies. Our approach instead treats every pixel as a CRF node, exploits long-range dependencies, and uses  CRF inference to directly optimize a DCNN-driven cost function. 
+The main difference between our model and other state-of-the-art models is the combination of pixel-level CRFs and DCNN-based `unary terms'. Focusing on the closest works in this direction, \citet{cogswell2014combining} use CRFs as a proposal mechanism for a DCNN-based reranking system, while \citet{farabet2013learning} treat superpixels as  nodes for a local pairwise CRF and use graph-cuts for discrete inference; as such their results can be limited by errors in superpixel computations, while ignoring  long-range superpixel dependencies. Our approach instead treats every pixel as a CRF node, exploits long-range dependencies, and uses  CRF inference to directly optimize a DCNN-driven cost function.
+
+Concurrently to our work, two other groups have independently pursued
+a very similar direction, combining DCNNs and densely connected CRFs
+\citep{bell2014material, zheng2015crfrnn}. There are several
+differences in technical aspects of the respective models. In terms of
+applications, \citet{bell2014material} focus on the problem of material
+classification. Similarly to us, \citet{zheng2015crfrnn} focus on the
+problem of semantic image segmentation but their results are somewhat
+inferior to ours. We refer the interested reader to these papers for
+different perspectives on the interplay of DCNNs and CRFs.
 
 % used in our fully-connected CRF. 
  %extract features via DCNN
