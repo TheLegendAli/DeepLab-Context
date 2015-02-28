@@ -26,7 +26,7 @@ from a classifier inherently requires invariance to spatial
 transformations. For instance, we cannot expect a `bicycle' classifier to
 respond differently to pixels that are placed on the bicycle's support and to
 pixels that are placed in the interior of its holes, e.g. within the bicycle's
-chassis, or rays. We partly alleviate this problem by re-purposing an Imagenet pretrained network to have a smaller receptive field, also accelerating its speed as a by-product. More importantly, we boost our model's ability to capture fine details by employing a fully-connected Conditional Random Field (CRF).  
+chassis, or rays. {\color{red} We partly alleviate this problem by re-purposing an Imagenet pretrained network to have a smaller receptive field, also accelerating its speed as a by-product}. More importantly, we boost our model's ability to capture fine details by employing a fully-connected Conditional Random Field (CRF).  
 Conditional Random Fields (CRFs) have been broadly used in semantic segmentation to
 combine class scores computed by multi-way classifiers with the low-level
 information captured by the local interactions of pixels and edges
