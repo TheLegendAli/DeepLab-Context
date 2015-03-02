@@ -3,6 +3,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <algorithm>
 
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -144,6 +145,9 @@ void ImageSegDataLayer<Dtype>::InternalThreadEntry() {
   Dtype* top_label    = this->prefetch_label_.mutable_cpu_data(); 
   Dtype* top_data_dim = this->prefetch_data_dim_.mutable_cpu_data();
 
+  const int max_height = this->prefetch_data_.height();
+  const int max_width  = this->prefetch_data_.width();
+
   ImageDataParameter image_data_param    = this->layer_param_.image_data_param();
   const int batch_size = image_data_param.batch_size();
   const int new_height = image_data_param.new_height();
@@ -169,8 +173,8 @@ void ImageSegDataLayer<Dtype>::InternalThreadEntry() {
     cv_img_seg.push_back(ReadImageToCVMat(root_folder + lines_[lines_id_].first,
 	  new_height, new_width, is_color, &img_row, &img_col));
 
-    *(top_data_dim + top_data_dim_offset)     = static_cast<Dtype>(img_row);
-    *(top_data_dim + top_data_dim_offset + 1) = static_cast<Dtype>(img_col);
+    top_data_dim[top_data_dim_offset]     = static_cast<Dtype>(std::min(max_height, img_row));
+    top_data_dim[top_data_dim_offset + 1] = static_cast<Dtype>(std::min(max_width, img_col));
 
     if (!cv_img_seg[0].data) {
       DLOG(INFO) << "Fail to load img: " << root_folder + lines_[lines_id_].first;
