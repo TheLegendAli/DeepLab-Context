@@ -5,8 +5,12 @@ clear all; close all;
 load('./pascal_seg_colormap.mat');
 
 is_server       = 1;
+
+crf_load_mat    = 1;   % the densecrf code load MAT files directly (no call SaveMatAsBin.m)
+                       % used by DownSampleFeature.m
+
 is_mat          = 1;   % the results are saved as mat or png
-has_postprocess = 1;   % has done densecrf post processing or not
+has_postprocess = 0;   % has done densecrf post processing or not
 is_argmax       = 0;   % the output has been taken argmax already (e.g., coco dataset). 
                        % assume the argmax takes C-convention (i.e., start from 0)
 
@@ -85,6 +89,35 @@ debug           = 0;   % if debug, show some results
 % vgg128_noup_pool3_20M (not xvaled)
 % bi_w = 5, bi_x_std = 71, bi_r_std = 3, pos_w = 3, pos_x_std = 3
 
+% vgg128_noup_pool3_125M 
+% bi_w = 4, bi_x_std = 72, bi_r_std = 5, pos_w = 3, pos_x_std = 3
+
+% vgg128_noup_pool3_largewin
+% bi_w = 4, bi_x_std = 56, bi_r_std = 4, pos_w = 3, pos_x_std = 3
+
+% vgg128_noup_pool3_largewin2
+% bi_w = 4, bi_x_std = 53, bi_r_std = 5, pos_w = 3, pos_x_std = 3
+
+% vgg128_noup_pool3_20M_largewin
+% bi_w = 4, bi_x_std = 123, bi_r_std = 5, pos_w = 3, pos_x_std = 3
+
+% vgg128_noup_pool3_20M_largewin2
+% bi_w = 4, bi_x_std = 175, bi_r_std = 5, pos_w = 3, pos_x_std = 3
+
+% vgg128_noup_pool3_20M_largewin2
+% bi_w = 4, bi_x_std = 121, bi_r_std = 5, pos_w = 3, pos_x_std = 3
+
+% vgg128_noup_pool3_largewin_coco
+% bi_w = 4, bi_x_std = 65, bi_r_std = 5, pos_w = 3, pos_x_std = 3
+
+% vgg128_noup_pool3_40M_largewin_spm
+% bi_w = 4, bi_x_std = 83, bi_r_std = 4, pos_w = 3, pos_x_std = 3
+
+
+% alexnet_noup_pool3_7M
+% bi_w = 5, bi_x_std = 61, bi_r_std = 5, pos_w = 3, pos_x_std = 3
+
+
 % erode_gt (bbox)
 % bi_w = 41, bi_x_std = 33, bi_r_std = 4
 
@@ -95,9 +128,9 @@ debug           = 0;   % if debug, show some results
 % bi_w = 45, bi_x_std = 37, bi_r_std = 3, pos_w = 15, pos_x_std = 3
  
 %
-bi_w           = 5; 
-bi_x_std       = 71;
-bi_r_std       = 3;
+bi_w           = 4; 
+bi_x_std       = 83;
+bi_r_std       = 4;
 
 pos_w          = 3;
 pos_x_std      = 3;
@@ -105,13 +138,13 @@ pos_x_std      = 3;
 %
 dataset    = 'voc12';  %'voc12', 'coco'
 id         = 'comp6';
-trainset   = 'train_aug';
-testset    = 'test';            %'val', 'test'
+trainset   = 'train_aug';       % not used
+testset    = 'val';            %'val', 'test'
 
-model_name = 'vgg128_noup_pool3_20M';
+model_name = 'vgg128_noup_pool3_17M_largewin2';
 
-feature_name = 'features2';
-feature_type = 'crf'; % fc8 / crf
+feature_name = 'features';
+feature_type = 'fc8'; % fc8 / crf
 
 % feature_name = 'erode_gt';     % 'erode_gt', 'features', 'features4', 'features2', ''
 % feature_type = 'bboxErode20_OccluBias';        %'bboxErode20', 'fc8', 'crf', 'fc8_crf'
@@ -127,11 +160,11 @@ down_sample_rate   = 8;
 num_sample         = 100;     % used for erode_gt 
 
 % ranges for cross-validation
-range_pos_w = [5];
-range_pos_x_std = [5];
+range_pos_w = [3];
+range_pos_x_std = [3];
 
 range_bi_w = [5];
-range_bi_x_std = [71];
+range_bi_x_std = [85:2:95];
 range_bi_r_std = [5];
 
 

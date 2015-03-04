@@ -9,16 +9,23 @@ SetupEnv;
 
 if is_server
   mat_folder  = fullfile('/rmt/work/deeplabel/exper', dataset, feature_name, model_name, testset, feature_type);
-  save_folder = fullfile(mat_folder, 'bin');
+  if crf_load_mat
+    save_folder = mat_folder;
+    file_name   = 'mat';    
+  else
+    save_folder = fullfile(mat_folder, 'bin');
+    file_name   = 'bin';
+  end
+  folder_name = fullfile(mat_folder, file_name);
 else
   mat_folder  = '../feature';
   save_folder = '../feature_bin';
 end
 
 if down_sample_method == 1
-  dest_folder = [save_folder, sprintf('_downsampleBy%d', down_sample_rate)];
+  dest_folder = [folder_name, sprintf('_downsampleBy%d', down_sample_rate)];
 elseif down_sample_method == 2
-  dest_folder = [save_folder, sprintf('_numSample%d', num_sample)];
+  dest_folder = [folder_name, sprintf('_numSample%d', num_sample)];
 else
    error('Wrong down_sample_method\n');
 end
@@ -27,7 +34,7 @@ if ~exist(dest_folder, 'dir')
   mkdir(dest_folder)
 end
 
-save_dir = dir(fullfile(save_folder, '*.bin'));
+save_dir = dir(fullfile(save_folder, ['*.' file_name]));
 
 if down_sample_method == 1
   save_dir = save_dir(1:down_sample_rate:end);

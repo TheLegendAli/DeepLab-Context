@@ -25,10 +25,17 @@ end
 %
 best_avacc = -1;
 best_w = -1;
+
 best_x_std = -1;
 best_r_std = -1;
 
-fid = fopen(sprintf('cross_avgIOU_%s_%s_%sDownSample%d.txt', dataset, model_name, testset, down_sample_rate), 'a');
+if down_sample_method == 1
+  fid = fopen(sprintf('cross_avgIOU_%s_%s_%sDownSample%d.txt', dataset, model_name, testset, down_sample_rate), 'a');
+elseif down_sample_method == 2
+  fid = fopen(sprintf('cross_avgIOU_%s_%s_%sNumSample%d.txt', dataset, model_name, testset, num_sample), 'a');
+else
+   error('Wrong down_sample_method\n');
+end
 
 for w = range_bi_w       %0.5:0.5:6 %[1 5 10 15 20]
   bi_w = w;
@@ -51,7 +58,7 @@ for w = range_bi_w       %0.5:0.5:6 %[1 5 10 15 20]
             error('wrong down_sample_method')
           end
 
-          save_root_folder = fullfile('/rmt/work/deeplabel/exper', dataset, 'res', model_name, testset, feature_type, post_folder);
+          save_root_folder = fullfile('/rmt/work/deeplabel/exper', dataset, 'res', feature_name, model_name, testset, feature_type, post_folder);
 
           if strcmp(dataset, 'voc12')
               seg_res_dir = [save_root_folder '/results/VOC2012/'];

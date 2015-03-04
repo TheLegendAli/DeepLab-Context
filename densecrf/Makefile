@@ -34,7 +34,6 @@ prog_refine_pascal_v2: refine_pascal_v2/dense_inference.cpp util/Timer.h libDens
 prog_refine_pascal_v4: refine_pascal_v4/dense_inference.cpp util/Timer.h libDenseCRF.a
 	$(CC) refine_pascal_v4/dense_inference.cpp -o prog_refine_pascal_v4 $(CFLAGS) -L. -lDenseCRF -lmatio -I./util/
 
-
 prog_refine_pascal_prob: refine_pascal_prob/dense_inference_prob.cpp libDenseCRF.a
 	$(CC) refine_pascal_prob/dense_inference_prob.cpp -o prog_refine_pascal_prob $(CFLAGS) -L. -lDenseCRF
 

@@ -26,7 +26,7 @@ for w = range_bi_w         %[3 5 7 9 11]                %0.5:0.5:6  %[1 5 10 15 
           end
 
           if is_server
-            map_folder = fullfile('/rmt/work/deeplabel/exper', dataset, 'res', model_name, testset, feature_type, post_folder);
+  	    map_folder = fullfile('/rmt/work/deeplabel/exper', dataset, 'res', feature_name, model_name, testset, feature_type, post_folder);
           else 
             map_folder = '../result';
           end

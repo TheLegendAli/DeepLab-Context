@@ -30,11 +30,11 @@ end
 
 output_mat_folder = fullfile('/rmt/work/deeplabel/exper', dataset, feature_name, model_name, testset, feature_type);
 
-if strcmp(feature_name, 'features')
-  save_root_folder = fullfile('/rmt/work/deeplabel/exper', dataset, 'res', model_name, testset, feature_type, post_folder);
-else 
+%if strcmp(feature_name, 'features')
+%  save_root_folder = fullfile('/rmt/work/deeplabel/exper', dataset, 'res', model_name, testset, feature_type, post_folder);
+%else 
   save_root_folder = fullfile('/rmt/work/deeplabel/exper', dataset, 'res', feature_name, model_name, testset, feature_type, post_folder);
-end
+%end
 
 fprintf(1, 'Saving to %s\n', save_root_folder);
 

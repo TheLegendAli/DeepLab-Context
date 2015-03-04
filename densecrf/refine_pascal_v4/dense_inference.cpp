@@ -342,7 +342,6 @@ void ComputeUnaryForCRF(float*& unary, float* feat, int feat_row, int feat_col, 
   }
 }
 
-
 void GetImgNamesFromFeatFiles(std::vector<std::string>& out, const std::vector<std::string>& in, const std::string& strip_pattern) {
   for (size_t k = 0; k < in.size(); ++k) {
     size_t pos = in[k].find(strip_pattern);
@@ -350,6 +349,25 @@ void GetImgNamesFromFeatFiles(std::vector<std::string>& out, const std::vector<s
       out.push_back(in[k].substr(0, pos));      
     }
   }
+}
+
+void OutputSetting(const InputData& inp) {
+  std::cout << "Input Parameters: " << std::endl;
+  std::cout << "ImgDir:           " << inp.ImgDir << std::endl;
+  std::cout << "FeatureDir:       " << inp.FeatureDir << std::endl;
+  std::cout << "SaveDir:          " << inp.SaveDir << std::endl;
+  std::cout << "MaxIterations:    " << inp.MaxIterations << std::endl;
+  //std::cout << "MaxImgSize:       " << inp.MaxImgSize << std::endl;
+  //std::cout << "NumClass:         " << inp.NumClass << std::endl;
+  std::cout << "PosW:      " << inp.PosW    << std::endl;
+  std::cout << "PosXStd:   " << inp.PosXStd << std::endl;
+  std::cout << "PosYStd:   " << inp.PosYStd << std::endl;
+  std::cout << "Bi_W:      " << inp.BilateralW    << std::endl;
+  std::cout << "Bi_X_Std:  " << inp.BilateralXStd << std::endl;
+  std::cout << "Bi_Y_Std:  " << inp.BilateralYStd << std::endl;
+  std::cout << "Bi_R_Std:  " << inp.BilateralRStd << std::endl;
+  std::cout << "Bi_G_Std:  " << inp.BilateralGStd << std::endl;
+  std::cout << "Bi_B_Std:  " << inp.BilateralBStd << std::endl;  
 }
 
 int main( int argc, char* argv[]){
@@ -373,6 +391,7 @@ int main( int argc, char* argv[]){
   inp.PosYStd = 3;
 
   ParseInput(argc, argv, inp);
+  OutputSetting(inp);
 
   assert(inp.ImgDir != NULL && inp.FeatureDir != NULL && inp.SaveDir != NULL);
   
@@ -396,6 +415,10 @@ int main( int argc, char* argv[]){
   CPrecisionTimer CTmr;
   CTmr.Start();
   for (size_t i = 0; i < feat_file_names.size(); ++i) {
+    if ( (i+1) % 100 == 0) {
+      std::cout << "processing " << i << " (" << feat_file_names.size() << ")..." << std::endl;
+    }
+
     fn = std::string(inp.ImgDir) + "/" + img_file_names[i] + ".ppm";
     img = readPPM(fn.c_str(), feat_col, feat_row);
 
