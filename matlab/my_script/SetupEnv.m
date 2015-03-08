@@ -9,7 +9,7 @@ is_server       = 1;
 crf_load_mat    = 1;   % the densecrf code load MAT files directly (no call SaveMatAsBin.m)
                        % used by DownSampleFeature.m
 
-is_mat          = 1;   % the results are saved as mat or png
+is_mat          = 1;   % the results to be evaluated are saved as mat or png
 has_postprocess = 0;   % has done densecrf post processing or not
 is_argmax       = 0;   % the output has been taken argmax already (e.g., coco dataset). 
                        % assume the argmax takes C-convention (i.e., start from 0)
@@ -104,7 +104,7 @@ debug           = 0;   % if debug, show some results
 % vgg128_noup_pool3_20M_largewin2
 % bi_w = 4, bi_x_std = 175, bi_r_std = 5, pos_w = 3, pos_x_std = 3
 
-% vgg128_noup_pool3_20M_largewin2
+% vgg128_noup_pool3_20M_largewin3
 % bi_w = 4, bi_x_std = 121, bi_r_std = 5, pos_w = 3, pos_x_std = 3
 
 % vgg128_noup_pool3_largewin_coco
@@ -113,7 +113,14 @@ debug           = 0;   % if debug, show some results
 % vgg128_noup_pool3_40M_largewin_spm
 % bi_w = 4, bi_x_std = 83, bi_r_std = 4, pos_w = 3, pos_x_std = 3
 
+% vgg128_noup_pool3_17M_largewin2
+% bi_w = 4, bi_x_std = 87, bi_r_std = 5, pos_w = 3, pos_x_std = 3
 
+% vgg128_noup_pool3_20M_largewin2_coco
+% bi_w = 4, bi_x_std = 65, bi_r_std = 5, pos_w = 3, pos_x_std = 3
+
+
+%
 % alexnet_noup_pool3_7M
 % bi_w = 5, bi_x_std = 61, bi_r_std = 5, pos_w = 3, pos_x_std = 3
 
@@ -129,8 +136,8 @@ debug           = 0;   % if debug, show some results
  
 %
 bi_w           = 4; 
-bi_x_std       = 83;
-bi_r_std       = 4;
+bi_x_std       = 121;
+bi_r_std       = 5;
 
 pos_w          = 3;
 pos_x_std      = 3;
@@ -141,7 +148,7 @@ id         = 'comp6';
 trainset   = 'train_aug';       % not used
 testset    = 'val';            %'val', 'test'
 
-model_name = 'vgg128_noup_pool3_17M_largewin2';
+model_name = 'vgg128_noup_pool3_largewin_coco';
 
 feature_name = 'features';
 feature_type = 'fc8'; % fc8 / crf
@@ -163,8 +170,8 @@ num_sample         = 100;     % used for erode_gt
 range_pos_w = [3];
 range_pos_x_std = [3];
 
-range_bi_w = [5];
-range_bi_x_std = [85:2:95];
+range_bi_w = [4 6 7];
+range_bi_x_std = [65];
 range_bi_r_std = [5];
 
 

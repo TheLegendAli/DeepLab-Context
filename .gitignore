@@ -1,3 +1,6 @@
+matlab/my_script/*.txt
+matlab/my_script/*al_d*
+
 ## General
 *.pdf
 *.blg
