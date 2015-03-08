@@ -8,6 +8,7 @@ is_server       = 1;
 
 crf_load_mat    = 1;   % the densecrf code load MAT files directly (no call SaveMatAsBin.m)
                        % used by DownSampleFeature.m
+learn_crf       = 1;   % is the crf parameters learned or cross-validated
 
 is_mat          = 1;   % the results to be evaluated are saved as mat or png
 has_postprocess = 0;   % has done densecrf post processing or not
@@ -136,11 +137,13 @@ debug           = 0;   % if debug, show some results
  
 %
 bi_w           = 4; 
-bi_x_std       = 121;
+bi_x_std       = 65;
 bi_r_std       = 5;
 
 pos_w          = 3;
 pos_x_std      = 3;
+
+epoch          = 10;  % used for learned crf parameters
 
 %
 dataset    = 'voc12';  %'voc12', 'coco'

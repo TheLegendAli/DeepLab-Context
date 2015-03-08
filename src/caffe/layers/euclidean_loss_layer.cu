@@ -19,8 +19,8 @@ void EuclideanLossLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
   caffe_gpu_scal(count, Dtype(1 / sqrt(count)), diff_.mutable_gpu_data());
   Dtype dot;
   caffe_gpu_dot(count, diff_.gpu_data(), diff_.gpu_data(), &dot);
-  Dtype loss = dot / Dtype(2);
-  top[0]->mutable_cpu_data()[0] = loss;
+  loss_ = sqrt(dot);
+  top[0]->mutable_cpu_data()[0] = loss_;
 }
 
 template <typename Dtype>
@@ -30,7 +30,8 @@ void EuclideanLossLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
   for (int i = 0; i < 2; ++i) {
     if (propagate_down[i]) {
       const Dtype sign = (i == 0) ? 1 : -1;
-      const Dtype alpha = sign * top[0]->cpu_diff()[0] / sqrt(count);
+      const Dtype alpha = sign * top[0]->cpu_diff()[0] / sqrt(count) /
+                          std::max(loss_, Dtype(1e-6));
       caffe_gpu_axpby(
           count,                              // count
           alpha,                              // alpha

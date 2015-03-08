@@ -22,8 +22,16 @@ else
   end
 end
 
+/rmt/work/deeplabel/exper/voc12/densecrf/res/features/vgg128_noup_pool3_largewin_coco/val/fc8/post_densecrf_W4_XStd65_RStd5_PosW3_PosXStd3_Epoch10
+
 if has_postprocess
-  post_folder = sprintf('post_densecrf_W%d_XStd%d_RStd%d_PosW%d_PosXStd%d', bi_w, bi_x_std, bi_r_std, pos_w, pos_x_std); 
+  if learn_crf
+    crf_folder = 'densecrf';
+    post_folder = sprintf('post_densecrf_W%d_XStd%d_RStd%d_PosW%d_PosXStd%d_Epoch%d', bi_w, bi_x_std, bi_r_std, pos_w, pos_x_std, epoch); 
+  else
+    crf_folder = '';
+    post_folder = sprintf('post_densecrf_W%d_XStd%d_RStd%d_PosW%d_PosXStd%d', bi_w, bi_x_std, bi_r_std, pos_w, pos_x_std); 
+  end
 else
   post_folder = 'post_none';
 end
