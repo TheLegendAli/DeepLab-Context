@@ -197,7 +197,6 @@ void Solver<Dtype>::Solve(const char* resume_file) {
     Dtype loss = net_->ForwardBackward(bottom_vec);
     if (losses.size() < average_loss) {
       losses.push_back(loss);
-      int size = losses.size();
     } else {
       int idx = (iter_ - start_iter) % average_loss;
       losses[idx] = loss;
@@ -205,7 +204,7 @@ void Solver<Dtype>::Solve(const char* resume_file) {
     if (display) {
       Dtype smoothed_loss = 0;
       for (int i = 0; i < losses.size(); ++i) {
-	smoothed_loss += losses[i] / average_loss;
+	smoothed_loss += losses[i] / losses.size();
       }
       LOG(INFO) << "Iteration " << iter_ << ", loss = " << smoothed_loss;
       const vector<Blob<Dtype>*>& result = net_->output_blobs();
