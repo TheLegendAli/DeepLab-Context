@@ -176,7 +176,6 @@ void Solver<Dtype>::Solve(const char* resume_file) {
   CHECK_GE(average_loss, 1) << "average_loss should be non-negative.";
 
   vector<Dtype> losses;
-  Dtype smoothed_loss = 0;
 
   // For a network that is trained by the solver, no bottom or top vecs
   // should be given, and we will just provide dummy vecs.
@@ -199,13 +198,15 @@ void Solver<Dtype>::Solve(const char* resume_file) {
     if (losses.size() < average_loss) {
       losses.push_back(loss);
       int size = losses.size();
-      smoothed_loss = (smoothed_loss * (size - 1) + loss) / size;
     } else {
       int idx = (iter_ - start_iter) % average_loss;
-      smoothed_loss += (loss - losses[idx]) / average_loss;
       losses[idx] = loss;
     }
     if (display) {
+      Dtype smoothed_loss = 0;
+      for (int i = 0; i < losses.size(); ++i) {
+	smoothed_loss += losses[i] / average_loss;
+      }
       LOG(INFO) << "Iteration " << iter_ << ", loss = " << smoothed_loss;
       const vector<Blob<Dtype>*>& result = net_->output_blobs();
       int score_index = 0;
