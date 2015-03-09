@@ -22,8 +22,6 @@ else
   end
 end
 
-/rmt/work/deeplabel/exper/voc12/densecrf/res/features/vgg128_noup_pool3_largewin_coco/val/fc8/post_densecrf_W4_XStd65_RStd5_PosW3_PosXStd3_Epoch10
-
 if has_postprocess
   if learn_crf
     crf_folder = 'densecrf';
@@ -38,11 +36,7 @@ end
 
 output_mat_folder = fullfile('/rmt/work/deeplabel/exper', dataset, feature_name, model_name, testset, feature_type);
 
-%if strcmp(feature_name, 'features')
-%  save_root_folder = fullfile('/rmt/work/deeplabel/exper', dataset, 'res', model_name, testset, feature_type, post_folder);
-%else 
-  save_root_folder = fullfile('/rmt/work/deeplabel/exper', dataset, 'res', feature_name, model_name, testset, feature_type, post_folder);
-%end
+save_root_folder = fullfile('/rmt/work/deeplabel/exper', dataset, 'res', feature_name, model_name, testset, feature_type, post_folder);
 
 fprintf(1, 'Saving to %s\n', save_root_folder);
 

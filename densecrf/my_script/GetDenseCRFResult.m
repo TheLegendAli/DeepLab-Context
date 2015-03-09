@@ -8,14 +8,24 @@ SetupEnv;
 % You do not need to change values below
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 if is_server
-  map_folder = fullfile('/rmt/work/deeplabel/exper', dataset, 'res', feature_name, model_name, testset, feature_type, sprintf('post_densecrf_W%d_XStd%d_RStd%d_PosW%d_PosXStd%d', bi_w, bi_x_std, bi_r_std, pos_w, pos_x_std)); 
+  if learn_crf
+    post_folder = sprintf('post_densecrf_W%d_XStd%d_RStd%d_PosW%d_PosXStd%d_Epoch%d', bi_w, bi_x_std, bi_r_std, pos_w, pos_x_std, epoch);
+
+    map_folder = fullfile('/rmt/work/deeplabel/exper', dataset, 'densecrf', 'res', feature_name, model_name, testset, feature_type, post_folder); 
+
+    save_root_folder = fullfile('/rmt/work/deeplabel/exper', dataset, 'res', feature_name, model_name, testset, feature_type, post_folder); ;
+  else
+    post_folder = sprintf('post_densecrf_W%d_XStd%d_RStd%d_PosW%d_PosXStd%d', bi_w, bi_x_std, bi_r_std, pos_w, pos_x_std);
+    map_folder = fullfile('/rmt/work/deeplabel/exper', dataset, 'res', feature_name, model_name, testset, feature_type, post_folder); 
+
+    save_root_folder = map_folder;
+  end
 else 
   map_folder = '../result';
 end
 
 map_dir = dir(fullfile(map_folder, '*.bin'));
 
-save_root_folder = map_folder;
 
 fprintf(1,' saving to %s\n', save_root_folder);
 

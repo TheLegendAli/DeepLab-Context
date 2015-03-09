@@ -457,10 +457,17 @@ void SGDSolver<Dtype>::ComputeUpdateValue() {
       Dtype local_decay = weight_decay * net_params_weight_decay[param_id];
 
       if (local_decay) {
+	// add weight decay
         if (regularization_type == "L2") {
-          // add weight decay
           caffe_axpy(net_params[param_id]->count(),
               local_decay,
+              net_params[param_id]->cpu_data(),
+              net_params[param_id]->mutable_cpu_diff());
+        } else if (regularization_type == "L2sqrt") {
+	  Dtype dot = caffe_cpu_dot(net_params[param_id]->count(),
+	      net_params[param_id]->cpu_data(), net_params[param_id]->cpu_data());
+          caffe_axpy(net_params[param_id]->count(),
+	      local_decay / std::max(Dtype(sqrt(dot)), Dtype(1e-6)),
               net_params[param_id]->cpu_data(),
               net_params[param_id]->mutable_cpu_diff());
         } else if (regularization_type == "L1") {
@@ -497,6 +504,15 @@ void SGDSolver<Dtype>::ComputeUpdateValue() {
           // add weight decay
           caffe_gpu_axpy(net_params[param_id]->count(),
               local_decay,
+              net_params[param_id]->gpu_data(),
+              net_params[param_id]->mutable_gpu_diff());
+        } else if (regularization_type == "L2sqrt") {
+	  Dtype dot;
+	  caffe_gpu_dot(net_params[param_id]->count(),
+	    net_params[param_id]->gpu_data(), net_params[param_id]->gpu_data(),
+	    &dot);
+          caffe_gpu_axpy(net_params[param_id]->count(),
+    	      local_decay / std::max(Dtype(sqrt(dot)), Dtype(1e-6)),
               net_params[param_id]->gpu_data(),
               net_params[param_id]->mutable_gpu_diff());
         } else if (regularization_type == "L1") {
