@@ -1,0 +1,24 @@
+# REMEBER to install liblbfgs
+
+CC	= g++
+CFLAGS	= -W -Wall -O3
+#CFLAGS	= -W -Wall -g
+
+EIGEN_INCLUDE = ./include/Eigen
+CRF_INCLUDE = ./include
+
+all:
+	make clean
+	make dense_learning
+
+clean:
+	rm -f *.a
+	rm -f *.o
+	rm -f examples/dense_learning
+
+libDenseCRF.a: src/common.cpp src/densecrf.cpp src/labelcompatibility.cpp src/objective.cpp src/optimization.cpp src/pairwise.cpp src/permutohedral.cpp src/unary.cpp src/util.cpp include/common.h include/densecrf.h include/labelcompatibility.h include/objective.h include/optimization.h include/pairwise.h include/permutohedral.h include/unary.h include/util.h
+	$(CC) src/common.cpp src/densecrf.cpp src/labelcompatibility.cpp src/objective.cpp src/optimization.cpp src/pairwise.cpp src/permutohedral.cpp src/unary.cpp src/util.cpp -c $(CFLAGS) -I${EIGEN_INCLUDE} -I${CRF_INCLUDE} 
+	ar rcs libDenseCRF.a common.o densecrf.o labelcompatibility.o objective.o optimization.o pairwise.o permutohedral.o unary.o util.o 
+
+dense_learning: examples/dense_learning.cpp examples/ppm.cpp examples/ppm.h libDenseCRF.a
+	$(CC) examples/dense_learning.cpp examples/ppm.cpp -o examples/dense_learning $(CFLAGS) -L. -lDenseCRF -llbfgs -I${EIGEN_INCLUDE} -I${CRF_INCLUDE}
