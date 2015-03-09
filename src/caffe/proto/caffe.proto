@@ -227,7 +227,7 @@ message LayerParameter {
   // line above the enum. Update the next available ID when you add a new
   // LayerType.
   //
-  // LayerType next available ID: 54 (last added: HISTOGRAM)
+  // LayerType next available ID: 55 (last added: RELATIVE_ERROR)
   enum LayerType {
     // "NONE" layer type is 0th enum element so that we don't cause confusion
     // by defaulting to an existent LayerType (instead, should usually error if
@@ -273,6 +273,7 @@ message LayerParameter {
     PADDING = 42;
     POOLING = 17;
     POWER = 26;
+    RELATIVE_ERROR = 54;
     RELU = 18;
     SEG_ACCURACY = 40;
     SIGMOID = 19;

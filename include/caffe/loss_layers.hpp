@@ -21,7 +21,7 @@ const float kLOG_THRESHOLD = 1e-20;
  * @brief Computes the classification accuracy for a one-of-many
  *        classification task.
  */
-    template <typename Dtype>
+template <typename Dtype>
 class AccuracyLayer : public Layer<Dtype> {
  public:
   /**
@@ -84,6 +84,40 @@ class AccuracyLayer : public Layer<Dtype> {
   }
 
   int top_k_;
+};
+
+/**
+ * @brief Computes relative error between target and test signals
+ */
+template <typename Dtype>
+class RelativeErrorLayer : public Layer<Dtype> {
+ public:
+  explicit RelativeErrorLayer(const LayerParameter& param)
+      : Layer<Dtype>(param) {}
+  virtual void LayerSetUp(const vector<Blob<Dtype>*>& bottom,
+      const vector<Blob<Dtype>*>& top);
+  virtual void Reshape(const vector<Blob<Dtype>*>& bottom,
+      const vector<Blob<Dtype>*>& top);
+
+  virtual inline LayerParameter_LayerType type() const {
+    return LayerParameter_LayerType_RELATIVE_ERROR;
+  }
+
+  virtual inline int ExactNumBottomBlobs() const { return 2; }
+  virtual inline int ExactNumTopBlobs() const { return 1; }
+
+ protected:
+  virtual void Forward_cpu(const vector<Blob<Dtype>*>& bottom,
+      const vector<Blob<Dtype>*>& top);
+  virtual void Forward_gpu(const vector<Blob<Dtype>*>& bottom,
+      const vector<Blob<Dtype>*>& top);
+  /// @brief Not implemented -- RelativeErrorLayer cannot be used as a loss.
+  virtual void Backward_cpu(const vector<Blob<Dtype>*>& top,
+      const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom) {
+    for (int i = 0; i < propagate_down.size(); ++i) {
+      if (propagate_down[i]) { NOT_IMPLEMENTED; }
+    }
+  }
 };
 
 /**
