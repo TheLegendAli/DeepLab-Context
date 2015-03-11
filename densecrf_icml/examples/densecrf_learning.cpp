@@ -148,7 +148,7 @@ public:
       //std::cout << "before dx: " << dx << std::endl << std::endl;
       dx += tmp;
 
-      //std::cout << "dx: " << dx << std::endl;
+      std::cout << k << ", dx: " << dx.transpose() << std::endl;
     
     }
 
@@ -167,7 +167,7 @@ public:
     }
 
     //std::cout << "gd 10:"  << std::endl;
-    //std::cout << "g: " << dx << std::endl;
+    std::cout << "final dx: " << dx.transpose() << std::endl;
 
     return r;
   }
@@ -253,7 +253,7 @@ int main( int argc, char* argv[]){
       std::vector<DenseCRF*> crfs;
       std::vector<ObjectiveFunction*> objectives;
 
-      std::cout << "Epoch " << e << ": processing batch " << k+1 << " (" << img_file_names.size() / 2 << ")" << std::endl;
+      std::cout << "Epoch " << e << ": processing batch " << k+1 << " (" << img_file_names.size() / inp.BatchSize << ")" << std::endl;
 
       // first load all the batches to crfs and objectives
       for (int m = 0; m < inp.BatchSize; ++m) {
@@ -304,7 +304,7 @@ int main( int argc, char* argv[]){
 			      learning_params.row(learning_params.rows()-1));
 	  } 
 
-	  if (inp.Verbose) {
+	  if (m == 0 && inp.Verbose) {
 	    std::cout << "parameters before learning: " << std::endl;
 	    crf->PrintParameters();
 	  }
