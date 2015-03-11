@@ -299,7 +299,7 @@ int main( int argc, char* argv[]){
 			      learning_params.row(learning_params.rows()-1));
 	  } 
 
-	  if (inp.Verbose) {
+	  if (m == 0 && inp.Verbose) {
 	    std::cout << "parameters before learning: " << std::endl;
 	    crf->PrintParameters();
 	  }
