@@ -33,7 +33,7 @@ public:
 	virtual VectorXf initialValue() = 0;
 	virtual double gradient( const VectorXf & x, VectorXf & dx ) = 0;
 };
-VectorXf minimizeLBFGS( EnergyFunction & efun, int restart=0, bool verbose=false );
+VectorXf minimizeLBFGS( EnergyFunction & efun, int restart=0, int itr=1, bool verbose=false );
 VectorXf numericGradient( EnergyFunction & efun, const VectorXf & x, float EPS=1e-3 );
 VectorXf gradient( EnergyFunction & efun, const VectorXf & x );
 double gradCheck( EnergyFunction & efun, const VectorXf & x, float EPS=1e-3 );

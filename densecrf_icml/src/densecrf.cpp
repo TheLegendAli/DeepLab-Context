@@ -82,6 +82,15 @@ void DenseCRF2D::addPairwiseBilateral ( float sx, float sy, float sr, float sg, 
 }
 
 // Jay add
+void DenseCRF::PrintParameters() {
+  std::cout << "Unary parameters: " <<
+    unaryParameters().transpose() << std::endl;
+  std::cout << "Pairwise parameters: " <<
+    labelCompatibilityParameters().transpose() << std::endl;
+  std::cout << "Kernel parameters: " <<
+    kernelParameters().transpose() << std::endl;
+}
+
 void DenseCRF::SaveParameters(const char* fn) {
   std::ofstream out(fn, std::ios_base::out | std::ios_base::binary);
 
