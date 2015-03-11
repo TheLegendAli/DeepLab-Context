@@ -53,6 +53,7 @@
 #include "lodepng.h"
 //#include "matio.h"
 #include "util.h"
+#include "Timer.h"
 
 // The energy object implements an energy function that is minimized using LBFGS
 class CRFEnergy: public EnergyFunction {
@@ -232,6 +233,10 @@ int main( int argc, char* argv[]){
   std::srand(0);
 
   int img_ind;
+
+  CPrecisionTimer CTmr;
+  CTmr.Start();
+ 
   for (int e = 0; e < inp.Epoch; ++e) {
 
     // random shuffle inputs
@@ -299,7 +304,7 @@ int main( int argc, char* argv[]){
 			      learning_params.row(learning_params.rows()-1));
 	  } 
 
-	  if (m == 0 && inp.Verbose) {
+	  if (inp.Verbose) {
 	    std::cout << "parameters before learning: " << std::endl;
 	    crf->PrintParameters();
 	  }
@@ -430,5 +435,6 @@ int main( int argc, char* argv[]){
     }
   }
   
+  std::cout << "Time : " << CTmr.Stop() << std::endl;
 
 }
