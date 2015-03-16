@@ -616,6 +616,7 @@ message GainChannelParameter {
   optional float drift = 2 [default = 0.0];
   optional float stdev = 3 [default = 0.0];
   optional FillerParameter gain_filler = 4;
+  optional bool norm_mean = 5 [default = true];
 }
 
 // Message that stores parameters used by HDF5DataLayer

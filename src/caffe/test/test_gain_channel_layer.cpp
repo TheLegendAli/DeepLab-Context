@@ -62,12 +62,13 @@ TYPED_TEST(GainChannelLayerTest, TestCPU) {
   LayerParameter layer_param;
   layer_param.mutable_gain_channel_param()->set_num_output_nz(3);
   layer_param.mutable_gain_channel_param()->mutable_gain_filler()->set_type("constant");
-  layer_param.mutable_gain_channel_param()->mutable_gain_filler()->set_value(3.f);
+  layer_param.mutable_gain_channel_param()->mutable_gain_filler()->set_value(1.f);
+  layer_param.mutable_gain_channel_param()->set_norm_mean(true);
   GainChannelLayer<Dtype> layer(layer_param);
   layer.SetUp(this->blob_bottom_vec_, this->blob_top_vec_);
   layer.Forward(this->blob_bottom_vec_, this->blob_top_vec_);
   for (int i = 0; i < this->blob_bottom_->count(); ++i) {
-    EXPECT_NEAR(3.f * this->blob_bottom_->cpu_data()[i],
+    EXPECT_NEAR(this->blob_bottom_->cpu_data()[i],
 		this->blob_top_->cpu_data()[i], 1e-5);
   }
 }
@@ -78,12 +79,13 @@ TYPED_TEST(GainChannelLayerTest, TestGPU) {
   LayerParameter layer_param;
   layer_param.mutable_gain_channel_param()->set_num_output_nz(3);
   layer_param.mutable_gain_channel_param()->mutable_gain_filler()->set_type("constant");
-  layer_param.mutable_gain_channel_param()->mutable_gain_filler()->set_value(3.f);
+  layer_param.mutable_gain_channel_param()->mutable_gain_filler()->set_value(1.f);
+  layer_param.mutable_gain_channel_param()->set_norm_mean(true);
   GainChannelLayer<Dtype> layer(layer_param);
   layer.SetUp(this->blob_bottom_vec_, this->blob_top_vec_);
   layer.Forward(this->blob_bottom_vec_, this->blob_top_vec_);
   for (int i = 0; i < this->blob_bottom_->count(); ++i) {
-    EXPECT_NEAR(3.f * this->blob_bottom_->cpu_data()[i],
+    EXPECT_NEAR(this->blob_bottom_->cpu_data()[i],
 		this->blob_top_->cpu_data()[i], 1e-5);
   }
 }
@@ -95,6 +97,7 @@ TYPED_TEST(GainChannelLayerTest, TestGradientCPU) {
   layer_param.mutable_gain_channel_param()->set_num_output_nz(3);
   layer_param.mutable_gain_channel_param()->mutable_gain_filler()->set_type("constant");
   layer_param.mutable_gain_channel_param()->mutable_gain_filler()->set_value(1.f);
+  layer_param.mutable_gain_channel_param()->set_norm_mean(false);
   GainChannelLayer<Dtype> layer(layer_param);
   GradientChecker<Dtype> checker(1e-2, 1e-2);
   checker.CheckGradientExhaustive(&layer, this->blob_bottom_vec_,
@@ -108,6 +111,35 @@ TYPED_TEST(GainChannelLayerTest, TestGradientGPU) {
   layer_param.mutable_gain_channel_param()->set_num_output_nz(3);
   layer_param.mutable_gain_channel_param()->mutable_gain_filler()->set_type("constant");
   layer_param.mutable_gain_channel_param()->mutable_gain_filler()->set_value(1.f);
+  layer_param.mutable_gain_channel_param()->set_norm_mean(false);
+  GainChannelLayer<Dtype> layer(layer_param);
+  GradientChecker<Dtype> checker(1e-2, 1e-2);
+  checker.CheckGradientExhaustive(&layer, this->blob_bottom_vec_,
+      this->blob_top_vec_);
+}
+
+TYPED_TEST(GainChannelLayerTest, TestGradientCPUNorm) {
+  typedef typename TypeParam::Dtype Dtype;
+  Caffe::set_mode(Caffe::CPU);
+  LayerParameter layer_param;
+  layer_param.mutable_gain_channel_param()->set_num_output_nz(3);
+  layer_param.mutable_gain_channel_param()->mutable_gain_filler()->set_type("constant");
+  layer_param.mutable_gain_channel_param()->mutable_gain_filler()->set_value(1.f);
+  layer_param.mutable_gain_channel_param()->set_norm_mean(true);
+  GainChannelLayer<Dtype> layer(layer_param);
+  GradientChecker<Dtype> checker(1e-2, 1e-2);
+  checker.CheckGradientExhaustive(&layer, this->blob_bottom_vec_,
+      this->blob_top_vec_);
+}
+
+TYPED_TEST(GainChannelLayerTest, TestGradientGPUNorm) {
+  typedef typename TypeParam::Dtype Dtype;
+  Caffe::set_mode(Caffe::GPU);
+  LayerParameter layer_param;
+  layer_param.mutable_gain_channel_param()->set_num_output_nz(3);
+  layer_param.mutable_gain_channel_param()->mutable_gain_filler()->set_type("constant");
+  layer_param.mutable_gain_channel_param()->mutable_gain_filler()->set_value(1.f);
+  layer_param.mutable_gain_channel_param()->set_norm_mean(true);
   GainChannelLayer<Dtype> layer(layer_param);
   GradientChecker<Dtype> checker(1e-2, 1e-2);
   checker.CheckGradientExhaustive(&layer, this->blob_bottom_vec_,

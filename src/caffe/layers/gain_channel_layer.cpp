@@ -17,6 +17,7 @@ void GainChannelLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
   num_output_nz_ = param.num_output_nz();
   drift_ = param.drift();
   stdev_ = param.stdev();
+  norm_mean_ = param.norm_mean();
   CHECK(num_output_nz_ > 0 && num_output_nz_ <= channels_);
   CHECK_GE(drift_, 0) << "Drift needs to be non-negative";
   CHECK_GE(stdev_, 0) << "Noise stdev needs to be non-negative";
@@ -50,16 +51,26 @@ template <typename Dtype>
 void GainChannelLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top) {
   // Project gain to positive values
+  Dtype *gain_data = this->blobs_[0]->mutable_cpu_data();
   for (int c = 0; c < channels_; ++c) {
-    if (this->blobs_[0]->cpu_data()[c] < 0) {
-      this->blobs_[0]->mutable_cpu_data()[c] = Dtype(0);
+    if (gain_data[c] < 0) {
+      gain_data[c] = Dtype(0);
+    }
+  }
+  // Optionally (multiplicatively) normalize gains to be 1-mean
+  if (norm_mean_) {
+    Dtype sum = 0;
+    for (int c = 0; c < channels_; ++c) {
+      sum += gain_data[c];
+    }
+    for (int c = 0; c < channels_; ++c) {
+      gain_data[c] = (sum > 0) ? channels_ / sum * gain_data[c] : Dtype(1);
     }
   }
   // Multiply with gain
   for (int n = 0; n < num_; ++n) {
     for (int c = 0; c < channels_; ++c) {
-      const Dtype alpha = this->blobs_[0]->cpu_data()[c];
-      caffe_cpu_scale(height_ * width_, alpha,
+      caffe_cpu_scale(height_ * width_, gain_data[c],
 		      bottom[0]->cpu_data(n, c),
 		      top[0]->mutable_cpu_data(n, c));
     }
@@ -106,6 +117,17 @@ void GainChannelLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
 	 Dtype(1.0), &noise[0]);
       caffe_axpy(channels_, stdev_, &noise[0], gain_diff);
     }
+    if (norm_mean_) {
+      // Make the gradient zero-mean
+      Dtype sum = 0;
+      for (int c = 0; c < channels_; ++c) {
+	sum += gain_diff[c];
+      }
+      sum /= channels_;
+      for (int c = 0; c < channels_; ++c) {
+	gain_diff[c] -= sum;
+      }      
+    }
   }
   if (propagate_down[0]) {
     for (int n = 0; n < num_; ++n) {
@@ -123,16 +145,26 @@ template <typename Dtype>
 void GainChannelLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top) {
   // Project gain to positive values
+  Dtype *gain_data = this->blobs_[0]->mutable_cpu_data();
   for (int c = 0; c < channels_; ++c) {
-    if (this->blobs_[0]->cpu_data()[c] < 0) {
-      this->blobs_[0]->mutable_cpu_data()[c] = Dtype(0);
+    if (gain_data[c] < 0) {
+      gain_data[c] = Dtype(0);
+    }
+  }
+  // Optionally (multiplicatively) normalize gains to be 1-mean
+  if (norm_mean_) {
+    Dtype sum = 0;
+    for (int c = 0; c < channels_; ++c) {
+      sum += gain_data[c];
+    }
+    for (int c = 0; c < channels_; ++c) {
+      gain_data[c] = (sum > 0) ? channels_ / sum * gain_data[c] : Dtype(1);
     }
   }
   // Multiply with gain
   for (int n = 0; n < num_; ++n) {
     for (int c = 0; c < channels_; ++c) {
-      const Dtype alpha = this->blobs_[0]->cpu_data()[c];
-      caffe_gpu_scale(height_ * width_, alpha,
+      caffe_gpu_scale(height_ * width_, gain_data[c],
 		      bottom[0]->gpu_data(n, c),
 		      top[0]->mutable_gpu_data(n, c));
     }
@@ -179,6 +211,17 @@ void GainChannelLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
       caffe_rng_gaussian(channels_, Dtype(0),
 	 Dtype(1.0), &noise[0]);
       caffe_axpy(channels_, stdev_, &noise[0], gain_diff);
+    }
+    if (norm_mean_) {
+      // Make the gradient zero-mean
+      Dtype sum = 0;
+      for (int c = 0; c < channels_; ++c) {
+	sum += gain_diff[c];
+      }
+      sum /= channels_;
+      for (int c = 0; c < channels_; ++c) {
+	gain_diff[c] -= sum;
+      }      
     }
   }
   if (propagate_down[0]) {

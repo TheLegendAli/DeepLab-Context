@@ -76,6 +76,7 @@ class GainChannelLayer : public NeuronLayer<Dtype> {
   int num_output_nz_;
   Dtype drift_;
   Dtype stdev_;
+  bool norm_mean_;
 };
 
 /**
