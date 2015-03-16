@@ -233,7 +233,11 @@ void OutputSetting(const InputData& inp) {
 
   std::cout << "OptimizePhase:  " << inp.OptimizePhase << std::endl;  
   std::cout << "Epoch:          " << inp.Epoch << std::endl;
-
+  std::cout << "BatchSize:      " << inp.BatchSize << std::endl;
+  std::cout << "L2Norm:         " << inp.L2Norm << std::endl;
+  std::cout << "LBFGSItr        " << inp.LBFGSItr << std::endl;
+  std::cout << "RandomShuffle   " << inp.RandomShuffle << std::endl;
+  std::cout << "Verbose:        " << inp.Verbose << std::endl;
 }
 
 int ParseInput(int argc, char** argv, struct InputData& OD) {
@@ -276,7 +280,17 @@ int ParseInput(int argc, char** argv, struct InputData& OD) {
       OD.OptimizePhase = atoi(argv[++k]);
     } else if(::strcmp(argv[k], "-e")==0 && k+1!=argc) {
       OD.Epoch = atoi(argv[++k]);
-    }
+    } else if(::strcmp(argv[k], "-bs")==0 && k+1!=argc) {
+      OD.BatchSize = atoi(argv[++k]);
+    } else if(::strcmp(argv[k], "-li")==0 && k+1!=argc) {
+      OD.LBFGSItr = atoi(argv[++k]);
+    } else if(::strcmp(argv[k], "-l2")==0 && k+1!=argc) {
+      OD.L2Norm = atof(argv[++k]);
+    } else if(::strcmp(argv[k], "-v")==0 && k+1!=argc) {
+      OD.Verbose = atoi(argv[++k]);
+    } else if(::strcmp(argv[k], "-rs")==0 && k+1!=argc) {
+      OD.RandomShuffle = atoi(argv[++k]);
+    } 
   }
   return 0;
 }
@@ -311,6 +325,7 @@ void ComputeUnaryForCRF(float*& unary, float* feat, int feat_row, int feat_col, 
 }
 
 void GetImgNamesFromFeatFiles(std::vector<std::string>& out, const std::vector<std::string>& in, const std::string& strip_pattern) {
+  out.clear();
   for (size_t k = 0; k < in.size(); ++k) {
     size_t pos = in[k].find(strip_pattern);
     if (pos != std::string::npos) {

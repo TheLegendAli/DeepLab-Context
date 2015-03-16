@@ -37,16 +37,20 @@ struct InputData {
   // 2: optimize both unary and pairwise
   // 3: optimize Full CRF (i.e., also kernel)
   int OptimizePhase;
-  
   int Epoch;
-
+  int BatchSize;
+  float L2Norm;
+  int LBFGSItr;
+  int RandomShuffle;
+  int Verbose;
+  
   InputData() :
     ImgDir(NULL), GtDir(NULL), FeatureDir(NULL), SaveDir(NULL), 
     ModelDir(NULL), Model(NULL), MaxIterations(10), 
     BilateralW(5), BilateralXStd(70), BilateralYStd(70), BilateralRStd(5),
     BilateralGStd(5), BilateralBStd(5), PosW(3), PosXStd(3), PosYStd(3),
-    Task(2), OptimizePhase(3), Epoch(1) {}
-
+    Task(2), OptimizePhase(3), Epoch(1), BatchSize(1), L2Norm(0.00001),
+    LBFGSItr(1), RandomShuffle(0), Verbose(0) {}
 };
 
 template <typename Dtype> 

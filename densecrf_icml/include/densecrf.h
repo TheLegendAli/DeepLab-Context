@@ -102,6 +102,7 @@ class DenseCRF{
   void setKernelParameters( const VectorXf & v );
 
   // jay add
+  void PrintParameters();
   void LoadParameters(const char* fn);
   void SaveParameters(const char* fn);
   //void SetParameters(const VectorXf& p, const int update_unary, const int update_pairwise, const int update_kernel);

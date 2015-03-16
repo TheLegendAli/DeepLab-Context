@@ -36,8 +36,7 @@ static lbfgsfloatval_t evaluate(
 				lbfgsfloatval_t *g,
 				const int n,
 				const lbfgsfloatval_t step
-				)
-{
+				) {
   EnergyFunction * efun = static_cast<EnergyFunction*>( instance );
 	
   VectorXf vx( n ), vg( n );
@@ -66,7 +65,7 @@ static int progress(
   printf("\n");
   return 0;
 }
-VectorXf minimizeLBFGS( EnergyFunction & efun, int restart, bool verbose ) {
+VectorXf minimizeLBFGS( EnergyFunction & efun, int restart, int itr, bool verbose ) {
   VectorXf x0 = efun.initialValue();
   const int n = x0.rows();
 	
@@ -80,9 +79,9 @@ VectorXf minimizeLBFGS( EnergyFunction & efun, int restart, bool verbose ) {
   lbfgs_parameter_t param;
   lbfgs_parameter_init(&param);
   // You might want to adjust the parameters to your problem
-  param.epsilon = 1e-6;
-  param.max_iterations = 1;
-
+  //param.epsilon = 1e-6;
+  param.max_iterations = itr;
+  
   double last_f = 1e100;
   int ret;
   for( int i=0; i<=restart; i++ ) {
