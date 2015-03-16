@@ -690,6 +690,7 @@ void Net<Dtype>::Reshape() {
 template <typename Dtype>
 void Net<Dtype>::CopyTrainedLayersFrom(const NetParameter& param) {
   int num_source_layers = param.layers_size();
+  vector<bool> layer_init_flag(layer_names_.size(), false);
   for (int i = 0; i < num_source_layers; ++i) {
     const LayerParameter& source_layer = param.layers(i);
     const string& source_layer_name = source_layer.name();
@@ -702,6 +703,7 @@ void Net<Dtype>::CopyTrainedLayersFrom(const NetParameter& param) {
       DLOG(INFO) << "Ignoring source layer " << source_layer_name;
       continue;
     }
+    layer_init_flag[target_layer_id] = true;
     DLOG(INFO) << "Copying source layer " << source_layer_name;
     vector<shared_ptr<Blob<Dtype> > >& target_blobs =
         layers_[target_layer_id]->blobs();
@@ -719,7 +721,6 @@ void Net<Dtype>::CopyTrainedLayersFrom(const NetParameter& param) {
 	CHECK_EQ(target_blobs[j]->width(), source_layer.blobs(j).width())
 	  << "Incompatible parameter size for layer " << source_layer_name;
 	target_blobs[j]->FromProto(source_layer.blobs(j));
-	continue;
       }
       else {
 	CHECK_EQ(target_blobs[j]->count(), source_layer.blobs(j).num() * source_layer.blobs(j).channels() *
@@ -733,15 +734,11 @@ void Net<Dtype>::CopyTrainedLayersFrom(const NetParameter& param) {
 	target_blobs[j]->FromProto(blob_copy);
       }
     }
-    /*
-    for (int j = 0; j < target_blobs.size(); ++j) {
-      CHECK_EQ(target_blobs[j]->num(), source_layer.blobs(j).num());
-      CHECK_EQ(target_blobs[j]->channels(), source_layer.blobs(j).channels());
-      CHECK_EQ(target_blobs[j]->height(), source_layer.blobs(j).height());
-      CHECK_EQ(target_blobs[j]->width(), source_layer.blobs(j).width());
-      target_blobs[j]->FromProto(source_layer.blobs(j));
+  }
+  for (int i = 0; i < layer_names_.size(); ++i) {
+    if (!layer_init_flag[i] && layers_[i]->blobs().size()) {
+      LOG(INFO) << "Target layer " << layer_names_[i] << " not initialized.";
     }
-    */
   }
 }
 

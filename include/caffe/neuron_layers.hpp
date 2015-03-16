@@ -37,6 +37,48 @@ class NeuronLayer : public Layer<Dtype> {
 };
 
 /**
+ * @brief Per channel multiplicative gain.
+   The gains are constrained to be non-negative.
+   Provides a way to enforce whole-channel sparsity:
+   During learning, we add to the gradient some IID Gaussian noise.
+   Also, if a particular gain value is below the top num_output_nz
+   of the gains for all channels, we add to the gradient a
+   (positive) drift_.
+   The goal is to further decrease the value of the gain to make it
+   exactly zero, which corresponds to completely pruning the
+   particular feature channel.
+ */
+template <typename Dtype>
+class GainChannelLayer : public NeuronLayer<Dtype> {
+ public:
+  explicit GainChannelLayer(const LayerParameter& param)
+      : NeuronLayer<Dtype>(param) {}
+  virtual void LayerSetUp(const vector<Blob<Dtype>*>& bottom,
+      const vector<Blob<Dtype>*>& top);
+  virtual void Reshape(const vector<Blob<Dtype>*>& bottom,
+      const vector<Blob<Dtype>*>& top);
+
+  virtual inline LayerParameter_LayerType type() const {
+    return LayerParameter_LayerType_GAIN_CHANNEL;
+  }
+
+ protected:
+  virtual void Forward_cpu(const vector<Blob<Dtype>*>& bottom,
+      const vector<Blob<Dtype>*>& top);
+  virtual void Forward_gpu(const vector<Blob<Dtype>*>& bottom,
+      const vector<Blob<Dtype>*>& top);
+  virtual void Backward_cpu(const vector<Blob<Dtype>*>& top,
+      const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom);
+  virtual void Backward_gpu(const vector<Blob<Dtype>*>& top,
+      const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom);
+  
+  int num_, channels_, height_, width_;
+  int num_output_nz_;
+  Dtype drift_;
+  Dtype stdev_;
+};
+
+/**
  * @brief Computes @f$ y = |x| @f$
  *
  * @param bottom input Blob vector (length 1)

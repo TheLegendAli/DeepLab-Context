@@ -206,7 +206,7 @@ message NetStateRule {
 // NOTE
 // Update the next available ID when you add a new LayerParameter field.
 //
-// LayerParameter next available ID: 58 (last added: euclidean_loss_param)
+// LayerParameter next available ID: 59 (last added: gain_channel_param)
 message LayerParameter {
   repeated string bottom = 2; // the name of the bottom blobs
   repeated string top = 3; // the name of the top blobs
@@ -227,7 +227,7 @@ message LayerParameter {
   // line above the enum. Update the next available ID when you add a new
   // LayerType.
   //
-  // LayerType next available ID: 55 (last added: RELATIVE_ERROR)
+  // LayerType next available ID: 56 (last added: GAIN_CHANNEL)
   enum LayerType {
     // "NONE" layer type is 0th enum element so that we don't cause confusion
     // by defaulting to an existent LayerType (instead, should usually error if
@@ -253,6 +253,7 @@ message LayerParameter {
     ELTWISE = 25;
     EXP = 38;
     FLATTEN = 8;
+    GAIN_CHANNEL = 55;
     HDF5_DATA = 9;
     HDF5_OUTPUT = 10;
     HINGE_LOSS = 28;
@@ -334,6 +335,7 @@ message LayerParameter {
   optional EltwiseParameter eltwise_param = 24;
   optional EuclideanLossParameter euclidean_loss_param = 57;
   optional ExpParameter exp_param = 41;
+  optional GainChannelParameter gain_channel_param = 58;
   optional HDF5DataParameter hdf5_data_param = 13;
   optional HDF5OutputParameter hdf5_output_param = 14;
   optional HingeLossParameter hinge_loss_param = 29;
@@ -607,6 +609,13 @@ message ExpParameter {
   optional float base = 1 [default = -1.0];
   optional float scale = 2 [default = 1.0];
   optional float shift = 3 [default = 0.0];
+}
+
+message GainChannelParameter {
+  required int32 num_output_nz = 1 [default = 0];
+  optional float drift = 2 [default = 0.0];
+  optional float stdev = 3 [default = 0.0];
+  optional FillerParameter gain_filler = 4;
 }
 
 // Message that stores parameters used by HDF5DataLayer
