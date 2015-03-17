@@ -44,6 +44,7 @@ void RelativeErrorLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
   top[0]->mutable_cpu_data()[0] = sqrt(nom / denom);
 }
 
+#ifndef CPU_ONLY
 template <typename Dtype>
 void RelativeErrorLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
     const vector<Blob<Dtype>*>& top) {
@@ -65,9 +66,10 @@ void RelativeErrorLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
   denom = std::max(denom, Dtype(1e-6));
   top[0]->mutable_cpu_data()[0] = sqrt(nom / denom);
 }
+#endif
 
 #ifdef CPU_ONLY
-STUB_GPU(RelativeErrorLayer);
+STUB_GPU_FORWARD(RelativeErrorLayer,Forward);
 #endif
 
 INSTANTIATE_CLASS(RelativeErrorLayer);

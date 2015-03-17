@@ -52,7 +52,7 @@ void HistogramLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
 }
 
 #ifdef CPU_ONLY
-STUB_GPU(HistogramLayer);
+//STUB_GPU(HistogramLayer);
 #endif
 
 INSTANTIATE_CLASS(HistogramLayer);

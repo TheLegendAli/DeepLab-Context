@@ -174,7 +174,7 @@ void AdaptiveBiasChannelLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& t
 }
 
 #ifdef CPU_ONLY
-STUB_GPU(AdaptiveBiasChannelLayer);
+//STUB_GPU(AdaptiveBiasChannelLayer);
 #endif
 
 INSTANTIATE_CLASS(AdaptiveBiasChannelLayer);

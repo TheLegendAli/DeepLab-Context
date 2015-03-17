@@ -71,7 +71,7 @@ void UniqueLabelLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
 }
 
 #ifdef CPU_ONLY
-STUB_GPU(UniqueLabelLayer);
+//STUB_GPU(UniqueLabelLayer);
 #endif
 
 INSTANTIATE_CLASS(UniqueLabelLayer);

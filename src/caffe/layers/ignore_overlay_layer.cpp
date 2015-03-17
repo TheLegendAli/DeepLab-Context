@@ -28,6 +28,7 @@ void IgnoreOverlayLayer<Dtype>::Reshape(const vector<Blob<Dtype>*>& bottom,
   top[0]->Reshape(num_, channels_, height_, width_);
 }
 
+//#ifndef CPU_ONLY
 template <typename Dtype>
 void IgnoreOverlayLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top) {
@@ -41,9 +42,9 @@ void IgnoreOverlayLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
     }
   }
 }
-
+//#endif
 #ifdef CPU_ONLY
-STUB_GPU(IgnoreOverlayLayer);
+//STUB_GPU(IgnoreOverlayLayer);
 #endif
 
 INSTANTIATE_CLASS(IgnoreOverlayLayer);

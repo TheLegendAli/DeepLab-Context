@@ -140,6 +140,7 @@ void GainChannelLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
     }
   }
 }
+#ifndef CPU_ONLY
 
 template <typename Dtype>
 void GainChannelLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
@@ -235,8 +236,7 @@ void GainChannelLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
     }
   }
 }
-
-
+#endif
 #ifdef CPU_ONLY
 STUB_GPU(GainChannelLayer);
 #endif

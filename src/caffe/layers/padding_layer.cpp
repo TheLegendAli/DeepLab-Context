@@ -99,6 +99,7 @@ void PaddingLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
   }
 }
 
+#ifndef CPU_ONLY
 template <typename Dtype>
 void PaddingLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top) {
@@ -158,6 +159,10 @@ void PaddingLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
     }
   }
 }
+#endif
+#ifdef CPU_ONLY
+STUB_GPU(PaddingLayer);
+#endif
 
 INSTANTIATE_CLASS(PaddingLayer);
 REGISTER_LAYER_CLASS(PADDING, PaddingLayer);
