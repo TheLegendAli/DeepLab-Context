@@ -16,7 +16,7 @@ if nargin < 3 || isempty(model_file)
 end
 
 
-if caffe('is_initialized') == 0
+if true || (caffe('is_initialized') == 0)
   if exist(model_file, 'file') == 0
     % NOTE: you'll have to get the pre-trained ILSVRC network
     error('You need a network model file');
@@ -33,6 +33,10 @@ fprintf('Done with init\n');
 if use_gpu
   fprintf('Using GPU Mode\n');
   caffe('set_mode_gpu');
+	%% 'use_gpu' should be equal to 'gpu_for_this'
+	%global gpu_for_this
+	%assert(use_gpu==gpu_for_this);
+  caffe('set_device',floor(use_gpu))
 else
   fprintf('Using CPU Mode\n');
   caffe('set_mode_cpu');
