@@ -62,7 +62,7 @@ void CensorLabelLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
 }
 
 #ifdef CPU_ONLY
-STUB_GPU(CensorLabelLayer);
+//STUB_GPU(CensorLabelLayer);
 #endif
 
 INSTANTIATE_CLASS(CensorLabelLayer);

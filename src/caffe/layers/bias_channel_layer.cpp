@@ -69,6 +69,7 @@ void BiasChannelLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
   }
 }
 
+#ifndef CPU_ONLY
 template <typename Dtype>
 void BiasChannelLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top) {
@@ -89,6 +90,7 @@ void BiasChannelLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
   }
 }
 
+
 template <typename Dtype>
 void BiasChannelLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
       const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom) {
@@ -99,6 +101,7 @@ void BiasChannelLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
     caffe_copy(bottom[0]->count(), top[0]->gpu_diff(), bottom[0]->mutable_gpu_diff());
   }
 }
+#endif
 
 #ifdef CPU_ONLY
 STUB_GPU(BiasChannelLayer);

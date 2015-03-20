@@ -77,6 +77,7 @@ void InterpLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
     top[0]->cpu_diff(), 0, 0, height_out_, width_out_, height_out_, width_out_);
 }
 
+#ifndef CPU_ONLY
 template <typename Dtype>
 void InterpLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top) {
@@ -94,6 +95,11 @@ void InterpLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
     bottom[0]->mutable_gpu_diff(), - pad_beg_, - pad_beg_, height_in_eff_, width_in_eff_, height_in_, width_in_,
     top[0]->gpu_diff(), 0, 0, height_out_, width_out_, height_out_, width_out_);
 }
+#endif
+#ifdef CPU_ONLY
+STUB_GPU(InterpLayer);
+#endif
+
 
 INSTANTIATE_CLASS(InterpLayer);
 REGISTER_LAYER_CLASS(INTERP, InterpLayer);
