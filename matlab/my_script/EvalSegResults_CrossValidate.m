@@ -51,9 +51,17 @@ for w = range_bi_w       %0.5:0.5:6 %[1 5 10 15 20]
           pos_x_std = p_x_std;
 
           if down_sample_method == 1
-            post_folder = sprintf('post_densecrf_W%d_XStd%d_RStd%d_PosW%d_PosXStd%d_downsampleBy%d', bi_w, bi_x_std, bi_r_std, pos_w, pos_x_std, down_sample_rate);
+            if learn_crf
+              post_folder = sprintf('post_densecrf_W%d_XStd%d_RStd%d_PosW%d_PosXStd%d_ModelType%d_Epoch%d_downsampleBy%d', bi_w, bi_x_std, bi_r_std, pos_w, pos_x_std, model_type, epoch, down_sample_rate); 
+            else
+              post_folder = sprintf('post_densecrf_W%d_XStd%d_RStd%d_PosW%d_PosXStd%d_downsampleBy%d', bi_w, bi_x_std, bi_r_std, pos_w, pos_x_std, down_sample_rate);
+            end
           elseif down_sample_method == 2
-            post_folder = sprintf('post_densecrf_W%d_XStd%d_RStd%d_PosW%d_PosXStd%d_numSample%d', bi_w, bi_x_std, bi_r_std, pos_w, pos_x_std, num_sample);
+            if learn_crf
+              post_folder = sprintf('post_densecrf_W%d_XStd%d_RStd%d_PosW%d_PosXStd%d_ModelType%d_Epoch%d_numSample%d', bi_w, bi_x_std, bi_r_std, pos_w, pos_x_std, model_type, epoch, num_sample); 
+            else
+              post_folder = sprintf('post_densecrf_W%d_XStd%d_RStd%d_PosW%d_PosXStd%d_numSample%d', bi_w, bi_x_std, bi_r_std, pos_w, pos_x_std, num_sample);
+            end
           else
             error('wrong down_sample_method')
           end

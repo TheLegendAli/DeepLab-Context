@@ -76,6 +76,20 @@ void caffe_gpu_axpy<double>(const int N, const double alpha, const double* X,
   CUBLAS_CHECK(cublasDaxpy(Caffe::cublas_handle(), N, &alpha, X, 1, Y, 1));
 }
 
+template <typename Dtype>
+void caffe_gpu_dot_mul(const CBLAS_TRANSPOSE TransAB,
+   const CBLAS_TRANSPOSE TransC,
+   const int M, const int N, const int K,
+   const Dtype alpha, const Dtype* A, const Dtype* B, const Dtype *C,
+   Dtype *buf,
+   const Dtype beta, Dtype *D) {
+  caffe_gpu_mul(M * K, A, B, buf);
+  caffe_gpu_gemm(TransAB, TransC,
+    M, N, K,
+    alpha, buf, C,
+    beta, D);
+}
+
 void caffe_gpu_memcpy(const size_t N, const void* X, void* Y) {
   if (X != Y) {
     CUDA_CHECK(cudaMemcpy(Y, X, N, cudaMemcpyDefault));  // NOLINT(caffe/alt_fn)
@@ -286,6 +300,28 @@ void caffe_gpu_div<double>(const int N, const double* a,
 }
 
 template <typename Dtype>
+__global__ void div_safe_kernel(const int n, const Dtype* a,
+    const Dtype* b, Dtype* y) {
+  CUDA_KERNEL_LOOP(index, n) {
+    y[index] = (b[index] != 0) ? a[index] / b[index] : a[index];
+  }
+}
+
+template <>
+void caffe_gpu_div_safe<float>(const int N, const float* a,
+    const float* b, float* y) {
+  div_safe_kernel<float><<<CAFFE_GET_BLOCKS(N), CAFFE_CUDA_NUM_THREADS>>>(
+      N, a, b, y);
+}
+
+template <>
+void caffe_gpu_div_safe<double>(const int N, const double* a,
+    const double* b, double* y) {
+  div_safe_kernel<double><<<CAFFE_GET_BLOCKS(N), CAFFE_CUDA_NUM_THREADS>>>(
+      N, a, b, y);
+}
+
+template <typename Dtype>
 __global__ void abs_kernel(const int n, const Dtype* a, Dtype* y) {
   CUDA_KERNEL_LOOP(index, n) {
     y[index] = abs(a[index]);
@@ -444,5 +480,13 @@ void caffe_gpu_rng_gaussian(const int n, const double mu, const double sigma,
   CURAND_CHECK(
       curandGenerateNormalDouble(Caffe::curand_generator(), r, n, mu, sigma));
 }
+
+// Explicit instances
+template void caffe_gpu_dot_mul<float>(const CBLAS_TRANSPOSE, const CBLAS_TRANSPOSE,
+   const int, const int, const int, const float, const float*, const float*,
+   const float*, float*, const float, float *);
+template void caffe_gpu_dot_mul<double>(const CBLAS_TRANSPOSE, const CBLAS_TRANSPOSE,
+   const int, const int, const int, const double, const double*, const double*,
+   const double*, double*, const double, double *);
 
 }  // namespace caffe

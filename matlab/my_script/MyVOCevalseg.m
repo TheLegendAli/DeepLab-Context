@@ -10,7 +10,7 @@
 %
 % [ACCURACIES,AVACC,CONF,RAWCOUNTS] = VOCEVALSEG(VOCopts,ID) also returns
 % the unnormalised confusion matrix, which contains raw pixel counts.
-function [accuracies,avacc,conf,rawcounts] = VOCevalseg(VOCopts,id)
+function [accuracies,avacc,conf,rawcounts] = MyVOCevalseg(VOCopts,id)
 
 % image test set
 [gtids,t]=textread(sprintf(VOCopts.seg.imgsetpath,VOCopts.testset),'%s %d');

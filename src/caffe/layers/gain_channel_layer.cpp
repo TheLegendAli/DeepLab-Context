@@ -45,6 +45,10 @@ void GainChannelLayer<Dtype>::Reshape(const vector<Blob<Dtype>*>& bottom,
   width_ = bottom[0]->width();
   //
   top[0]->ReshapeLike(*bottom[0]);
+  // Auxiliary storage
+  buf_.Reshape(1, channels_, height_, width_);
+  ones_.Reshape(1, 1, height_, width_);
+  caffe_set(height_ * width_, Dtype(1), ones_.mutable_cpu_data());
 }
 
 template <typename Dtype>
@@ -69,53 +73,54 @@ void GainChannelLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
   }
   // Multiply with gain
   for (int n = 0; n < num_; ++n) {
-    for (int c = 0; c < channels_; ++c) {
-      caffe_cpu_scale(height_ * width_, gain_data[c],
-		      bottom[0]->cpu_data(n, c),
-		      top[0]->mutable_cpu_data(n, c));
-    }
+    caffe_cpu_dgmm(CUBLAS_SIDE_LEFT,
+       channels_, height_ * width_,
+       bottom[0]->cpu_data(n),
+       gain_data,
+       top[0]->mutable_cpu_data(n));
   }
 }
 
 template <typename Dtype>
 void GainChannelLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
       const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom) {
-  const bool in_place = bottom[0]->cpu_data() == top[0]->cpu_data();
+  const Dtype *gain_data = this->blobs_[0]->cpu_data();
+  Dtype *gain_diff = this->blobs_[0]->mutable_cpu_diff();
   // Update local parameters
   if (1 || this->param_propagate_down(0)) {
     CHECK_EQ(this->blobs_[0]->count(), channels_);
-    Dtype *gain_diff = this->blobs_[0]->mutable_cpu_diff();
     caffe_set(channels_, Dtype(0), gain_diff);
     for (int n = 0; n < num_; ++n) {
-      for (int c = 0; c < channels_; ++c) {
-	const Dtype alpha = this->blobs_[0]->cpu_data()[c];
-	gain_diff[c] +=
-	  ((in_place && alpha > 0) ? Dtype(1.) / alpha : Dtype(1.)) *
-	  caffe_cpu_dot(height_ * width_,
-	     top[0]->cpu_diff(n, c),
-	     bottom[0]->cpu_data(n, c));
-      }
+      caffe_cpu_dot_mul(CblasNoTrans, CblasNoTrans,
+	 channels_, 1, height_ * width_,
+	 Dtype(1), top[0]->cpu_diff(n), bottom[0]->cpu_data(n), ones_.cpu_data(),
+	 buf_.mutable_cpu_data(),
+	 Dtype(1), gain_diff);
+    }
+    const bool in_place = bottom[0]->cpu_data() == top[0]->cpu_data();
+    if (in_place) {
+      caffe_cpu_div_safe(channels_, gain_diff, gain_data, gain_diff);
     }
     if (drift_ > 0) {
       // Find the num_output_nz_ greatest gains
-      const Dtype *gain_data = this->blobs_[0]->cpu_data();
       std::vector<Dtype> gains(channels_);
       std::copy(gain_data, gain_data + channels_, gains.begin());
       std::nth_element(gains.begin(), gains.begin() + num_output_nz_,
 		       gains.end(), std::greater<Dtype>());
+      const Dtype thresh = gains[num_output_nz_ - 1];
       // Add gradient drift to encourage further shrinkage of small gains
       for (int c = 0; c < channels_; ++c) {
-	if (gain_data[c] < gains[num_output_nz_ - 1]) {
+	if (gain_data[c] < thresh) {
 	  gain_diff[c] += drift_;
 	}
       }
     }
     if (stdev_ > 0) {
       // Add zero-mean Gaussian noise to the gradient
-      std::vector<Dtype> noise(channels_);
+      Blob<Dtype> noise(1, channels_, 1, 1);
       caffe_rng_gaussian(channels_, Dtype(0),
-	 Dtype(1.0), &noise[0]);
-      caffe_axpy(channels_, stdev_, &noise[0], gain_diff);
+	 Dtype(1.0), noise.mutable_cpu_data());
+      caffe_axpy(channels_, stdev_, noise.cpu_data(), gain_diff);
     }
     if (norm_mean_) {
       // Make the gradient zero-mean
@@ -131,12 +136,11 @@ void GainChannelLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
   }
   if (propagate_down[0]) {
     for (int n = 0; n < num_; ++n) {
-      for (int c = 0; c < channels_; ++c) {
-	const Dtype alpha = this->blobs_[0]->cpu_data()[c];
-	caffe_cpu_scale(height_ * width_, alpha,
-			top[0]->cpu_diff(n, c),
-			bottom[0]->mutable_cpu_diff(n, c));
-      }
+      caffe_cpu_dgmm(CUBLAS_SIDE_LEFT,
+	  channels_, height_ * width_,
+	  top[0]->cpu_diff(n),
+	  gain_data,
+          bottom[0]->mutable_cpu_diff(n));
     }
   }
 }
@@ -163,38 +167,44 @@ void GainChannelLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
     }
   }
   // Multiply with gain
+  gain_data = this->blobs_[0]->mutable_gpu_data();
   for (int n = 0; n < num_; ++n) {
-    for (int c = 0; c < channels_; ++c) {
-      caffe_gpu_scale(height_ * width_, gain_data[c],
-		      bottom[0]->gpu_data(n, c),
-		      top[0]->mutable_gpu_data(n, c));
-    }
+    caffe_gpu_dgmm(CUBLAS_SIDE_LEFT,
+       channels_, height_ * width_,
+       bottom[0]->gpu_data(n),
+       gain_data,
+       top[0]->mutable_gpu_data(n));
   }
 }
 
 template <typename Dtype>
 void GainChannelLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
       const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom) {
-  const bool in_place = bottom[0]->gpu_data() == top[0]->gpu_data();
+  const Dtype *gain_data;
+  Dtype *gain_diff;
   // Update local parameters
   if (1 || this->param_propagate_down(0)) {
+    // gain_data and gain_diff point to device memory
+    gain_data = this->blobs_[0]->gpu_data();
+    gain_diff = this->blobs_[0]->mutable_gpu_diff();
     CHECK_EQ(this->blobs_[0]->count(), channels_);
-    Dtype *gain_diff = this->blobs_[0]->mutable_gpu_diff();
     caffe_gpu_set(channels_, Dtype(0), gain_diff);
     for (int n = 0; n < num_; ++n) {
-      for (int c = 0; c < channels_; ++c) {
-	const Dtype alpha = this->blobs_[0]->cpu_data()[c];
-	caffe_gpu_gemm(CblasNoTrans, CblasNoTrans,
-	   1, 1, height_ * width_,
-	   ((in_place && alpha > 0) ? Dtype(1.) / alpha : Dtype(1.)),
-	   top[0]->gpu_diff(n, c), bottom[0]->gpu_data(n, c),
-	   Dtype(1.), &gain_diff[c]);
-      }
+      caffe_gpu_dot_mul(CblasNoTrans, CblasNoTrans,
+	 channels_, 1, height_ * width_,
+	 Dtype(1), top[0]->gpu_diff(n), bottom[0]->gpu_data(n), ones_.gpu_data(),
+	 buf_.mutable_gpu_data(),
+	 Dtype(1), gain_diff);
     }
+    const bool in_place = bottom[0]->gpu_data() == top[0]->gpu_data();
+    if (in_place) {
+      caffe_gpu_div_safe(channels_, gain_diff, gain_data, gain_diff);
+    }
+    // gain_data and gain_diff point to main memory
+    gain_data = this->blobs_[0]->cpu_data();
     gain_diff = this->blobs_[0]->mutable_cpu_diff();
     if (drift_ > 0) {
       // Find the num_output_nz_ greatest gains
-      const Dtype *gain_data = this->blobs_[0]->cpu_data();
       std::vector<Dtype> gains(channels_);
       std::copy(gain_data, gain_data + channels_, gains.begin());
       std::nth_element(gains.begin(), gains.begin() + num_output_nz_,
@@ -208,10 +218,10 @@ void GainChannelLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
     }
     if (stdev_ > 0) {
       // Add zero-mean Gaussian noise to the gradient
-      std::vector<Dtype> noise(channels_);
+      Blob<Dtype> noise(1, channels_, 1, 1);
       caffe_rng_gaussian(channels_, Dtype(0),
-	 Dtype(1.0), &noise[0]);
-      caffe_axpy(channels_, stdev_, &noise[0], gain_diff);
+	 Dtype(1.0), noise.mutable_cpu_data());
+      caffe_axpy(channels_, stdev_, noise.cpu_data(), gain_diff);
     }
     if (norm_mean_) {
       // Make the gradient zero-mean
@@ -226,17 +236,20 @@ void GainChannelLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
     }
   }
   if (propagate_down[0]) {
+    // gain_data points to device memory
+    gain_data = this->blobs_[0]->gpu_data();
     for (int n = 0; n < num_; ++n) {
-      for (int c = 0; c < channels_; ++c) {
-	const Dtype alpha = this->blobs_[0]->cpu_data()[c];
-	caffe_gpu_scale(height_ * width_, alpha,
-			top[0]->gpu_diff(n, c),
-			bottom[0]->mutable_gpu_diff(n, c));
-      }
+      caffe_gpu_dgmm(CUBLAS_SIDE_LEFT,
+	  channels_, height_ * width_,
+	  top[0]->gpu_diff(n),
+	  gain_data,
+          bottom[0]->mutable_gpu_diff(n));
     }
   }
 }
+
 #endif
+
 #ifdef CPU_ONLY
 STUB_GPU(GainChannelLayer);
 #endif

@@ -40,10 +40,17 @@ VOCopts.testset = testset;
 
 % initialize main challenge paths
 
-VOCopts.annopath=[VOCopts.datadir VOCopts.dataset '/Annotations/%s.xml'];
-VOCopts.imgpath=[VOCopts.datadir VOCopts.dataset '/JPEGImages/%s.jpg'];
-VOCopts.imgsetpath=[VOCopts.datadir VOCopts.dataset '/ImageSets/Main/%s.txt'];
-VOCopts.clsimgsetpath=[VOCopts.datadir VOCopts.dataset '/ImageSets/Main/%s_%s.txt'];
+%VOCopts.annopath=[VOCopts.datadir VOCopts.dataset '/Annotations/%s.xml'];
+%VOCopts.imgpath=[VOCopts.datadir VOCopts.dataset '/JPEGImages/%s.jpg'];
+%VOCopts.imgsetpath=[VOCopts.datadir VOCopts.dataset '/ImageSets/Main/%s.txt'];
+%VOCopts.clsimgsetpath=[VOCopts.datadir VOCopts.dataset '/ImageSets/Main/%s_%s.txt'];
+
+VOCopts.annopath=[seg_root '/Annotations/%s.xml'];
+VOCopts.imgpath=[seg_root '/JPEGImages/%s.jpg'];
+VOCopts.imgsetpath=[seg_root '/ImageSets/Main/%s.txt'];
+VOCopts.clsimgsetpath=[seg_root '/ImageSets/Main/%s_%s.txt'];
+
+
 VOCopts.clsrespath=[VOCopts.resdir 'Main/%s_cls_' VOCopts.testset '_%s.txt'];
 VOCopts.detrespath=[VOCopts.resdir 'Main/%s_det_' VOCopts.testset '_%s.txt'];
 

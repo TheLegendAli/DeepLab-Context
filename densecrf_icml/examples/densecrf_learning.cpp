@@ -148,7 +148,7 @@ public:
       //std::cout << "before dx: " << dx << std::endl << std::endl;
       dx += tmp;
 
-      std::cout << k << ", dx: " << dx.transpose() << std::endl;
+      //std::cout << k << ", dx: " << dx.transpose() << std::endl;
     
     }
 
@@ -157,8 +157,7 @@ public:
     dx = dx.array() / crfs_.size();
 
     //std::cout << "c size:" << crfs_.size() << std::endl;
-  
-    //std::cout << "gd 9:"  << std::endl;
+    //std::cout << "dx :"  << dx.transpose() << std::endl;
 
     r = -r;
     if( l2_norm_ > 0 ) {
@@ -167,7 +166,7 @@ public:
     }
 
     //std::cout << "gd 10:"  << std::endl;
-    std::cout << "final dx: " << dx.transpose() << std::endl;
+    //std::cout << "final dx: " << dx.transpose() << std::endl;
 
     return r;
   }
@@ -198,6 +197,8 @@ int main( int argc, char* argv[]){
   
   std::string strip_pattern("_blob_0");
   std::vector<std::string> img_file_names;
+
+  GetImgNamesFromFeatFiles(img_file_names, feat_file_names, strip_pattern);
   
   std::string fn;
   unsigned char* img = NULL;
@@ -257,6 +258,8 @@ int main( int argc, char* argv[]){
 
       // first load all the batches to crfs and objectives
       for (int m = 0; m < inp.BatchSize; ++m) {
+	//std::cout << "loading " << m << std::endl;
+
 	img_ind = k * inp.BatchSize + m;
 
 	// read ppm image
@@ -281,18 +284,24 @@ int main( int argc, char* argv[]){
 	crf->addPairwiseGaussian(inp.PosXStd, inp.PosYStd, 
 			      new PottsCompatibility(inp.PosW));
 	// Add a longer range label compatibility term
-	/*
+	///*
+	if (inp.ModelType == 0) {
 	  crf->addPairwiseBilateral(inp.BilateralXStd, inp.BilateralYStd, 
 	  inp.BilateralRStd, inp.BilateralGStd, inp.BilateralBStd, img, 
 	  new PottsCompatibility(inp.BilateralW));
-	*/
-	///*
-	// note the minus sign for MatrixCompatibility
-	// if use Potts, just use plus sign
-	crf->addPairwiseBilateral(inp.BilateralXStd, inp.BilateralYStd, 
+	} else if(inp.ModelType == 1) {
+	  crf->addPairwiseBilateral(inp.BilateralXStd, inp.BilateralYStd, 
+	    inp.BilateralRStd, inp.BilateralGStd, inp.BilateralBStd, img, 
+	    new DiagonalCompatibility(-inp.BilateralW *
+				    VectorXf::Ones(feat_channel, 1)));
+	} else if (inp.ModelType == 2) {
+	  // note the minus sign for MatrixCompatibility
+	  // if use Potts, just use plus sign
+	  crf->addPairwiseBilateral(inp.BilateralXStd, inp.BilateralYStd, 
 	       inp.BilateralRStd, inp.BilateralGStd, inp.BilateralBStd, img, 
 	       new MatrixCompatibility(-inp.BilateralW * 
 		       MatrixXf::Identity(feat_channel, feat_channel))); 
+	}
 
 	delete[] img;
 	img = NULL;
@@ -330,10 +339,10 @@ int main( int argc, char* argv[]){
 	  //std::cout << "04" << std::endl;
 
 	  // Choose your loss function
-	  // 	LogLikelihood objective( labeling, 0.01 ); // Log likelihood loss
+	  //LogLikelihood* objective = new LogLikelihood( labeling, 0.01 ); // Log likelihood loss
 	  // 	Hamming objective( labeling, 0.0 ); // Global accuracy
 	  // 	Hamming objective( labeling, 1.0 ); // Class average accuracy
-	  // 	Hamming objective( labeling, 0.2 ); // Hamming loss close to intersection over union
+	  //    Hamming* objective = new Hamming( labeling, 0.2 ); // Hamming loss close to intersection over union
 	  // Intersection over union accuracy
 	  IntersectionOverUnion* objective = new IntersectionOverUnion( labeling );
 	
@@ -377,12 +386,13 @@ int main( int argc, char* argv[]){
 	  //bool lbfgs_verbose = false;
 	  crf_params = minimizeLBFGS( energy, num_restart, inp.LBFGSItr, inp.Verbose);
 
-	  //std::cout << "3" << std::endl;
+	  //std::cout << "3" << std::endl << std::endl;
 	  
 	} // done learning
 
 	// save parameters
 	if (k == (img_file_names.size() / inp.BatchSize) - 1) {	  	  
+	  std::cout << "Saving parameters..." << std::endl;
 	  // Save the values
 	  crfs[0]->SetParameters(crf_params, 
 			      learning_params.row(learning_params.rows()-1));
@@ -411,7 +421,12 @@ int main( int argc, char* argv[]){
 	    std::cout << " Loaded prameters:" << std::endl;
 	    crfs[0]->PrintParameters();
 	  }
-	} 
+	} else {
+	  if (e == 0 && k == 0 && inp.Verbose) {
+	    std::cout << "No specified parameters. Use default ones..." << std::endl;
+	    crfs[0]->PrintParameters();
+	  }	  
+	}
 	// Do map inference
 	VectorXs map = crfs[0]->map(inp.MaxIterations);
 

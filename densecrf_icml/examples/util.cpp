@@ -190,24 +190,13 @@ void TraverseDirectory(const std::string& path, std::string& pattern, bool subdi
 
 void OutputSetting(const InputData& inp) {
   std::cout << "Input Parameters: " << std::endl;
-  if (inp.ImgDir) {
-    std::cout << "ImgDir:           " << inp.ImgDir << std::endl;
-  }
-  if (inp.GtDir) {
-    std::cout << "GtDir:            " << inp.GtDir << std::endl;
-  }
-  if (inp.FeatureDir) {
-    std::cout << "FeatureDir:       " << inp.FeatureDir << std::endl;
-  }
-  if (inp.SaveDir) {
-    std::cout << "SaveDir:          " << inp.SaveDir << std::endl;
-  }
-  if (inp.ModelDir) {
-    std::cout << "ModelDir:         " << inp.ModelDir << std::endl;
-  }
-  if (inp.Model) {
-    std::cout << "Model:            " << inp.Model << std::endl;
-  }
+  std::cout << "ImgDir:           " << (inp.ImgDir?inp.ImgDir:"") << std::endl;
+  std::cout << "GtDir:            " << (inp.GtDir?inp.GtDir:"") << std::endl;
+  std::cout << "FeatureDir:       " << (inp.FeatureDir?inp.FeatureDir:"") << std::endl;
+  std::cout << "SaveDir:          " << (inp.SaveDir?inp.SaveDir:"") << std::endl;
+  std::cout << "ModelDir:         " << (inp.ModelDir?inp.ModelDir:"") << std::endl;
+  std::cout << "Model:            " << (inp.Model?inp.Model:"") << std::endl;
+
   std::cout << "MaxIterations:    " << inp.MaxIterations << std::endl;
   std::cout << "PosW:      " << inp.PosW    << std::endl;
   std::cout << "PosXStd:   " << inp.PosXStd << std::endl;
@@ -232,11 +221,28 @@ void OutputSetting(const InputData& inp) {
   }
 
   std::cout << "OptimizePhase:  " << inp.OptimizePhase << std::endl;  
+
+
+  switch(inp.ModelType) {
+  case 0:
+    std::cout << "Model type: Potts " << std::endl;
+    break;
+  case 1:
+    std::cout << "Model type: Diagonal " << std::endl;
+    break;
+  case 2:
+    std::cout << "Model type: Matrix " << std::endl;
+    break;
+  default:
+    std::cerr << "Wrong Model Type..." << std::endl;
+    break;
+  }
+
   std::cout << "Epoch:          " << inp.Epoch << std::endl;
   std::cout << "BatchSize:      " << inp.BatchSize << std::endl;
   std::cout << "L2Norm:         " << inp.L2Norm << std::endl;
   std::cout << "LBFGSItr        " << inp.LBFGSItr << std::endl;
-  std::cout << "RandomShuffle   " << inp.RandomShuffle << std::endl;
+  std::cout << "RandomShuffle   " << inp.RandomShuffle << std::endl;  
   std::cout << "Verbose:        " << inp.Verbose << std::endl;
 }
 
@@ -290,6 +296,8 @@ int ParseInput(int argc, char** argv, struct InputData& OD) {
       OD.Verbose = atoi(argv[++k]);
     } else if(::strcmp(argv[k], "-rs")==0 && k+1!=argc) {
       OD.RandomShuffle = atoi(argv[++k]);
+    } else if(::strcmp(argv[k], "-mt")==0 && k+1!=argc) {
+      OD.ModelType = atoi(argv[++k]);
     } 
   }
   return 0;

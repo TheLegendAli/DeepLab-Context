@@ -37,6 +37,7 @@ struct InputData {
   // 2: optimize both unary and pairwise
   // 3: optimize Full CRF (i.e., also kernel)
   int OptimizePhase;
+  int ModelType;  //0: Potts, 1: Diagonal, 2: Matrix
   int Epoch;
   int BatchSize;
   float L2Norm;
@@ -49,7 +50,7 @@ struct InputData {
     ModelDir(NULL), Model(NULL), MaxIterations(10), 
     BilateralW(5), BilateralXStd(70), BilateralYStd(70), BilateralRStd(5),
     BilateralGStd(5), BilateralBStd(5), PosW(3), PosXStd(3), PosYStd(3),
-    Task(2), OptimizePhase(3), Epoch(1), BatchSize(1), L2Norm(0.00001),
+    Task(2), OptimizePhase(3), ModelType(0), Epoch(1), BatchSize(1), L2Norm(0.00001),
     LBFGSItr(1), RandomShuffle(0), Verbose(0) {}
 };
 

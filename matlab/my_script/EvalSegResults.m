@@ -24,10 +24,8 @@ end
 
 if has_postprocess
   if learn_crf
-    crf_folder = 'densecrf';
-    post_folder = sprintf('post_densecrf_W%d_XStd%d_RStd%d_PosW%d_PosXStd%d_Epoch%d', bi_w, bi_x_std, bi_r_std, pos_w, pos_x_std, epoch); 
+    post_folder = sprintf('post_densecrf_W%d_XStd%d_RStd%d_PosW%d_PosXStd%d_ModelType%d_Epoch%d', bi_w, bi_x_std, bi_r_std, pos_w, pos_x_std, model_type, epoch); 
   else
-    crf_folder = '';
     post_folder = sprintf('post_densecrf_W%d_XStd%d_RStd%d_PosW%d_PosXStd%d', bi_w, bi_x_std, bi_r_std, pos_w, pos_x_std); 
   end
 else

@@ -33,6 +33,37 @@ template <typename Dtype>
 void caffe_cpu_axpby(const int N, const Dtype alpha, const Dtype* X,
     const Dtype beta, Dtype* Y);
 
+// INPUT:
+// op(A), op(B): M x K
+// op(C): K x N
+// buf: M x K scratch to store op(A .* B) (can be one of A or B if not needed)
+// OUTPUT: (depending on TransA, TransC)
+// D = alpha * op(A .* B) * op(C) + beta * D, with size M X N
+template <typename Dtype>
+void caffe_cpu_dot_mul(const CBLAS_TRANSPOSE TransAB,
+   const CBLAS_TRANSPOSE TransC,
+   const int M, const int N, const int K,
+   const Dtype alpha, const Dtype* A, const Dtype* B, const Dtype *C,
+   Dtype *buf,
+   const Dtype beta, Dtype *D);
+template <typename Dtype>
+void caffe_gpu_dot_mul(const CBLAS_TRANSPOSE TransAB,
+   const CBLAS_TRANSPOSE TransC,
+   const int M, const int N, const int K,
+   const Dtype alpha, const Dtype* A, const Dtype* B, const Dtype *C,
+   Dtype *buf,
+   const Dtype beta, Dtype *D);
+
+// C := A*diag(x). if mode = CUBLAS_SIDE_RIGHT
+// C := diag(x)*A. if mode = CUBLAS_SIDE_LEFT
+// A, C have size M x N. If C is missing, then multiply A in-place.
+template <typename Dtype>
+void caffe_cpu_dgmm(cublasSideMode_t mode,
+    const int M, const int N, const Dtype *A, const Dtype *x, Dtype *C);
+template <typename Dtype>
+void caffe_cpu_dgmm(cublasSideMode_t mode, 
+    const int M, const int N, Dtype *A, const Dtype *x);
+
 template <typename Dtype>
 void caffe_copy(const int N, const Dtype *X, Dtype *Y);
 
@@ -63,6 +94,9 @@ void caffe_mul(const int N, const Dtype* a, const Dtype* b, Dtype* y);
 
 template <typename Dtype>
 void caffe_div(const int N, const Dtype* a, const Dtype* b, Dtype* y);
+
+template <typename Dtype>
+void caffe_cpu_div_safe(const int N, const Dtype* a, const Dtype* b, Dtype* y);
 
 template <typename Dtype>
 void caffe_powx(const int n, const Dtype* a, const Dtype b, Dtype* y);
@@ -166,6 +200,13 @@ template <typename Dtype>
 void caffe_gpu_axpby(const int N, const Dtype alpha, const Dtype* X,
     const Dtype beta, Dtype* Y);
 
+template <typename Dtype>
+void caffe_gpu_dgmm(cublasSideMode_t mode, 
+    const int M, const int N, const Dtype *A, const Dtype *x, Dtype *C);
+template <typename Dtype>
+void caffe_gpu_dgmm(cublasSideMode_t mode, 
+    const int M, const int N, Dtype *A, const Dtype *x);
+
 void caffe_gpu_memcpy(const size_t N, const void *X, void *Y);
 
 template <typename Dtype>
@@ -196,6 +237,9 @@ void caffe_gpu_mul(const int N, const Dtype* a, const Dtype* b, Dtype* y);
 
 template <typename Dtype>
 void caffe_gpu_div(const int N, const Dtype* a, const Dtype* b, Dtype* y);
+
+template <typename Dtype>
+void caffe_gpu_div_safe(const int N, const Dtype* a, const Dtype* b, Dtype* y);
 
 template <typename Dtype>
 void caffe_gpu_abs(const int n, const Dtype* a, Dtype* y);

@@ -7,11 +7,11 @@ load('./pascal_seg_colormap.mat');
 is_server       = 1;
 
 crf_load_mat    = 1;   % the densecrf code load MAT files directly (no call SaveMatAsBin.m)
-                       % used by DownSampleFeature.m
-learn_crf       = 1;   % is the crf parameters learned or cross-validated
+                       % used ONLY by DownSampleFeature.m
+learn_crf       = 0;   % is the crf parameters learned or cross-validated
 
-is_mat          = 0;   % the results to be evaluated are saved as mat or png
-has_postprocess = 1;   % has done densecrf post processing or not
+is_mat          = 1;   % the results to be evaluated are saved as mat or png
+has_postprocess = 0;   % has done densecrf post processing or not
 is_argmax       = 0;   % the output has been taken argmax already (e.g., coco dataset). 
                        % assume the argmax takes C-convention (i.e., start from 0)
 
@@ -120,6 +120,13 @@ debug           = 0;   % if debug, show some results
 % vgg128_noup_pool3_20M_largewin2_coco
 % bi_w = 4, bi_x_std = 65, bi_r_std = 5, pos_w = 3, pos_x_std = 3
 
+% vgg128_noup_pool3_20M_largewin3_coco
+% bi_w = 5, bi_x_std = 69, bi_r_std = 5, pos_w = 3, pos_x_std = 3
+
+% vgg128_noup_pool3_125M_coco
+% bi_w = 5, bi_x_std = 49, bi_r_std = 3, pos_w = 3, pos_x_std = 3
+
+
 
 %
 % alexnet_noup_pool3_7M
@@ -135,29 +142,46 @@ debug           = 0;   % if debug, show some results
 % erode_gt/bboxErode20
 % bi_w = 45, bi_x_std = 37, bi_r_std = 3, pos_w = 15, pos_x_std = 3
  
+
 %
-bi_w           = 4; 
-bi_x_std       = 65;
-bi_r_std       = 5;
+% initial or default values for crf
+bi_w           = 5; 
+bi_x_std       = 49;
+bi_r_std       = 3;
 
 pos_w          = 3;
 pos_x_std      = 3;
 
+% used for learn_crf
+model_type     = 1;  % 0: Potts, 1: Diagonal, 2: Matrix label compacitability
 epoch          = 1;  % used for learned crf parameters
+%
 
 %
 dataset    = 'voc12';  %'voc12', 'coco'
-id         = 'comp6';
 trainset   = 'train_aug';       % not used
-testset    = 'val';            %'val', 'test'
+testset    = 'test';            %'val', 'test'
 
-model_name = 'vgg128_noup_pool3_largewin_coco';
+model_name = 'vgg128_noup_pool3_20M_largewin3_coco_cls_baseline'; 
 
-feature_name = 'features';
+feature_name = 'features2';
 feature_type = 'fc8'; % fc8 / crf
+
+% method to get "scores" for image classification task
+cls_score_type = 'hard';    % 'hard', 'soft', 'score'
 
 % feature_name = 'erode_gt';     % 'erode_gt', 'features', 'features4', 'features2', ''
 % feature_type = 'bboxErode20_OccluBias';        %'bboxErode20', 'fc8', 'crf', 'fc8_crf'
+
+
+id                 = 'comp6';
+seg_id             = id;
+seg_task_folder    = 'Segmentation';
+seg_gt_task_folder = 'SegmentationClass';
+
+cls_id             = 'comp2';
+cls_task_folder    = 'Main';
+cls_gt_task_folder = 'Main';
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% used for cross-validation
@@ -173,8 +197,8 @@ num_sample         = 100;     % used for erode_gt
 range_pos_w = [3];
 range_pos_x_std = [3];
 
-range_bi_w = [4];
-range_bi_x_std = [65];
-range_bi_r_std = [5];
+range_bi_w = [5];
+range_bi_x_std = [49];
+range_bi_r_std = [4 5];
 
 
