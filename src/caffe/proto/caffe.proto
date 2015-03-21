@@ -206,7 +206,7 @@ message NetStateRule {
 // NOTE
 // Update the next available ID when you add a new LayerParameter field.
 //
-// LayerParameter next available ID: 59 (last added: gain_channel_param)
+// LayerParameter next available ID: 60 (last added: one_hot_param)
 message LayerParameter {
   repeated string bottom = 2; // the name of the bottom blobs
   repeated string top = 3; // the name of the top blobs
@@ -227,7 +227,7 @@ message LayerParameter {
   // line above the enum. Update the next available ID when you add a new
   // LayerType.
   //
-  // LayerType next available ID: 56 (last added: GAIN_CHANNEL)
+  // LayerType next available ID: 57 (last added: ONE_HOT)
   enum LayerType {
     // "NONE" layer type is 0th enum element so that we don't cause confusion
     // by defaulting to an existent LayerType (instead, should usually error if
@@ -271,6 +271,7 @@ message LayerParameter {
     MEMORY_DATA = 29;
     MULTINOMIAL_LOGISTIC_LOSS = 16;
     MVN = 34;
+    ONEHOT = 56;
     PADDING = 42;
     POOLING = 17;
     POWER = 26;
@@ -350,6 +351,7 @@ message LayerParameter {
   optional MatWriteParameter mat_write_param = 46;
   optional MemoryDataParameter memory_data_param = 22;
   optional MVNParameter mvn_param = 34;
+  optional OneHotParameter onehot_param = 59;
   optional PaddingParameter padding_param = 45;
   optional PoolingParameter pooling_param = 19;
   optional PowerParameter power_param = 21;
@@ -761,6 +763,11 @@ message MVNParameter {
 
   // This parameter can be set to true to perform DNN-like MVN
   optional bool across_channels = 2 [default = false];
+}
+
+// Message that stores parameters used by OneHotLayer
+message OneHotParameter {
+  required int32 num_labels = 1;
 }
 
 // Message that stores parameters used by PaddingLayer
