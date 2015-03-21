@@ -17,10 +17,12 @@ void GainChannelLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
   num_output_nz_ = param.num_output_nz();
   drift_ = param.drift();
   stdev_ = param.stdev();
+  thresh_ = param.thresh();
   norm_mean_ = param.norm_mean();
   CHECK(num_output_nz_ > 0 && num_output_nz_ <= channels_);
   CHECK_GE(drift_, 0) << "Drift needs to be non-negative";
   CHECK_GE(stdev_, 0) << "Noise stdev needs to be non-negative";
+  CHECK_GT(thresh_, 0) << "Gain threshold needs to be positive";
   if (this->blobs_.size() > 0) {
     LOG(INFO) << "Skipping parameter initialization";
     CHECK_EQ(this->blobs_[0]->count(), channels_);
@@ -54,11 +56,11 @@ void GainChannelLayer<Dtype>::Reshape(const vector<Blob<Dtype>*>& bottom,
 template <typename Dtype>
 void GainChannelLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top) {
-  // Project gain to positive values
+  // Clip gain values less than thresh
   Dtype *gain_data = this->blobs_[0]->mutable_cpu_data();
   for (int c = 0; c < channels_; ++c) {
-    if (gain_data[c] < 0) {
-      gain_data[c] = Dtype(0);
+    if (gain_data[c] < thresh_) {
+      gain_data[c] = thresh_;
     }
   }
   // Optionally (multiplicatively) normalize gains to be 1-mean
@@ -99,7 +101,7 @@ void GainChannelLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
     }
     const bool in_place = bottom[0]->cpu_data() == top[0]->cpu_data();
     if (in_place) {
-      caffe_cpu_div_safe(channels_, gain_diff, gain_data, gain_diff);
+      caffe_div(channels_, gain_diff, gain_data, gain_diff);
     }
     if (drift_ > 0) {
       // Find the num_output_nz_ greatest gains
@@ -152,8 +154,8 @@ void GainChannelLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
   // Project gain to positive values
   Dtype *gain_data = this->blobs_[0]->mutable_cpu_data();
   for (int c = 0; c < channels_; ++c) {
-    if (gain_data[c] < 0) {
-      gain_data[c] = Dtype(0);
+    if (gain_data[c] < thresh_) {
+      gain_data[c] = thresh_;
     }
   }
   // Optionally (multiplicatively) normalize gains to be 1-mean
@@ -198,7 +200,7 @@ void GainChannelLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
     }
     const bool in_place = bottom[0]->gpu_data() == top[0]->gpu_data();
     if (in_place) {
-      caffe_gpu_div_safe(channels_, gain_diff, gain_data, gain_diff);
+      caffe_gpu_div(channels_, gain_diff, gain_data, gain_diff);
     }
     // gain_data and gain_diff point to main memory
     gain_data = this->blobs_[0]->cpu_data();

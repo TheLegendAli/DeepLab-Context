@@ -160,15 +160,15 @@ epoch          = 1;  % used for learned crf parameters
 %
 dataset    = 'voc12';  %'voc12', 'coco'
 trainset   = 'train_aug';       % not used
-testset    = 'test';            %'val', 'test'
+testset    = 'val';            %'val', 'test'
 
-model_name = 'vgg128_noup_pool3_20M_largewin3_coco_cls_baseline'; 
+model_name = 'vgg128_noup_pool3_20M_largewin3_coco'; %_cls_baseline; 
 
 feature_name = 'features2';
-feature_type = 'fc8'; % fc8 / crf
+feature_type = 'crf'; % fc8 / crf
 
 % method to get "scores" for image classification task
-cls_score_type = 'hard';    % 'hard', 'soft', 'score'
+cls_score_type = 'soft';    % 'hard', 'soft', 'score'
 
 % feature_name = 'erode_gt';     % 'erode_gt', 'features', 'features4', 'features2', ''
 % feature_type = 'bboxErode20_OccluBias';        %'bboxErode20', 'fc8', 'crf', 'fc8_crf'
