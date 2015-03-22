@@ -11,9 +11,10 @@ Efficient Inference in Fully Connected CRFs with Gaussian Edge Potentials, Phili
 ### How to compile the code
 
 Linux: 
-make
 
-see run_densecrf.sh for examples of input arguments or see the dense_inference.cpp.
+Just run make command (modify Makefile if needed).
+
+Please see run_densecrf.sh for examples of input arguments or see the dense_inference.cpp.
 
 ### Caffe wrapper
 
