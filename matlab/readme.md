@@ -11,5 +11,5 @@ Some useful scripts:
 2. EvalSegResults.m
     * Evaluate the segmentation results which are saved as png files.  
 3. GetDenseCRFResult.m (saved under the folder densecrf/my_script)
-    * Transform the CRF computed results in the format of "bin" to "png" format.
+    * Transform the CRF computed results from the format of __bin__ to __png__ format.
   
