@@ -16,7 +16,7 @@ Some useful scripts:
     Evaluate the segmentation results which are saved as png files.
 
 
-3. GetDenseCRFResult.m
+3. GetDenseCRFResult.m (saved under the folder densecrf/my_script)
 
     Transform the CRF computed results in the format of "bin" to "png" format.
   
