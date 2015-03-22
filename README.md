@@ -10,20 +10,20 @@ This distribution provides a publicly available implementation for the key model
 It also contains implementations for methods supporting model learning using only weakly labeled examples, described in a second follow-up [arXiv paper](http://arxiv.org/abs/1502.02734).
 Please consult and consider citing the following papers:
 
-   @inproceedings{chen2014semantic,
-     title={Semantic Image Segmentation with Deep Convolutional Nets and Fully Connected CRFs},
-     author={Liang-Chieh Chen and George Papandreou and Iasonas Kokkinos and Kevin Murphy and Alan L Yuille},
-     booktitle={ICLR},
-     url={http://arxiv.org/abs/1412.7062},
-     year={2014}
-   }
+    @inproceedings{chen2014semantic,
+      title={Semantic Image Segmentation with Deep Convolutional Nets and Fully Connected CRFs},
+      author={Liang-Chieh Chen and George Papandreou and Iasonas Kokkinos and Kevin Murphy and Alan L Yuille},
+      booktitle={ICLR},
+      url={http://arxiv.org/abs/1412.7062},
+      year={2014}
+    }
 
-   @inproceedings{papandreou15,
-     title={Weakly- and Semi-Supervised Learning of a DCNN for Semantic Image Segmentation},
-     author={George Papandreou and Liang-Chieh Chen and Kevin Murphy and Alan L Yuille},
-     url={http://arxiv.org/abs/1502.02734},
-     year={2015}
-   }
+    @inproceedings{papandreou15,
+      title={Weakly- and Semi-Supervised Learning of a DCNN for Semantic Image Segmentation},
+      author={George Papandreou and Liang-Chieh Chen and Kevin Murphy and Alan L Yuille},
+      url={http://arxiv.org/abs/1502.02734},
+      year={2015}
+    }
 
 ### Performance
 
