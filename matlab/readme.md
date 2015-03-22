@@ -8,12 +8,10 @@ Some useful scripts:
 
 1. SetupEnv.m
 
-  * Set up the environmental variables.
-  
+  * Set up the environmental variables.  
 2. EvalSegResults.m
 
-  * Evaluate the segmentation results which are saved as png files.
-  
+  * Evaluate the segmentation results which are saved as png files.  
 3. GetDenseCRFResult.m (saved under the folder densecrf/my_script)
 
   * Transform the CRF computed results in the format of "bin" to "png" format.
