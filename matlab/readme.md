@@ -10,6 +10,7 @@ Some useful scripts:
 
 1. SetupEnv.m
     * Set up the environmental variables.  
+    * You can also find the DenseCRF parameters found by cross-validation in this script.
 2. EvalSegResults.m
     * Evaluate the segmentation results which are saved as png files.  
 3. GetDenseCRFResult.m (saved under the folder densecrf/my_script)
