@@ -28,3 +28,21 @@ Please consult and consider citing the following papers:
 ### Performance
 
 At the time of its release, DeepLab is the state-of-art method on semantic image segmentation on the challenging PASCAL VOC-2012 image segmentation task, with the latest variant achieving 72.7% mean IoU on the test set -- see the [leaderboard](http://host.robots.ox.ac.uk:8080/leaderboard/displaylb.php?challengeid=11&compid=6).
+
+### Pre-trained models
+
+1. DeepLab and corresponding prototxt files at [here](http://www.cs.ucla.edu/~lcchen/deeplab-public/vgg128_noup/)
+
+2. DeepLab-MSc at [here](http://www.cs.ucla.edu/~lcchen/deeplab-public/vgg128_ms_pool3/)
+
+3. DeepLab-COCO (has fine-tuned on [MS-COCO](http://mscoco.org/) and then on PASCAL VOC [2012](http://pascallin.ecs.soton.ac.uk/challenges/VOC/voc2012/) at [here](http://www.cs.ucla.edu/~lcchen/deeplab-public/vgg128_noup_pool3_cocomix/)
+
+### Others
+
+1. The scripts we used for our experiments:
+    1. [run_pascal.sh](http://www.cs.ucla.edu/~lcchen/deeplab-public/run_pascal.sh): the script for training/testing on the PASCAL VOC 2012 dataset.
+    2. [run_densecrf.sh](http://www.cs.ucla.edu/~lcchen/deeplab-public/run_densecrf.sh) and [run_densecrf_grid_search.sh](http://www.cs.ucla.edu/~lcchen/deeplab-public/run_densecrf_grid_search.sh): the scripts we used for post-processing the DCNN computed results by DenseCRF.
+
+2. The image list files used in our experiments:
+    * The [list folder](http://www.cs.ucla.edu/~lcchen/deeplab-public/list) stores the list files for the PASCAL VOC 2012 dataset.
+    
