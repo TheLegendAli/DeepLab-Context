@@ -45,5 +45,5 @@ At the time of its release, DeepLab is the state-of-art method on semantic image
 
 
 2. The image list files used in our experiments:
-    * The [list folder](http://www.cs.ucla.edu/~lcchen/deeplab-public/list) stores the list files for the PASCAL VOC 2012 dataset.
+    * The [list folder](http://www.cs.ucla.edu/~lcchen/deeplab-public/list) stores the list files for the PASCAL VOC 2012 dataset. You can download the zipped file [here](http://www.cs.ucla.edu/~lcchen/deeplab-public/list.zip) (i.e., all the lists).
     
