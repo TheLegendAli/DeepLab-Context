@@ -2,7 +2,7 @@
 
 ### Code
 
-The code is modified from the publicly available code by Philipp Krähenbühl.
+The code is modified from the publicly available code by Philipp Krähenbühl and Vladlen Koltun.
 See their project [website](http://www.philkr.net/home/densecrf) for more information 
 
 If you also use this part of code, please cite their [paper](http://googledrive.com/host/0B6qziMs8hVGieFg0UzE0WmZaOW8/papers/densecrf.pdf):
