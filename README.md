@@ -41,7 +41,9 @@ At the time of its release, DeepLab is the state-of-art method on semantic image
 
 1. The scripts we used for our experiments:
     1. [run_pascal.sh](http://www.cs.ucla.edu/~lcchen/deeplab-public/run_pascal.sh): the script for training/testing on the PASCAL VOC 2012 dataset.
+        * You also need to download this [file](http://www.cs.ucla.edu/~lcchen/deeplab-public/sub.sed)
     2. [run_densecrf.sh](http://www.cs.ucla.edu/~lcchen/deeplab-public/run_densecrf.sh) and [run_densecrf_grid_search.sh](http://www.cs.ucla.edu/~lcchen/deeplab-public/run_densecrf_grid_search.sh): the scripts we used for post-processing the DCNN computed results by DenseCRF.
+
 
 2. The image list files used in our experiments:
     * The [list folder](http://www.cs.ucla.edu/~lcchen/deeplab-public/list) stores the list files for the PASCAL VOC 2012 dataset.
