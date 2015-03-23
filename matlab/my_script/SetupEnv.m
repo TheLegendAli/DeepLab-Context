@@ -17,18 +17,16 @@ is_argmax       = 0;   % the output has been taken argmax already (e.g., coco da
 
 debug           = 0;   % if debug, show some results
 
-% vgg128_noup_pool3 (not optimized well)
+% vgg128_noup (not optimized well), aka DeepLab
 % bi_w = 5, bi_x_std = 50, bi_r_std = 10
 
-% vgg128_ms_pool3
+% vgg128_ms_pool3, aka DeepLab-MSc
 % bi_w = 3, bi_x_std = 95, bi_r_std = 3
 
-% vgg128_noup_pool3_coco
-% bi_w = 5, bi_x_std = 63, bi_r_std = 3
-
-% vgg128_noup_pool3_cocomix
+% vgg128_noup_pool3_cocomix, aka DeepLab-COCO
 % bi_w = 5, bi_x_std = 67, bi_r_std = 3
 
+%% these are used for the bounding box weak annotation experiments (i.e., to generate the Bbox-Seg)
 % erode_gt (bbox)
 % bi_w = 41, bi_x_std = 33, bi_r_std = 4
 
@@ -39,7 +37,7 @@ debug           = 0;   % if debug, show some results
 %
 % initial or default values for crf
 bi_w           = 5; 
-bi_x_std       = 49;
+bi_x_std       = 50;
 bi_r_std       = 3;
 
 pos_w          = 3;
@@ -51,7 +49,7 @@ dataset    = 'voc12';  %'voc12', 'coco'
 trainset   = 'train_aug';      % not used
 testset    = 'val';            %'val', 'test'
 
-model_name = 'vgg128_noup_pool3';
+model_name = 'vgg128_noup';
 
 feature_name = 'features';
 feature_type = 'fc8'; % fc8 / crf
