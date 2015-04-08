@@ -18,10 +18,10 @@ Please consult and consider citing the following papers:
       year={2015}
     }
 
-    @inproceedings{papandreou15weak,
+    @article{papandreou15weak,
       title={Weakly- and Semi-Supervised Learning of a DCNN for Semantic Image Segmentation},
       author={George Papandreou and Liang-Chieh Chen and Kevin Murphy and Alan L Yuille},
-      url={http://arxiv.org/abs/1502.02734},
+      journal={arxiv:1502.02734},
       year={2015}
     }
 
