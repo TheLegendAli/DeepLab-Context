@@ -37,6 +37,8 @@ At the time of its release, DeepLab is the state-of-art method on semantic image
 
 3. DeepLab-COCO (has fine-tuned on [MS-COCO](http://mscoco.org/) and then on PASCAL VOC [2012](http://pascallin.ecs.soton.ac.uk/challenges/VOC/voc2012/)) at [here](http://www.cs.ucla.edu/~lcchen/deeplab-public/vgg128_noup_pool3_cocomix/). After DenseCRF, the model yields 70.4% performance on the PASCAL VOC 2012 test set.
 
+4. DeepLab-Weak-EM-Adapt at [here](http://ttic.uchicago.edu/~gpapan/deeplab/vgg128_noup_pool3_adaweak). Trained on PASCAL using only weak image-level labels. After DenseCRF, the model yields 39.0% performance on the PASCAL VOC 2012 test set.
+
 ### Experimental set-up
 
 1. The scripts we used for our experiments:
