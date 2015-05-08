@@ -27,7 +27,7 @@ Please consult and consider citing the following papers:
 
 ### Performance
 
-DeepLab currently achieves at best 73.9% on the challenging PASCAL VOC 2012 image segmentation task -- see the [leaderboard](http://host.robots.ox.ac.uk:8080/leaderboard/displaylb.php?challengeid=11&compid=6). 
+DeepLab currently achieves 73.9% on the challenging PASCAL VOC 2012 image segmentation task -- see the [leaderboard](http://host.robots.ox.ac.uk:8080/leaderboard/displaylb.php?challengeid=11&compid=6). 
 
 ### Pre-trained models
 
