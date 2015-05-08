@@ -27,17 +27,19 @@ Please consult and consider citing the following papers:
 
 ### Performance
 
-At the time of its release, DeepLab is the state-of-art method on semantic image segmentation on the challenging PASCAL VOC-2012 image segmentation task, with the latest variant achieving 72.7% mean IoU on the test set -- see the [leaderboard](http://host.robots.ox.ac.uk:8080/leaderboard/displaylb.php?challengeid=11&compid=6).
+DeepLab currently achieves at best 73.9% on the challenging PASCAL VOC 2012 image segmentation task -- see the [leaderboard](http://host.robots.ox.ac.uk:8080/leaderboard/displaylb.php?challengeid=11&compid=6). 
 
 ### Pre-trained models
 
-1. DeepLab and corresponding prototxt files at [here](http://www.cs.ucla.edu/~lcchen/deeplab-public/vgg128_noup/). After DenseCRF, the model yields 66.4% performance on the PASCAL VOC 2012 test set.
+We have released several trained models and corresponding prototxt files at [here](http://ccvl.stat.ucla.edu/software/deeplab/) for more model details.
 
-2. DeepLab-MSc at [here](http://www.cs.ucla.edu/~lcchen/deeplab-public/vgg128_ms_pool3/). After DenseCRF, the model yields 67.1% performance on the PASCAL VOC 2012 test set.
+'''1. DeepLab and corresponding prototxt files at [here](http://www.cs.ucla.edu/~lcchen/deeplab-public/vgg128_noup/). After DenseCRF, the model yields 66.4% performance on the PASCAL VOC 2012 test set.
 
-3. DeepLab-COCO (has fine-tuned on [MS-COCO](http://mscoco.org/) and then on PASCAL VOC [2012](http://pascallin.ecs.soton.ac.uk/challenges/VOC/voc2012/)) at [here](http://www.cs.ucla.edu/~lcchen/deeplab-public/vgg128_noup_pool3_cocomix/). After DenseCRF, the model yields 70.4% performance on the PASCAL VOC 2012 test set.
+'''2. DeepLab-MSc at [here](http://www.cs.ucla.edu/~lcchen/deeplab-public/vgg128_ms_pool3/). After DenseCRF, the model yields 67.1% performance on the PASCAL VOC 2012 test set.
 
-4. DeepLab-Weak-EM-Adapt at [here](http://ttic.uchicago.edu/~gpapan/deeplab/vgg128_noup_pool3_adaweak). Trained on PASCAL using only weak image-level labels. After DenseCRF, the model yields 39.0% performance on the PASCAL VOC 2012 test set.
+'''3. DeepLab-COCO (has fine-tuned on [MS-COCO](http://mscoco.org/) and then on PASCAL VOC [2012](http://pascallin.ecs.soton.ac.uk/challenges/VOC/voc2012/)) at [here](http://www.cs.ucla.edu/~lcchen/deeplab-public/vgg128_noup_pool3_cocomix/). After DenseCRF, the model yields 70.4% performance on the PASCAL VOC 2012 test set.
+
+'''4. DeepLab-Weak-EM-Adapt at [here](http://ttic.uchicago.edu/~gpapan/deeplab/vgg128_noup_pool3_adaweak). Trained on PASCAL using only weak image-level labels. After DenseCRF, the model yields 39.0% performance on the PASCAL VOC 2012 test set.
 
 ### Experimental set-up
 
@@ -47,3 +49,7 @@ At the time of its release, DeepLab is the state-of-art method on semantic image
 2. The image list files used in our experiments:
     * The [list folder](http://www.cs.ucla.edu/~lcchen/deeplab-public/list) stores the list files for the PASCAL VOC 2012 dataset. You can download the zipped file [here](http://www.cs.ucla.edu/~lcchen/deeplab-public/list.zip) (i.e., all the lists).
 3. To use the mat_read_layer and mat_write_layer, please download and install [matio](http://sourceforge.net/projects/matio/files/matio/1.5.2/).
+
+### FAQ
+
+Check [FAQ](http://ccvl.stat.ucla.edu/deeplab-faq/) if you have some problems while using the code.
