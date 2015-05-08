@@ -31,15 +31,15 @@ DeepLab currently achieves at best 73.9% on the challenging PASCAL VOC 2012 imag
 
 ### Pre-trained models
 
-We have released several trained models and corresponding prototxt files at [here](http://ccvl.stat.ucla.edu/software/deeplab/) for more model details.
+We have released several trained models and corresponding prototxt files at [here](http://ccvl.stat.ucla.edu/software/deeplab/). Please check it for more model details.
 
-'''1. DeepLab and corresponding prototxt files at [here](http://www.cs.ucla.edu/~lcchen/deeplab-public/vgg128_noup/). After DenseCRF, the model yields 66.4% performance on the PASCAL VOC 2012 test set.
+```1. DeepLab and corresponding prototxt files at [here](http://www.cs.ucla.edu/~lcchen/deeplab-public/vgg128_noup/). After DenseCRF, the model yields 66.4% performance on the PASCAL VOC 2012 test set.
 
-'''2. DeepLab-MSc at [here](http://www.cs.ucla.edu/~lcchen/deeplab-public/vgg128_ms_pool3/). After DenseCRF, the model yields 67.1% performance on the PASCAL VOC 2012 test set.
+```2. DeepLab-MSc at [here](http://www.cs.ucla.edu/~lcchen/deeplab-public/vgg128_ms_pool3/). After DenseCRF, the model yields 67.1% performance on the PASCAL VOC 2012 test set.
 
-'''3. DeepLab-COCO (has fine-tuned on [MS-COCO](http://mscoco.org/) and then on PASCAL VOC [2012](http://pascallin.ecs.soton.ac.uk/challenges/VOC/voc2012/)) at [here](http://www.cs.ucla.edu/~lcchen/deeplab-public/vgg128_noup_pool3_cocomix/). After DenseCRF, the model yields 70.4% performance on the PASCAL VOC 2012 test set.
+```3. DeepLab-COCO (has fine-tuned on [MS-COCO](http://mscoco.org/) and then on PASCAL VOC [2012](http://pascallin.ecs.soton.ac.uk/challenges/VOC/voc2012/)) at [here](http://www.cs.ucla.edu/~lcchen/deeplab-public/vgg128_noup_pool3_cocomix/). After DenseCRF, the model yields 70.4% performance on the PASCAL VOC 2012 test set.
 
-'''4. DeepLab-Weak-EM-Adapt at [here](http://ttic.uchicago.edu/~gpapan/deeplab/vgg128_noup_pool3_adaweak). Trained on PASCAL using only weak image-level labels. After DenseCRF, the model yields 39.0% performance on the PASCAL VOC 2012 test set.
+```4. DeepLab-Weak-EM-Adapt at [here](http://ttic.uchicago.edu/~gpapan/deeplab/vgg128_noup_pool3_adaweak). Trained on PASCAL using only weak image-level labels. After DenseCRF, the model yields 39.0% performance on the PASCAL VOC 2012 test set.
 
 ### Experimental set-up
 
