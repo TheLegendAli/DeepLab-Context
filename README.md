@@ -46,4 +46,4 @@ The best model among the released ones yields 73.6% on PASCAL VOC 2012 test set.
 
 ### FAQ
 
-Check [FAQ](http://ccvl.stat.ucla.edu/deeplab-faq/) if you have some problems while using the code.
+Check [FAQ](http://ccvl.stat.ucla.edu/deeplab_faq/) if you have some problems while using the code.
