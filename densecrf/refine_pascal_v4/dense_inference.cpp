@@ -120,7 +120,7 @@ void LoadMatFile(const std::string& fn, T*& data, const int row, const int col,
 	  out_ind = m * out_offset + n * data_channel + c;
 
 	  // perform transpose of file_data
-	  in_ind  = n + m * matvar->dims[1];  
+	  in_ind  = n + m * matvar->dims[0];  
 
 	  // note the minus sign
 	  data[out_ind] = -file_data[in_ind + c*in_offset];  
@@ -133,7 +133,7 @@ void LoadMatFile(const std::string& fn, T*& data, const int row, const int col,
     for (int c = 0; c < data_channel; ++c) {
       for (int m = 0; m < row; ++m) {
 	for (int n = 0; n < col; ++n) {
-	  in_ind  = m + n * matvar->dims[1];
+	  in_ind  = m + n * matvar->dims[0];
 	  out_ind = m + n * row; 
 	  data[out_ind + c*out_offset] = -file_data[in_ind + c*in_offset];	  
 	}
