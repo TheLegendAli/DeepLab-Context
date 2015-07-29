@@ -25,6 +25,15 @@ Please consult and consider citing the following papers:
       year={2015}
     }
 
+Note that if you use the densecrf implementation, plase consult and cite the following paper:
+
+    @inproceedings{KrahenbuhlK11,
+      title={Efficient Inference in Fully Connected CRFs with Gaussian Edge Potentials},
+      author={Philipp Kr{\"{a}}henb{\"{u}}hl and Vladlen Koltun},
+      booktitle={NIPS},      
+      year={2011}
+    }
+
 ### Performance
 
 DeepLab currently achieves 73.9% on the challenging PASCAL VOC 2012 image segmentation task -- see the [leaderboard](http://host.robots.ox.ac.uk:8080/leaderboard/displaylb.php?challengeid=11&compid=6). 
