@@ -25,7 +25,7 @@ Please consult and consider citing the following papers:
       year={2015}
     }
 
-Note that if you use the densecrf implementation, plase consult and cite the following paper:
+Note that if you use the densecrf implementation, please consult and cite the following paper:
 
     @inproceedings{KrahenbuhlK11,
       title={Efficient Inference in Fully Connected CRFs with Gaussian Edge Potentials},
