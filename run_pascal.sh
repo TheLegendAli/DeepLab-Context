@@ -70,10 +70,9 @@ if [ ${RUN_TRAIN} -eq 1 ]; then
         CMD="${CAFFE_BIN} train \
          --solver=${CONFIG_DIR}/solver_${TRAIN_SET}.prototxt \
          --gpu=${DEV_ID}"
-	#if [ -f ${MODEL} ]; then
-	#    CMD="${CMD} --weights=${MODEL}"
-	#fi
-    CMD="${CMD} --snapshot=voc12/model/vgg128_noup/train_iter_4000.solverstate"
+	if [ -f ${MODEL} ]; then
+	    CMD="${CMD} --weights=${MODEL}"
+	fi
 	echo Running ${CMD} && ${CMD}
     #echo Running ${CMD}
 fi
