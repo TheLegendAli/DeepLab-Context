@@ -1,0 +1,7 @@
+Log file created at: 2015/08/12 23:56:19
+Running on machine: alanlab-linux-1
+Log line format: [IWEF]mmdd hh:mm:ss.uuuuuu threadid file:line] msg
+E0812 23:56:19.884891 14671 io.cpp:76] Could not open or find file /rmt/data/pascal/VOCdevkit/VOC2012/JPEGImages/2011_002985.jpg
+E0812 23:56:19.894557 14673 io.cpp:76] Could not open or find file /rmt/data/pascal/VOCdevkit/VOC2012/JPEGImages/2011_002985.jpg
+E0812 23:56:19.894613 14673 io.cpp:76] Could not open or find file /rmt/data/pascal/VOCdevkit/VOC2012/SegmentationClassAug/2011_002985.png
+F0812 23:56:19.894644 14673 data_transformer.cpp:358] Check failed: mean_values_.size() == 1 || mean_values_.size() == img_channels Specify either 1 mean_value or as many as channels: 1

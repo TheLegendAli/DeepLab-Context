@@ -1,0 +1,4 @@
+Log file created at: 2015/08/12 23:52:24
+Running on machine: alanlab-linux-1
+Log line format: [IWEF]mmdd hh:mm:ss.uuuuuu threadid file:line] msg
+F0812 23:52:24.866842 14298 caffe.cpp:133] Check failed: FLAGS_weights.size() > 0 (0 vs. 0) Need model weights to score.

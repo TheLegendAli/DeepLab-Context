@@ -2,11 +2,12 @@
 %
 
 clear all; close all;
-load('./pascal_seg_colormap.mat');
+addpath('/media/Work_SSD/ali/deeplab-public/matlab/my_script');
+load('pascal_seg_colormap.mat');
 
 is_server       = 1;
 
-crf_load_mat    = 1;   % the densecrf code load MAT files directly (no call SaveMatAsBin.m)
+crf_load_mat    = 0;   % the densecrf code load MAT files directly (no call SaveMatAsBin.m)
                        % used ONLY by DownSampleFeature.m
 learn_crf       = 0;   % NOT USED. Set to 0
 
@@ -46,7 +47,7 @@ pos_x_std      = 3;
 
 %
 dataset    = 'voc12';  %'voc12', 'coco'
-trainset   = 'train_aug';      % not used
+trainset   = 'train_aug'; %'train_aug';      % not used
 testset    = 'val';            %'val', 'test'
 
 model_name = 'vgg128_noup';

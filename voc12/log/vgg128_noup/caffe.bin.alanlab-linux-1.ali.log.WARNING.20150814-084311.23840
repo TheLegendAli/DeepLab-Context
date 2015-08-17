@@ -1,0 +1,4 @@
+Log file created at: 2015/08/14 08:43:11
+Running on machine: alanlab-linux-1
+Log line format: [IWEF]mmdd hh:mm:ss.uuuuuu threadid file:line] msg
+F0814 08:43:11.416218 23840 caffe.cpp:86] Check failed: !FLAGS_snapshot.size() || !FLAGS_weights.size() Give a snapshot to resume training or weights to finetune but not both.

@@ -6,17 +6,17 @@ SetupEnv;
 
 if is_server
   if strcmp(dataset, 'voc12')
-    VOC_root_folder = '/rmt/data/pascal/VOCdevkit';
+    VOC_root_folder = '/media/Work_SSD/ali/VOCdevkit';
   elseif strcmp(dataset, 'coco')
-    VOC_root_folder = '/rmt/data/coco';
+    VOC_root_folder = '/media/Work_SSD/ali/coco';
   else
     error('Wrong dataset');
   end
 else
   if strcmp(dataset, 'voc12')  
-    VOC_root_folder = '~/dataset/PASCAL/VOCdevkit';
+    VOC_root_folder = '/media/Work_SSD/ali/VOCdevkit';
   elseif strcmp(dataset, 'coco')
-    VOC_root_folder = '~/dataset/coco';
+    VOC_root_folder = '/media/Work_SSD/ali/coco';
   else
     error('Wrong dataset');
   end
@@ -32,9 +32,9 @@ else
   post_folder = 'post_none';
 end
 
-output_mat_folder = fullfile('/rmt/work/deeplabel/exper', dataset, feature_name, model_name, testset, feature_type);
+output_mat_folder = fullfile('/media/Work_SSD/ali/deeplab-public', dataset, feature_name, model_name, testset, feature_type);
 
-save_root_folder = fullfile('/rmt/work/deeplabel/exper', dataset, 'res', feature_name, model_name, testset, feature_type, post_folder);
+save_root_folder = fullfile('/media/Work_SSD/ali/deeplab-public', dataset, feature_name, model_name, testset, feature_type, post_folder);
 
 fprintf(1, 'Saving to %s\n', save_root_folder);
 
