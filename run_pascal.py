@@ -105,7 +105,7 @@ def tester(type_=1):
     set_ = ['val'] if type_==1 else ['val', 'test']
     caffe_ = '/test.caffemodel' if type_==1 else '/test2.caffemodel'
     features = '/features/' if type_==1 else '/features2/'
-    for TEST_SET in set_
+    for TEST_SET in set_:
         file1 = LIST_DIR + '/' + TEST_SET + '.txt'
         cmd = 'cat {0} | wc -l'.format(file1)
         TEST_ITER = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True).communicate()[0][:-1]
@@ -143,11 +143,11 @@ def saver():#doesnt really save
 
 
 def run(RUN_TRAIN, RUN_TEST, RUN_TRAIN2, RUN_TEST2, RUN_SAVE):
-    trainer() if RUN_TRAIN
-    tester() if RUN_TEST
-    trainer(type_=2) if RUN_TRAIN2
-    tester(type_=2) if RUN_TEST2
-    saver() if RUN_SAVE
+    if RUN_TRAIN : trainer()
+    if RUN_TEST : tester()
+    if RUN_TRAIN2 : trainer(type_=2)
+    if RUN_TEST2 : tester(type_=2)
+    if RUN_SAVE: saver() 
 
 
 if __name__ == "__main__":
