@@ -13,7 +13,7 @@
 # end of the interpolated signal to produce the expected $n$
 # 
 
-name: ""
+name: "vgg128_noup"
 
 layers {
   name: "data"
@@ -21,7 +21,7 @@ layers {
   top: "data"
   image_data_param {
     root_folder: "/media/Work_SSD/ali/VOCdevkit/VOC2012"
-    source: "voc12/list/.txt"
+    source: "voc12/list/val.txt"
     batch_size: 1
     has_label: false
   }
@@ -524,8 +524,8 @@ layers {
   type: MAT_WRITE
   bottom: "fc8_crop"
   mat_write_param {
-    prefix: "//fc8/"
-    source: "voc12/list/_id.txt"
+    prefix: "voc12/features2/vgg128_noup/val/fc8/"
+    source: "voc12/list/val_id.txt"
     strip: 0
     period: 1
   }

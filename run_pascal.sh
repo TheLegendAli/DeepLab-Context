@@ -40,10 +40,10 @@ export GLOG_log_dir=${LOG_DIR}
 
 # Run
 
-RUN_TRAIN=0
-RUN_TEST=0
-RUN_TRAIN2=0
-RUN_TEST2=0
+RUN_TRAIN=1
+RUN_TEST=1
+RUN_TRAIN2=1
+RUN_TEST2=1
 RUN_SAVE=1
 
 # Training #1 (on train_aug)
@@ -55,7 +55,7 @@ if [ ${RUN_TRAIN} -eq 1 ]; then
     if [ -z ${TRAIN_SET_WEAK_LEN} ]; then
 	TRAIN_SET_WEAK=${TRAIN_SET}_diff_${TRAIN_SET_STRONG}
 	comm -3 ${LIST_DIR}/${TRAIN_SET}.txt ${LIST_DIR}/${TRAIN_SET_STRONG}.txt > ${LIST_DIR}/${TRAIN_SET_WEAK}.txt
-     echo ${LIST_DIR}/${TRAIN_SET_STRONG}.txt #${LIST_DIR}/${TRAIN_SET_STRONG}.txt > ${LIST_DIR}/${TRAIN_SET_WEAK}.txt
+     #echo ${LIST_DIR}/${TRAIN_SET_STRONG}.txt #${LIST_DIR}/${TRAIN_SET_STRONG}.txt > ${LIST_DIR}/${TRAIN_SET_WEAK}.txt
     else
 	TRAIN_SET_WEAK=${TRAIN_SET}_diff_${TRAIN_SET_STRONG}_head${TRAIN_SET_WEAK_LEN}
 	comm -3 ${LIST_DIR}/${TRAIN_SET}.txt ${LIST_DIR}/${TRAIN_SET_STRONG}.txt | head -n ${TRAIN_SET_WEAK_LEN} > ${LIST_DIR}/${TRAIN_SET_WEAK}.txt

@@ -86,9 +86,9 @@ def trainer(type_=1):
         subprocess.call(command, shell=True)
 
     MODEL=EXP + '/model/' + NET_ID + init #change this
-    #if not os.path.isfile(MODEL): MODEL=model_finder(EXP+'/model/'+NET_ID)
+    if not os.path.isfile(MODEL): MODEL=model_finder(EXP+'/model/'+NET_ID)
     #
-    print 'Training' + str(type_) + net + ' ' + EXP + '/' + NET_ID # change this
+    print 'Training' + str(type_) + ' net ' + EXP + '/' + NET_ID # change this
     for variable in ['train', solver]: #change this
         file1= CONFIG_DIR + '/' + variable + '.prototxt'
         file_output = CONFIG_DIR + '/' + variable + '_' + TRAIN_SET + '.prototxt'
@@ -132,7 +132,7 @@ def tester(type_=1):
 
 def saver():#doesnt really save
     MODEL=EXP + '/model/' + NET_ID + '/test2.caffemodel'
-    #if not os.path.isfile(MODEL): MODEL=model_finder(EXP+'/model/'+NET_ID)
+    if not os.path.isfile(MODEL): MODEL=model_finder(EXP+'/model/'+NET_ID)
     MODEL_DEPLOY=EXP + '/model/' + NET_ID + '/deploy.caffemodel'
 
     print 'Translating net ' + EXP + '/' + NET_ID
