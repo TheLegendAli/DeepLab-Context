@@ -13,7 +13,7 @@
 # to produce the expected $m$
 # 
 
-name: "vgg128_noup"
+name: ""
 
 layers {
   name: "data"
@@ -22,7 +22,7 @@ layers {
   top: "label"
   image_data_param {
     root_folder: "/media/Work_SSD/ali/VOCdevkit/VOC2012"
-    source: "voc12/list/trainval_aug.txt"
+    source: "voc12/list/.txt"
     label_type: PIXEL
     batch_size: 20
     shuffle: true
@@ -536,7 +536,7 @@ layers {
   type: MAT_WRITE
   bottom: "fc8_pascal"
   mat_write_param {
-    prefix: "voc12/features/vgg128_noup//fc8/"
+    prefix: "voc12/features///fc8/"
     source: "voc12/list/_id.txt"
     strip: 0
     period: 1

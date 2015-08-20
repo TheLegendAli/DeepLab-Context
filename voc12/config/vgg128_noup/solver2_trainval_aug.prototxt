@@ -1,4 +1,4 @@
-train_net: "voc12/config/vgg128_noup/train_trainval_aug.prototxt"
+train_net: "voc12/config//train_.prototxt"
 
 lr_policy: "step"
 gamma: 0.1
@@ -11,5 +11,5 @@ momentum: 0.9
 weight_decay: 0.0005
 
 snapshot: 2000
-snapshot_prefix: "voc12/model/vgg128_noup/train2"
+snapshot_prefix: "voc12/model//train2"
 solver_mode: GPU

@@ -42,9 +42,9 @@ export GLOG_log_dir=${LOG_DIR}
 
 RUN_TRAIN=0
 RUN_TEST=0
-RUN_TRAIN2=1
-RUN_TEST2=1
-RUN_SAVE=0
+RUN_TRAIN2=0
+RUN_TEST2=0
+RUN_SAVE=1
 
 # Training #1 (on train_aug)
 
@@ -55,6 +55,7 @@ if [ ${RUN_TRAIN} -eq 1 ]; then
     if [ -z ${TRAIN_SET_WEAK_LEN} ]; then
 	TRAIN_SET_WEAK=${TRAIN_SET}_diff_${TRAIN_SET_STRONG}
 	comm -3 ${LIST_DIR}/${TRAIN_SET}.txt ${LIST_DIR}/${TRAIN_SET_STRONG}.txt > ${LIST_DIR}/${TRAIN_SET_WEAK}.txt
+     echo ${LIST_DIR}/${TRAIN_SET_STRONG}.txt #${LIST_DIR}/${TRAIN_SET_STRONG}.txt > ${LIST_DIR}/${TRAIN_SET_WEAK}.txt
     else
 	TRAIN_SET_WEAK=${TRAIN_SET}_diff_${TRAIN_SET_STRONG}_head${TRAIN_SET_WEAK_LEN}
 	comm -3 ${LIST_DIR}/${TRAIN_SET}.txt ${LIST_DIR}/${TRAIN_SET_STRONG}.txt | head -n ${TRAIN_SET_WEAK_LEN} > ${LIST_DIR}/${TRAIN_SET_WEAK}.txt
@@ -70,12 +71,12 @@ if [ ${RUN_TRAIN} -eq 1 ]; then
         CMD="${CAFFE_BIN} train \
          --solver=${CONFIG_DIR}/solver_${TRAIN_SET}.prototxt \
          --gpu=${DEV_ID}"
-	#if [ -f ${MODEL} ]; then
-	#    CMD="${CMD} --weights=${MODEL}"
-	#fi
-    CMD="${CMD} --snapshot=voc12/model/vgg128_noup/train_iter_4000.solverstate"
-	echo Running ${CMD} && ${CMD}
-    #echo Running ${CMD}
+	if [ -f ${MODEL} ]; then
+	    CMD="${CMD} --weights=${MODEL}"
+	fi
+    #CMD="${CMD} --snapshot=voc12/model/vgg128_noup/train_iter_4000.solverstate"
+#	echo Running ${CMD} && ${CMD}
+    echo Running ${CMD}
 fi
 
 # Test #1 specification (on val or test)
@@ -85,7 +86,7 @@ if [ ${RUN_TEST} -eq 1 ]; then
     for TEST_SET in val; do
 	TEST_ITER=`cat voc12/list/${TEST_SET}.txt | wc -l`
 	MODEL=${EXP}/model/${NET_ID}/test.caffemodel
-	#MODEL=${EXP}/model/${NET_ID}/train_iter_4000.caffemodel
+    #MODEL=${EXP}/model/${NET_ID}/train_iter_4000.caffemodel
 	if [ ! -f ${MODEL} ]; then
 	    MODEL=`ls -t ${EXP}/model/${NET_ID}/train_iter_*.caffemodel | head -n 1`
 	fi
@@ -101,7 +102,7 @@ if [ ${RUN_TEST} -eq 1 ]; then
              --weights=${MODEL} \
              --gpu=${DEV_ID} \
              --iterations=${TEST_ITER}"
-	echo Running ${CMD} && ${CMD}
+	echo Running ${CMD} #&& ${CMD}
     done
 fi
 
@@ -133,7 +134,7 @@ if [ ${RUN_TRAIN2} -eq 1 ]; then
          --solver=${CONFIG_DIR}/solver2_${TRAIN_SET}.prototxt \
          --weights=${MODEL} \
          --gpu=${DEV_ID}"
-	echo Running ${CMD} && ${CMD}
+	echo Running ${CMD} #&& ${CMD}
 fi
 
 # Test #2 on official test set
@@ -158,7 +159,7 @@ if [ ${RUN_TEST2} -eq 1 ]; then
              --weights=${MODEL} \
              --gpu=${DEV_ID} \
              --iterations=${TEST_ITER}"
-	echo Running ${CMD} && ${CMD}
+	echo Running ${CMD} #&& ${CMD}
     done
 fi
 
@@ -177,6 +178,6 @@ if [ ${RUN_SAVE} -eq 1 ]; then
          --model=${CONFIG_DIR}/deploy.prototxt \
          --weights=${MODEL} \
          --out_weights=${MODEL_DEPLOY}"
-	echo Running ${CMD} && ${CMD}
+	echo Running ${CMD} #&& ${CMD}
 fi
 
