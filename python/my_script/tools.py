@@ -38,11 +38,39 @@ def mkdir():
 	if not os.path.exists(CONFIG_DIR):
 	    os.makedirs(CONFIG_DIR)
 	if not os.path.exists(MODEL_DIR):
-	    os.makedirs(MODEL_DIR)
+	    os.makedirs(MODEL_DIR), 
 	if not os.path.exists(LOG_DIR):
 	    os.makedirs(LOG_DIR)
 
 	os.environ['GLOG_log_dir'] = LOG_DIR
 	dic = {'CAFFE_DIR': CAFFE_DIR, 'CAFFE_BIN': CAFFE_BIN, 'CONFIG_DIR': CONFIG_DIR, 'MODEL_DIR': MODEL_DIR, 'LOG_DIR': LOG_DIR, 'LIST_DIR': LIST_DIR}
 	environment_variable_creator(dic)
+
+def file_editor(filein, type_of_path,path):
+	f = open(filein,'r')
+	filedata = f.read()
+	f.close()
+
+	newdata = filedata.replace(type_of_path,path)
+
+	f = open(filein,'w')
+	f.write(newdata)
+	f.close()
+
+def path_config(type_):
+	if os.environ['OLD_ROOT'] != '':
+		path = os.environ['OLD_ROOT']
+	else:
+		path = '{DATA_ROOT}'
+
+	if type_=='test':
+		file_list = ['/test.prototxt', '/test_test.prototxt', '/test_val.prototxt']#includ ematlab after loop
+		for file_ in file_list:
+			filein = os.environ['CAFFE_DIR']+os.environ['CONFIG_DIR']+file_
+			file_editor(filein, path, os.environ['DATA_ROOT'])
+	elif type_=='train':
+		file_list = ['/train.prototxt', '/train_train_aug.prototxt', '/train_trainval_aug.prototxt']#includ ematlab after loop
+		for file_ in file_list:
+			filein = os.environ['CAFFE_DIR']+os.environ['CONFIG_DIR']+file_
+			file_editor(filein, path, os.environ['DATA_ROOT'])
 
