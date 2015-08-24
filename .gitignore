@@ -1,5 +1,7 @@
 matlab/my_script/*.txt
 matlab/my_script/*al_d*
+voc12/log/*
+
 
 ## General
 *.pdf
