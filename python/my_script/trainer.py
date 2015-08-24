@@ -1,6 +1,6 @@
 import os
 import subprocess
-from tools import model_finder
+from tools import model_finder, path_config
 
 def train_variables(type_):
     train = 'train' if type_==1 else 'trainval'
@@ -43,6 +43,7 @@ def train_runner(solver, train_set, model):
     ' --weight=' + model + ' --gpu=' + os.environ['DEV_ID'] #change solver
     print 'Running ' + cmd
     subprocess.call(cmd, shell=True)
+    path_config('train')
 
 
 def trainer(type_=1):
