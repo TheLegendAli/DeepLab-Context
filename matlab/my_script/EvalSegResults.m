@@ -4,23 +4,8 @@ SetupEnv;
 % You do not need to chage values below
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-if is_server
-  if strcmp(dataset, 'voc12')
-    VOC_root_folder = '/media/Work_SSD/ali/VOCdevkit';
-  elseif strcmp(dataset, 'coco')
-    VOC_root_folder = '/media/Work_SSD/ali/coco';
-  else
-    error('Wrong dataset');
-  end
-else
-  if strcmp(dataset, 'voc12')  
-    VOC_root_folder = '/media/Work_SSD/ali/VOCdevkit';
-  elseif strcmp(dataset, 'coco')
-    VOC_root_folder = '/media/Work_SSD/ali/coco';
-  else
-    error('Wrong dataset');
-  end
-end
+VOC_root_folder = '{DATA_ROOT}';
+
 
 if has_postprocess
   if learn_crf
@@ -32,16 +17,16 @@ else
   post_folder = 'post_none';
 end
 
-output_mat_folder = fullfile('/media/Work_SSD/ali/deeplab-public', dataset, feature_name, model_name, testset, feature_type);
+output_mat_folder = fullfile('{ROOT}', dataset, feature_name, model_name, testset, feature_type);
 
-save_root_folder = fullfile('/media/Work_SSD/ali/deeplab-public', dataset, feature_name, model_name, testset, feature_type, post_folder);
+save_root_folder = fullfile('{ROOT}', dataset, feature_name, model_name, testset, feature_type, post_folder);
 
 fprintf(1, 'Saving to %s\n', save_root_folder);
 
 if strcmp(dataset, 'voc12')
   seg_res_dir = [save_root_folder '/results/VOC2012/'];
-  seg_root = fullfile(VOC_root_folder, 'VOC2012');
-  gt_dir   = fullfile(VOC_root_folder, 'VOC2012', 'SegmentationClass');
+  seg_root = VOC_root_folder;
+  gt_dir   = fullfile(VOC_root_folder, 'SegmentationClass');
 elseif strcmp(dataset, 'coco')
   seg_res_dir = [save_root_folder '/results/COCO2014/'];
   seg_root = fullfile(VOC_root_folder, '');
@@ -79,7 +64,7 @@ if is_mat
     img_fn = strrep(img_fn, '_blob_0', '');
     
     if strcmp(dataset, 'voc12')
-      img = imread(fullfile(VOC_root_folder, 'VOC2012', 'JPEGImages', [img_fn, '.jpg']));
+      img = imread(fullfile(VOC_root_folder, 'JPEGImages', [img_fn, '.jpg']));
     elseif strcmp(dataset, 'coco')
       img = imread(fullfile(VOC_root_folder, 'JPEGImages', [img_fn, '.jpg']));
     end

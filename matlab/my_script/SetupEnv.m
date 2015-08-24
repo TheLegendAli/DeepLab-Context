@@ -2,7 +2,7 @@
 %
 
 clear all; close all;
-addpath('/media/Work_SSD/ali/deeplab-public/matlab/my_script');
+addpath('{DIR}');
 load('pascal_seg_colormap.mat');
 
 is_server       = 1;
@@ -46,13 +46,13 @@ pos_x_std      = 3;
 
 
 %
-dataset    = 'voc12';  %'voc12', 'coco'
+dataset    = '{EXP}'
 trainset   = 'train_aug'; %'train_aug';      % not used
-testset    = 'val';            %'val', 'test'
+testset    = '{TEST}';            %'val', 'test'
 
-model_name = 'vgg128_noup';
+model_name = 'NET_ID';
 
-feature_name = 'features';
+feature_name = '{FEATURE}';
 feature_type = 'fc8'; % fc8 / crf
 
 id           = 'comp6';
