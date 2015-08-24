@@ -16,7 +16,7 @@ def test_txt_maker(test_set):
 
 def test_prototext(type_, caffe_, features, test_set):
     model=os.environ['EXP'] + '/model/' + os.environ['NET_ID'] + caffe_
-    if not os.path.isfile(model): model=model_finder(os.environ['EXP']+'/model/'+os.environ['NET_ID'], type_)
+    #if not os.path.isfile(model): model=model_finder(os.environ['EXP']+'/model/'+os.environ['NET_ID'], type_)
 
     os.environ['FEATURE_DIR']=os.environ['EXP'] + features + os.environ['NET_ID']
     fc8 = os.environ['FEATURE_DIR'] + '/' + test_set + '/fc8'
@@ -31,12 +31,12 @@ def test_prototext(type_, caffe_, features, test_set):
 
     return model
 
-def test_runner(model, test_set, test_iter):
+def test_runner(model, test_set, test_iter, type_):
     cmd = os.environ['CAFFE_DIR'] + os.environ['CAFFE_BIN'] + ' test --model=' + os.environ['CONFIG_DIR'] + '/test_' + test_set + '.prototxt' \
     ' --weights=' + model + ' --gpu=' + os.environ['DEV_ID'] + ' --iterations=' + str(test_iter)
     print 'Running ' + cmd
-    subprocess.call(cmd, shell=True)
-    path_config('test')
+    #subprocess.call(cmd, shell=True)
+    path_config('test'+type_)
 
 def tester(type_=1):
     set_, caffe_, features = test_variables(type_)  
@@ -44,4 +44,4 @@ def tester(type_=1):
     for test_set in set_:
         test_iter = test_txt_maker(test_set)
         model = test_prototext(type_, caffe_, features, test_set)
-        test_runner(model, test_set, test_iter)
+        test_runner(model, test_set, test_iter,type_)

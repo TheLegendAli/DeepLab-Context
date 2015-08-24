@@ -57,13 +57,25 @@ def file_editor(filein, type_of_path,path):
 	f.write(newdata)
 	f.close()
 
+def matlab_path_editor(type, path):
+	test_ = 'val' if type_ == 'test1' else 'test'
+	features = 'features' if type_ == 'test1' else 'features2'
+	file_editor(os.getcwd()+'/matlab/my_script/SetupEnv.m', '{DIR}', os.getcwd()+'/matlab/my_script')
+	file_editor(os.getcwd()+'/matlab/my_script/SetupEnv.m', '{EXP}', os.environ['EXP'])
+	file_editor(os.getcwd()+'/matlab/my_script/SetupEnv.m', '{TEST}', test_)
+	file_editor(os.getcwd()+'/matlab/my_script/SetupEnv.m', '{NET_ID}', os.environ['NET_ID'])
+	file_editor(os.getcwd()+'/matlab/my_script/SetupEnv.m', '{FEATURE}', features)
+
+	file_editor(os.getcwd()+'/matlab/my_script/EvalSegResults.m', 'path', os.environ['DATA_ROOT'])
+	file_editor(os.getcwd()+'/matlab/my_script/EvalSegResults.m', '{ROOT}', os.getcwd())
+
 def path_config(type_):
 	if os.environ['OLD_ROOT'] != '':
 		path = os.environ['OLD_ROOT']
 	else:
 		path = '{DATA_ROOT}'
 
-	if type_=='test':
+	if type_=='test1' or type_='test2':
 		file_list = ['/test.prototxt', '/test_test.prototxt', '/test_val.prototxt']#includ ematlab after loop
 		for file_ in file_list:
 			filein = os.environ['CAFFE_DIR']+os.environ['CONFIG_DIR']+file_
