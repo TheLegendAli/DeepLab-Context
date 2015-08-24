@@ -1,4 +1,0 @@
-Log file created at: 2015/08/12 23:56:19
-Running on machine: alanlab-linux-1
-Log line format: [IWEF]mmdd hh:mm:ss.uuuuuu threadid file:line] msg
-F0812 23:56:19.894644 14673 data_transformer.cpp:358] Check failed: mean_values_.size() == 1 || mean_values_.size() == img_channels Specify either 1 mean_value or as many as channels: 1
