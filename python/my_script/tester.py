@@ -1,6 +1,6 @@
 import os
 import subprocess
-from tools import model_finder
+from tools import model_finder, path_config
 
 def test_variables(type_):
     set_ = ['val'] if type_==1 else ['val', 'test']
@@ -26,9 +26,8 @@ def test_prototext(type_, caffe_, features, test_set):
 
     file1= os.environ['CONFIG_DIR'] + '/test.prototxt'
     file_output = os.environ['CONFIG_DIR'] + '/test_' + test_set + '.prototxt'
-    if not os.path.isfile(file_output):
-        command = 'sed "$(eval echo $(cat sub.sed))" {0} > {1}'.format(file1, file_output)
-        subprocess.call(command, shell=True)
+    command = 'sed "$(eval echo $(cat sub.sed))" {0} > {1}'.format(file1, file_output)
+    subprocess.call(command, shell=True)
 
     return model
 
@@ -37,6 +36,7 @@ def test_runner(model, test_set, test_iter):
     ' --weights=' + model + ' --gpu=' + os.environ['DEV_ID'] + ' --iterations=' + str(test_iter)
     print 'Running ' + cmd
     subprocess.call(cmd, shell=True)
+    path_config('test')
 
 def tester(type_=1):
     set_, caffe_, features = test_variables(type_)  
