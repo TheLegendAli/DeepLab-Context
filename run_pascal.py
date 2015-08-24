@@ -1,4 +1,4 @@
-import os,sys
+import os,sys, subprocess
 sys.path.insert(0, os.getcwd()+'/python/my_script/')
 
 from tester import tester
@@ -10,7 +10,8 @@ import tools
 EXP='voc12'
 NET_ID='vgg128_noup'
 NUM_LABELS=21
-DATA_ROOT='../VOCdevkit/VOC2012'
+DATA_ROOT=subprocess.Popen('cd .. && pwd', stdout=subprocess.PIPE, shell=True).communicate()[0][:-1] + '/VOCdevkit/VOC2012' #one folder above #'../VOCdevkit/VOC2012'
+print DATA_ROOT
 OLD_ROOT=''#only change if you are changing the path to images
 DEV_ID=0 #gpu id
 

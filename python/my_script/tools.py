@@ -75,7 +75,7 @@ def path_config(type_):
 	else:
 		path = '{DATA_ROOT}'
 
-	if type_=='test1' or type_='test2':
+	if type_=='test1' or type_=='test2':
 		file_list = ['/test.prototxt', '/test_test.prototxt', '/test_val.prototxt']#includ ematlab after loop
 		for file_ in file_list:
 			filein = os.environ['CAFFE_DIR']+os.environ['CONFIG_DIR']+file_
