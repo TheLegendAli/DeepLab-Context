@@ -20,7 +20,7 @@ layers {
   type: IMAGE_SEG_DATA
   top: "data"
   image_data_param {
-    root_folder: "/media/Work_SSD/ali/VOCdevkit/VOC2012"
+    root_folder: "{DATA_ROOT}"
     source: "voc12/list/test.txt"
     batch_size: 1
     has_label: false
