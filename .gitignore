@@ -2,6 +2,10 @@ matlab/my_script/*.txt
 matlab/my_script/*al_d*
 voc12/log/*
 
+# prototxt
+
+voc12/config/vgg128_noup/*.prototxt
+
 
 ## General
 *.pdf
