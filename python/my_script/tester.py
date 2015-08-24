@@ -35,8 +35,9 @@ def test_runner(model, test_set, test_iter, type_):
     cmd = os.environ['CAFFE_DIR'] + os.environ['CAFFE_BIN'] + ' test --model=' + os.environ['CONFIG_DIR'] + '/test_' + test_set + '.prototxt' \
     ' --weights=' + model + ' --gpu=' + os.environ['DEV_ID'] + ' --iterations=' + str(test_iter)
     print 'Running ' + cmd
-    #subprocess.call(cmd, shell=True)
     path_config('test'+type_)
+    #subprocess.call(cmd, shell=True)
+    
 
 def tester(type_=1):
     set_, caffe_, features = test_variables(type_)  

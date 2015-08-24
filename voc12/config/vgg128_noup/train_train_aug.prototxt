@@ -21,7 +21,7 @@ layers {
   top: "data"
   top: "label"
   image_data_param {
-    root_folder: "{DATA_ROOT}"
+    root_folder: "/media/Work_SSD/ali/VOCdevkit/VOC2012"
     source: "voc12/list/train_aug.txt"
     label_type: PIXEL
     batch_size: 20
@@ -42,7 +42,7 @@ layers {
   top: "data"
   top: "label"
   image_data_param {
-    root_folder: "{DATA_ROOT}"
+    root_folder: "/media/Work_SSD/ali/VOCdevkit/VOC2012"
     source: "voc12/list/.txt"
     batch_size: 1
   }

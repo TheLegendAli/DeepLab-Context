@@ -42,8 +42,9 @@ def train_runner(solver, train_set, model):
     ' --solver=' + os.environ['CONFIG_DIR'] + '/' + solver + '_' + train_set + '.prototxt' \
     ' --weight=' + model + ' --gpu=' + os.environ['DEV_ID'] #change solver
     print 'Running ' + cmd
-    #subprocess.call(cmd, shell=True)
     path_config('train')
+    #subprocess.call(cmd, shell=True)
+    
 
 
 def trainer(type_=1):
