@@ -20,8 +20,8 @@ layers {
   type: IMAGE_SEG_DATA
   top: "data"
   image_data_param {
-    root_folder: "/media/Work_SSD/ali/VOCdevkit/VOC2012"
-    source: "voc12/list/val.txt"
+    root_folder: "{DATA_ROOT}
+    source: "voc12/list/.txt"
     batch_size: 1
     has_label: false
   }
@@ -524,8 +524,8 @@ layers {
   type: MAT_WRITE
   bottom: "fc8_crop"
   mat_write_param {
-    prefix: "voc12/features/vgg128_noup/val/fc8/"
-    source: "voc12/list/val_id.txt"
+    prefix: "voc12/features/vgg128_noup//fc8/"
+    source: "voc12/list/_id.txt"
     strip: 0
     period: 1
   }

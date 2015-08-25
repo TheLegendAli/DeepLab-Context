@@ -1,4 +1,0 @@
-Log file created at: 2015/08/12 23:47:25
-Running on machine: alanlab-linux-1
-Log line format: [IWEF]mmdd hh:mm:ss.uuuuuu threadid file:line] msg
-F0812 23:47:25.015287 14146 solver.cpp:49] Check failed: num_train_nets >= 1 (0 vs. 1) SolverParameter must specify a train net using one of these fields: net, net_param, train_net, train_net_param
