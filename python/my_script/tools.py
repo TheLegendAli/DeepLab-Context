@@ -61,6 +61,7 @@ def file_editor(filein, train_set='', test_set=''):
 	newdata = newdata.replace('${TRAIN_SET}', train_set)
 	newdata = newdata.replace('${TEST_SET}', test_set)
 	newdata = newdata.replace('${FEATURE_DIR}', os.environ['FEATURE_DIR'])
+	newdata = newdata.replace('${NUM_LABELS}', os.environ['NUM_LABELS'])
 
 	f = open(filein,'w')
 	f.write(newdata)
