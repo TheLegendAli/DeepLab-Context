@@ -46,12 +46,21 @@ def mkdir():
 	dic = {'CAFFE_DIR': CAFFE_DIR, 'CAFFE_BIN': CAFFE_BIN, 'CONFIG_DIR': CONFIG_DIR, 'MODEL_DIR': MODEL_DIR, 'LOG_DIR': LOG_DIR, 'LIST_DIR': LIST_DIR}
 	environment_variable_creator(dic)
 
-def file_editor(filein, type_of_path,path):
+def file_editor(filein, train_set='', test_set=''):
 	f = open(filein,'r')
 	filedata = f.read()
 	f.close()
+	if os.environ['OLD_ROOT'] != '':
+		path = os.environ['OLD_ROOT']
+	else:
+		path = '$'+'{DATA_ROOT}'
 
-	newdata = filedata.replace(type_of_path,path)
+	
+	newdata = filedata.replace(path, os.environ['DATA_ROOT'])
+	newdata = newdata.replace('${NET_ID}', os.environ['NET_ID'])
+	newdata = newdata.replace('${TRAIN_SET}', train_set)
+	newdata = newdata.replace('${TEST_SET}', test_set)
+	newdata = newdata.replace('${FEATURE_DIR}', os.environ['FEATURE_DIR'])
 
 	f = open(filein,'w')
 	f.write(newdata)
@@ -68,21 +77,3 @@ def matlab_path_editor(type, path):
 
 	file_editor(os.getcwd()+'/matlab/my_script/EvalSegResults.m', 'path', os.environ['DATA_ROOT'])
 	file_editor(os.getcwd()+'/matlab/my_script/EvalSegResults.m', '{ROOT}', os.getcwd())
-
-def path_config(type_):
-	if os.environ['OLD_ROOT'] != '':
-		path = os.environ['OLD_ROOT']
-	else:
-		path = '{DATA_ROOT}'
-
-	if type_=='test1' or type_=='test2':
-		file_list = ['/test.prototxt', '/test_test.prototxt', '/test_val.prototxt']#includ ematlab after loop
-		for file_ in file_list:
-			filein = os.environ['CAFFE_DIR']+os.environ['CONFIG_DIR']+file_
-			file_editor(filein, path, os.environ['DATA_ROOT'])
-	elif type_=='train':
-		file_list = ['/train.prototxt', '/train_train_aug.prototxt', '/train_trainval_aug.prototxt']#includ ematlab after loop
-		for file_ in file_list:
-			filein = os.environ['CAFFE_DIR']+os.environ['CONFIG_DIR']+file_
-			file_editor(filein, path, os.environ['DATA_ROOT'])
-

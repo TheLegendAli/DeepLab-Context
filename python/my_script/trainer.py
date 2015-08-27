@@ -1,6 +1,7 @@
 import os
 import subprocess
-from tools import model_finder, path_config
+import shutil
+from tools import model_finder, file_editor
 
 def train_variables(type_):
     train = 'train' if type_==1 else 'trainval'
@@ -32,9 +33,8 @@ def train_prototxt_maker(train, init, solver, train_set):
     for variable in [train, solver]:
         file1= os.environ['CONFIG_DIR'] + '/' + variable + '.prototxt'
         file_output = os.environ['CONFIG_DIR'] + '/' + variable + '_' + train_set + '.prototxt'
-        if not os.path.isfile(file_output):
-            command = 'sed "$(eval echo $(cat sub.sed))" {0} > {1}'.format(file1, file_output)
-            subprocess.call(command, shell=True)
+        shutil.copyfile(file1, file_output)
+        file_editor(file_output, train_set=train_set, test_set='')
     return model
 
 def train_runner(solver, train_set, model):
@@ -42,7 +42,6 @@ def train_runner(solver, train_set, model):
     ' --solver=' + os.environ['CONFIG_DIR'] + '/' + solver + '_' + train_set + '.prototxt' \
     ' --weights=' + model + ' --gpu=' + os.environ['DEV_ID'] #change solver
     print 'Running ' + cmd
-    path_config('train')
     subprocess.call(cmd, shell=True)
     
 

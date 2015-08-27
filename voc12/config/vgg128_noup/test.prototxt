@@ -20,7 +20,7 @@ layers {
   type: IMAGE_SEG_DATA
   top: "data"
   image_data_param {
-    root_folder: "{DATA_ROOT}
+    root_folder: "${DATA_ROOT}"
     source: "voc12/list/${TEST_SET}.txt"
     batch_size: 1
     has_label: false

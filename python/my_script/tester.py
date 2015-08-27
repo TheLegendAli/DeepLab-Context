@@ -1,6 +1,7 @@
 import os
 import subprocess
-from tools import model_finder, path_config
+import shutil
+from tools import model_finder, file_editor
 
 def test_variables(type_):
     set_ = ['val'] if type_==1 else ['val', 'test']
@@ -26,8 +27,8 @@ def test_prototext(type_, caffe_, features, test_set):
 
     file1= os.environ['CONFIG_DIR'] + '/test.prototxt'
     file_output = os.environ['CONFIG_DIR'] + '/test_' + test_set + '.prototxt'
-    command = 'sed "$(eval echo $(cat sub.sed))" {0} > {1}'.format(file1, file_output)
-    subprocess.call(command, shell=True)
+    shutil.copyfile(file1, file_output)
+    file_editor(file_output, train_set='', test_set=test_set)
 
     return model
 
@@ -35,8 +36,7 @@ def test_runner(model, test_set, test_iter, type_):
     cmd = os.environ['CAFFE_DIR'] + os.environ['CAFFE_BIN'] + ' test --model=' + os.environ['CONFIG_DIR'] + '/test_' + test_set + '.prototxt' \
     ' --weights=' + model + ' --gpu=' + os.environ['DEV_ID'] + ' --iterations=' + str(test_iter)
     print 'Running ' + cmd
-    path_config('test'+type_)
-    #subprocess.call(cmd, shell=True)
+    subprocess.call(cmd, shell=True)
     
 
 def tester(type_=1):
