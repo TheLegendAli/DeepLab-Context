@@ -1,3 +1,9 @@
+cd('/media/Work_SSD/ali/VOCdevkit/VOC2010/trainval2/trainval')
+
+for ii = 1:length(imgs)
+im = data.LabelMap;
+data = load(imgs(ii).name);
+
 inds_1 = find(im == 2);
 inds_2 = find(im == 23);
 inds_3 = find(im == 25);
@@ -66,53 +72,11 @@ im(inds_31) = 31;
 im(inds_32) = 32;
 im(inds_33) = 33;
 im(inds_bg) = 400;
-inds_bg = find(im > 33);
+%inds_bg = find(im > 33);
+inds_bg = find(im > 21);
 im(inds_bg) = 0;
-
 name = imgs(ii).name;
-imwrite(im, [name(1:end-4) '.png']);inds_29 = find(im == 440);                                        
-inds_30 = find(im == 158);                                        
-inds_31 = find(im == 415);                                        
-inds_32 = find(im == 220);                                        
-inds_33 = find(im == 68);                                         
-inds_bg = find(im<47 & im~=2 & im~=23 & im~=25 & im~=31 & im~=34);
-im(inds_1) = 1;                                                   
-im(inds_2) = 2;                                                   
-im(inds_3) = 3;                                                   
-im(inds_4) = 4;                                                   
-im(inds_5) = 5;                                                                                                     
-im(inds_6) = 6;                                                   
-im(inds_7) = 7;                                                   
-im(inds_8) = 8;                                                   
-im(inds_9) = 9;                                                   
-im(inds_10) = 10;                                                 
-im(inds_11) = 11;                                                 
-im(inds_12) = 12;                                                 
-im(inds_13) = 13;                                                 
-im(inds_14) = 14;                                                 
-im(inds_15) = 15;                                                 
-im(inds_16) = 16;                                                 
-im(inds_17) = 17;                                                 
-im(inds_18) = 18;                                                 
-im(inds_19) = 19;                                                 
-im(inds_20) = 20;                                                 
-im(inds_21) = 21;                                                 
-im(inds_22) = 22;                                                 
-im(inds_23) = 23;                                                 
-im(inds_24) = 24;                                                 
-im(inds_25) = 25;                                                 
-im(inds_26) = 26;                                                 
-im(inds_27) = 27;                                                 
-im(inds_28) = 28;                                                 
-im(inds_29) = 29;                                                 
-im(inds_30) = 30;                                                 
-im(inds_31) = 31;                                                 
-im(inds_32) = 32; 
-im(inds_33) = 33;
-im(inds_bg) = 400;                                                 
-inds_bg = find(im > 33);                                          
-im(inds_bg) = 34;
-                                            
+imwrite(im, [name(1:end-4) '.png']);inds_29 = find(im == 440);                                                                                    
 name = imgs(ii).name;                                             
 imwrite(im, [name(1:end-4) '.png']);                              
 end 
