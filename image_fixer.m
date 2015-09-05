@@ -1,8 +1,9 @@
 cd('/media/Work_SSD/ali/VOCdevkit/VOC2010/trainval2/trainval')
 
+imgs = dir('*.mat');
 for ii = 1:length(imgs)
-im = data.LabelMap;
 data = load(imgs(ii).name);
+im = data.LabelMap;
 
 inds_1 = find(im == 2);
 inds_2 = find(im == 23);
