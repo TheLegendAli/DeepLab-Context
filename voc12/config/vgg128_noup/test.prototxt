@@ -453,7 +453,7 @@ layers {
   weight_decay: 1
   weight_decay: 0
   convolution_param {
-    num_output: 21
+    num_output: ${NUM_LABELS}
     kernel_size: 1
     weight_filler {
       type: "gaussian"
