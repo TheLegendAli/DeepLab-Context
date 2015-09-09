@@ -64,6 +64,7 @@ def file_editor(filein, train_set='', test_set=''):
 	if test_set != '':
 		newdata = newdata.replace('${FEATURE_DIR}', os.environ['FEATURE_DIR'])
 
+
 	f = open(filein,'w')
 	f.write(newdata)
 	f.close()

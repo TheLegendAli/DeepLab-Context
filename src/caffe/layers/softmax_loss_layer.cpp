@@ -72,6 +72,7 @@ void SoftmaxWithLossLayer<Dtype>::Forward_cpu(
   for (int i = 0; i < num; ++i) {
     for (int j = 0; j < spatial_dim; j++) {
       const int gt_label = static_cast<int>(label[i * spatial_dim + j]);
+      //printf("gt_label: %d \n", gt_label);
 
       if (ignore_label_.count(gt_label) != 0) {
 	// ignore the pixel with this gt_label

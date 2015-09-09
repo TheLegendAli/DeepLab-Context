@@ -13,51 +13,12 @@
 # to produce the expected $m$
 # 
 
-name: "${NET_ID}"
-
-layers {
-  name: "data"
-  type: IMAGE_SEG_DATA
-  top: "data"
-  top: "label"
-  image_data_param {
-    root_folder: "${DATA_ROOT}"
-    source: "voc12/list/${TRAIN_SET}.txt"
-    label_type: PIXEL
-    batch_size: 20
-    shuffle: true
-  }
-  transform_param {
-    mean_value: 104.008
-    mean_value: 116.669
-    mean_value: 122.675
-    crop_size: 306
-    mirror: true
-  }
-  include: { phase: TRAIN }
-}
-layers {
-  name: "data"
-  type: IMAGE_SEG_DATA
-  top: "data"
-  top: "label"
-  image_data_param {
-    root_folder: "${DATA_ROOT}"
-    source: "voc12/list/${TEST_SET}.txt"
-    batch_size: 1
-  }
-  transform_param {
-    mean_value: 104.008
-    mean_value: 116.669
-    mean_value: 122.675
-    crop_size: 514 #  = 64 * 8 + 2
-    mirror: false
-  }
-  include: { phase: TEST }
-}
-
-### NETWORK ###
-
+name: "vgg128_noup"
+input: "data"
+input_dim: 10
+input_dim: 3
+input_dim: 227
+input_dim: 227
 layers {
   bottom: "data"
   top: "conv1_1"
@@ -474,8 +435,7 @@ layers {
   weight_decay: 1
   weight_decay: 0
   convolution_param {
-    num_output: ${NUM_LABELS}
-    num_output: 34
+    num_output: 21
     kernel_size: 1
     weight_filler {
       type: "gaussian"
@@ -487,60 +447,10 @@ layers {
     }
   }
 }
-
 layers {
-  bottom: "label"
-  top: "label_shrink"
-  name: "label_shrink"
-  type: INTERP
-  interp_param {
-    shrink_factor: 8
-    pad_beg: -1
-    pad_end: 0
-  }
-}
-layers {
-  name: "loss"
-  type: SOFTMAX_LOSS
+  name: "prob"
+  type: SOFTMAX
   bottom: "fc8_pascal"
-  bottom: "label_shrink"
-  softmaxloss_param {
-    #weight_source: "voc12/loss_weight/loss_weight_train.txt"
-    ignore_label: 255
-  }
-  include: { phase: TRAIN }
-}
-layers {
-  name: "accuracy"
-  type: SEG_ACCURACY
-  bottom: "fc8_pascal"
-  bottom: "label_shrink"
-  top: "accuracy"
-  seg_accuracy_param {
-    ignore_label: 255
-  }
-}
-
-# layers {
-#   name: "im_data"
-#   type: IMSHOW
-#   bottom: "data"
-# }
-# layers {
-#   name: "im_scores"
-#   type: IMSHOW
-#   bottom: "fc8_pascal"
-# }
-
-layers {
-  name: "fc8_mat"
-  type: MAT_WRITE
-  bottom: "fc8_pascal"
-  mat_write_param {
-    prefix: "voc12/features/${NET_ID}/${TEST_SET}/fc8/"
-    source: "voc12/list/${TEST_SET}_id.txt"
-    strip: 0
-    period: 1
-  }
-  include: { phase: TEST }
+  top: "prob"
+ 
 }
