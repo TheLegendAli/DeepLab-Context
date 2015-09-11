@@ -95,7 +95,7 @@ def matlab_path_editor(type_):
 	f.close()
 
 	newdata = filedata.replace('{ROOT}', os.getcwd())
-	#newdata = filedata.replace({DATA_ROOT}, os.environ['DATA_ROOT'])
+	newdata = filedata.replace({DATA_ROOT}, os.environ['DATA_ROOT'])
 	
 
 	f = open(filein,'w')
