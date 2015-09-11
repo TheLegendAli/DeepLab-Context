@@ -1,15 +1,15 @@
 import os
 
 def model_finder(path, type_=1):
-    mtime = lambda f: os.stat(os.path.join(path, f)).st_mtime
-    files= list(sorted(os.listdir(path), key=mtime))
-    for fil in files:
-        if type_==1:
-            if fil[0:10] == 'train_iter_' and fil[-11:]=='.caffemodel':
-                return fil
-        else:
-            if fil[0:11] == 'train2_iter_' and fil[-11:]=='.caffemodel':
-                return fil
+	mtime = lambda f: os.stat(os.path.join(path, f)).st_mtime
+	files= reversed(list(sorted(os.listdir(path), key=mtime)))
+	for fil in files:
+		if type_==1:
+			if fil[0:11] == 'train_iter_' and fil[-11:]=='.caffemodel':
+				return path + '/' + fil
+		else:
+			if fil[0:12] == 'train2_iter_' and fil[-11:]=='.caffemodel':
+				return path + '/' + fil
 
 
 def saver():#doesnt really save

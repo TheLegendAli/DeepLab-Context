@@ -11,7 +11,7 @@ EXP='voc12'
 NET_ID='vgg128_noup'
 NUM_LABELS=21
 #DATA_ROOT='/VOCdevkit/VOC2012'
-DATA_ROOT=subprocess.Popen('cd .. && pwd', stdout=subprocess.PIPE, shell=True).communicate()[0][:-1] + '/VOCdevkit/VOC2010' 
+DATA_ROOT=subprocess.Popen('cd .. && pwd', stdout=subprocess.PIPE, shell=True).communicate()[0][:-1] + '/VOCdevkit/VOC2012' 
 OLD_ROOT=''#only change if you are changing the path to images
 DEV_ID=0 #gpu id
 
@@ -29,8 +29,8 @@ train_set_WEAK_LEN=0 #'5000'
 
 # Run
 
-RUN_TRAIN=1 # Training #1 (on train_aug)
-RUN_TEST=0 # Test #1 specification (on val or test)
+RUN_TRAIN=0 # Training #1 (on train_aug)
+RUN_TEST=1 # Test #1 specification (on val or test)
 RUN_TRAIN2=0 # Training #2 (finetune on trainval_aug)
 RUN_TEST2=0 # Test #2 on official test set
 RUN_SAVE=0 # Translate and save the model

@@ -17,7 +17,7 @@ def test_txt_maker(test_set):
 
 def test_prototext(type_, caffe_, features, test_set):
     model=os.environ['EXP'] + '/model/' + os.environ['NET_ID'] + caffe_
-    #if not os.path.isfile(model): model=model_finder(os.environ['EXP']+'/model/'+os.environ['NET_ID'], type_)
+    if not os.path.isfile(model): model=model_finder(os.environ['EXP']+'/model/'+os.environ['NET_ID'], type_)
 
     os.environ['FEATURE_DIR']=os.environ['EXP'] + features + os.environ['NET_ID']
     fc8 = os.environ['FEATURE_DIR'] + '/' + test_set + '/fc8'
