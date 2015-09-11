@@ -70,8 +70,8 @@ def file_editor(filein, train_set='', test_set=''):
 	f.close()
 
 def matlab_path_editor(type_):
-	test_ = 'val' if type_ == 'test1' else 'test'
-	features = 'features' if type_ == 'test1' else 'features2'
+	test_ = 'val' if type_ == 1 else 'test'
+	features = 'features' if type_ == 1 else 'features2'
 	
 
 	filein = os.getcwd()+'/matlab/my_script/SetupEnv.m'
@@ -94,8 +94,9 @@ def matlab_path_editor(type_):
 	filedata = f.read()
 	f.close()
 
-	#newdata = filedata.replace(path, os.environ['DATA_ROOT'])
-	newdata = newdata.replace('{ROOT}', os.getcwd())
+	newdata = filedata.replace('{ROOT}', os.getcwd())
+	#newdata = filedata.replace({DATA_ROOT}, os.environ['DATA_ROOT'])
+	
 
 	f = open(filein,'w')
 	f.write(newdata)
