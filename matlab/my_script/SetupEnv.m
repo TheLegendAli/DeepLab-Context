@@ -50,7 +50,7 @@ dataset    = '{EXP}'
 trainset   = 'train_aug'; %'train_aug';      % not used
 testset    = '{TEST}';            %'val', 'test'
 
-model_name = 'NET_ID';
+model_name = '{NET_ID}';
 
 feature_name = '{FEATURE}';
 feature_type = 'fc8'; % fc8 / crf

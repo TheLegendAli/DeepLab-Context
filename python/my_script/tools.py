@@ -69,14 +69,36 @@ def file_editor(filein, train_set='', test_set=''):
 	f.write(newdata)
 	f.close()
 
-def matlab_path_editor(type, path):
-	test_ = 'val' if type_ == 'test1' else 'test'
-	features = 'features' if type_ == 'test1' else 'features2'
-	file_editor(os.getcwd()+'/matlab/my_script/SetupEnv.m', '{DIR}', os.getcwd()+'/matlab/my_script')
-	file_editor(os.getcwd()+'/matlab/my_script/SetupEnv.m', '{EXP}', os.environ['EXP'])
-	file_editor(os.getcwd()+'/matlab/my_script/SetupEnv.m', '{TEST}', test_)
-	file_editor(os.getcwd()+'/matlab/my_script/SetupEnv.m', '{NET_ID}', os.environ['NET_ID'])
-	file_editor(os.getcwd()+'/matlab/my_script/SetupEnv.m', '{FEATURE}', features)
+def matlab_path_editor(type_):
+	test_ = 'val' if type_ == 1 else 'test'
+	features = 'features' if type_ == 1 else 'features2'
+	
 
-	file_editor(os.getcwd()+'/matlab/my_script/EvalSegResults.m', 'path', os.environ['DATA_ROOT'])
-	file_editor(os.getcwd()+'/matlab/my_script/EvalSegResults.m', '{ROOT}', os.getcwd())
+	filein = os.getcwd()+'/matlab/my_script/SetupEnv.m'
+	f = open(filein,'r')
+	filedata = f.read()
+	f.close()
+
+	newdata = filedata.replace('{DIR}', os.getcwd()+'/matlab/my_script')
+	newdata = newdata.replace('{NET_ID}', os.environ['NET_ID'])
+	newdata = newdata.replace('{EXP}', os.environ['EXP'])
+	newdata = newdata.replace('{TEST}', test_)
+	newdata = newdata.replace('{FEATURE}', features)
+
+	f = open(filein,'w')
+	f.write(newdata)
+	f.close()
+
+	filein = os.getcwd()+'/matlab/my_script/EvalSegResults.m'
+	f = open(filein,'r')
+	filedata = f.read()
+	f.close()
+
+	newdata = filedata.replace('{ROOT}', os.getcwd())
+	#newdata = filedata.replace({DATA_ROOT}, os.environ['DATA_ROOT'])
+	
+
+	f = open(filein,'w')
+	f.write(newdata)
+	f.close()
+
