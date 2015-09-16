@@ -29,8 +29,8 @@ def train_text_maker(train_set):
 
 def train_prototxt_maker(train, init, solver, train_set):
     model=os.environ['EXP'] + '/model/' +os.environ['NET_ID'] + init #change this
-    #if not os.path.isfile(model): model=model_finder(os.environ['EXP']+ '/model/' + os.environ['NET_ID'])
-    for variable in [train, solver]:
+    if not os.path.isfile(model): model=model_finder(os.environ['EXP']+ '/model/' + os.environ['NET_ID'])
+    for variable in ['train', solver]:
         file1= os.environ['CONFIG_DIR'] + '/' + variable + '.prototxt'
         file_output = os.environ['CONFIG_DIR'] + '/' + variable + '_' + train_set + '.prototxt'
         shutil.copyfile(file1, file_output)

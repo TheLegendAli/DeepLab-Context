@@ -59,6 +59,7 @@ def file_editor(filein, train_set='', test_set=''):
 	newdata = filedata.replace(path, os.environ['DATA_ROOT'])
 	newdata = newdata.replace('${NET_ID}', os.environ['NET_ID'])
 	newdata = newdata.replace('${TRAIN_SET}', train_set)
+	newdata = newdata.replace('${EXP}', os.environ['EXP'])
 	newdata = newdata.replace('${TEST_SET}', test_set)
 	newdata = newdata.replace('${NUM_LABELS}', os.environ['NUM_LABELS'])
 	if test_set != '':
@@ -95,7 +96,7 @@ def matlab_path_editor(type_):
 	f.close()
 
 	newdata = filedata.replace('{ROOT}', os.getcwd())
-	newdata = filedata.replace({DATA_ROOT}, os.environ['DATA_ROOT'])
+	newdata = filedata.replace('{DATA_ROOT}', os.environ['DATA_ROOT'])
 	
 
 	f = open(filein,'w')
