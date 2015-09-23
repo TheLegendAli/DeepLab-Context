@@ -2,15 +2,18 @@
 # Network modified to have smaller receptive field (128 pixels)
 # and smaller stride (8 pixels) when run in convolutional mode.
 #
-# For alignment to work, we set:
+# In this model we also change max pooling size in the first 4 layers
+# from 2 to 3 while retaining stride = 2
+# which makes it easier to exactly align responses at different layers.
+#
+# For alignment to work, we set (we choose 32x so as to be able to evaluate
+# the model for all different subsampling sizes):
 # (1) input dimension equal to
-# $n = 8 * k + 2$, e.g., 306 (for k = 38)
-# (2) dimension after 3rd max-pooling (centered at -3.5)
-# $m = k + 2$ (40 if k = 38)
-# (3) dimension after 4th max-pooling (centered at -1.5)
-# $m = k + 1$ (39 if k = 38)
-# (4) Crop 1 pixels at the begin of label map and shrink by 8
-# to produce the expected $m$
+# $n = 32 * k - 31$, e.g., 321 (for k = 11)
+# Dimension after pooling w. subsampling:
+# (16 * k - 15); (8 * k - 7); (4 * k - 3); (2 * k - 1); (k).
+# For k = 11, these translate to
+#           161;          81;          41;          21;  11
 # 
 
 name: "${NET_ID}"
@@ -22,38 +25,19 @@ layers {
   top: "label"
   image_data_param {
     root_folder: "${DATA_ROOT}"
-    source: "voc12/list/${TRAIN_SET}.txt"
+    source: "${EXP}/list/${TRAIN_SET}.txt"
     label_type: PIXEL
-    batch_size: 20
+    batch_size: 30
     shuffle: true
   }
   transform_param {
     mean_value: 104.008
     mean_value: 116.669
     mean_value: 122.675
-    crop_size: 306
+    crop_size: 321
     mirror: true
   }
   include: { phase: TRAIN }
-}
-layers {
-  name: "data"
-  type: IMAGE_SEG_DATA
-  top: "data"
-  top: "label"
-  image_data_param {
-    root_folder: "${DATA_ROOT}"
-    source: "voc12/list/${TEST_SET}.txt"
-    batch_size: 1
-  }
-  transform_param {
-    mean_value: 104.008
-    mean_value: 116.669
-    mean_value: 122.675
-    crop_size: 514 #  = 64 * 8 + 2
-    mirror: false
-  }
-  include: { phase: TEST }
 }
 
 ### NETWORK ###
@@ -107,7 +91,7 @@ layers {
   type: POOLING
   pooling_param {
     pool: MAX
-    kernel_size: 2
+    kernel_size: 3
     stride: 2
     pad: 1
   }
@@ -161,7 +145,7 @@ layers {
   type: POOLING
   pooling_param {
     pool: MAX
-    kernel_size: 2
+    kernel_size: 3
     stride: 2
     pad: 1
   }
@@ -236,7 +220,7 @@ layers {
   type: POOLING
   pooling_param {
     pool: MAX
-    kernel_size: 2
+    kernel_size: 3
     stride: 2
     pad: 1
   }
@@ -311,9 +295,8 @@ layers {
   type: POOLING
   pooling_param {
     pool: MAX
-    kernel_size: 2
-    #pad: 1
-    #stride: 2
+    kernel_size: 3
+    pad: 1
     stride: 1
   }
 }
@@ -403,19 +386,32 @@ layers {
 
 layers {
   bottom: "pool5"
+  top: "pool5a"
+  name: "pool5a"
+  type: POOLING
+  pooling_param {
+    pool: AVE
+    kernel_size: 3
+    stride: 1
+    pad: 1
+  }
+}
+
+layers {
+  bottom: "pool5a"
   top: "fc6"
   name: "fc6"
   type: CONVOLUTION
-  strict_dim: false
+#  strict_dim: false
   blobs_lr: 1
   blobs_lr: 2
   weight_decay: 1
   weight_decay: 0
   convolution_param {
-    num_output: 4096
-    pad: 6
-    hole: 4
-    kernel_size: 4
+    num_output: 1024
+    pad: 12
+    hole: 12
+    kernel_size: 3
   }
 }
 layers {
@@ -438,13 +434,13 @@ layers {
   top: "fc7"
   name: "fc7"
   type: CONVOLUTION
-  strict_dim: false
+#  strict_dim: false
   blobs_lr: 1
   blobs_lr: 2
   weight_decay: 1
   weight_decay: 0
   convolution_param {
-    num_output: 4096
+    num_output: 1024
     kernel_size: 1
   }
 }
@@ -465,10 +461,10 @@ layers {
 }
 layers {
   bottom: "fc7"
-  top: "fc8_pascal"
-  name: "fc8_pascal"
+  top: "fc8_${EXP}"
+  name: "fc8_${EXP}"
   type: CONVOLUTION
-  strict_dim: false
+#  strict_dim: false
   blobs_lr: 10
   blobs_lr: 20
   weight_decay: 1
@@ -494,17 +490,17 @@ layers {
   type: INTERP
   interp_param {
     shrink_factor: 8
-    pad_beg: -1
+    pad_beg: 0
     pad_end: 0
   }
 }
 layers {
   name: "loss"
   type: SOFTMAX_LOSS
-  bottom: "fc8_pascal"
+  bottom: "fc8_${EXP}"
   bottom: "label_shrink"
   softmaxloss_param {
-    #weight_source: "voc12/loss_weight/loss_weight_train.txt"
+    #weight_source: "${EXP}/loss_weight/loss_weight_train.txt"
     ignore_label: 255
   }
   include: { phase: TRAIN }
@@ -512,34 +508,10 @@ layers {
 layers {
   name: "accuracy"
   type: SEG_ACCURACY
-  bottom: "fc8_pascal"
+  bottom: "fc8_${EXP}"
   bottom: "label_shrink"
   top: "accuracy"
   seg_accuracy_param {
     ignore_label: 255
-  }
-}
-
-# layers {
-#   name: "im_data"
-#   type: IMSHOW
-#   bottom: "data"
-# }
-# layers {
-#   name: "im_scores"
-#   type: IMSHOW
-#   bottom: "fc8_pascal"
-# }
-
-layers {
-  name: "fc8_mat"
-  type: MAT_WRITE
-  bottom: "fc8_pascal"
-  mat_write_param {
-    prefix: "voc12/features/${NET_ID}/${TEST_SET}/fc8/"
-    source: "voc12/list/${TEST_SET}_id.txt"
-    strip: 0
-    period: 1
-  }
-  include: { phase: TEST }
+  } 
 }
