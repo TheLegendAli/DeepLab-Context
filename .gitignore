@@ -4,7 +4,7 @@ voc12/log/*
 
 # prototxt
 
-voc12/model//*
+voc12/model/vgg128_noup/*
 
 
 ## General
