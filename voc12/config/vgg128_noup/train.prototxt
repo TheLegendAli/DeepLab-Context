@@ -2,15 +2,18 @@
 # Network modified to have smaller receptive field (128 pixels)
 # and smaller stride (8 pixels) when run in convolutional mode.
 #
-# For alignment to work, we set:
+# In this model we also change max pooling size in the first 4 layers
+# from 2 to 3 while retaining stride = 2
+# which makes it easier to exactly align responses at different layers.
+#
+# For alignment to work, we set (we choose 32x so as to be able to evaluate
+# the model for all different subsampling sizes):
 # (1) input dimension equal to
-# $n = 8 * k + 2$, e.g., 306 (for k = 38)
-# (2) dimension after 3rd max-pooling (centered at -3.5)
-# $m = k + 2$ (40 if k = 38)
-# (3) dimension after 4th max-pooling (centered at -1.5)
-# $m = k + 1$ (39 if k = 38)
-# (4) Crop 1 pixels at the begin of label map and shrink by 8
-# to produce the expected $m$
+# $n = 32 * k - 31$, e.g., 321 (for k = 11)
+# Dimension after pooling w. subsampling:
+# (16 * k - 15); (8 * k - 7); (4 * k - 3); (2 * k - 1); (k).
+# For k = 11, these translate to
+#           161;          81;          41;          21;  11
 # 
 
 name: "${NET_ID}"
@@ -22,39 +25,122 @@ layers {
   top: "label"
   image_data_param {
     root_folder: "${DATA_ROOT}"
-    source: "voc12/list/${TRAIN_SET}.txt"
+    source: "${EXP}/list/${TRAIN_SET}.txt"
     label_type: PIXEL
-    batch_size: 20
+    batch_size: 30
     shuffle: true
   }
   transform_param {
     mean_value: 104.008
     mean_value: 116.669
     mean_value: 122.675
-    crop_size: 306
+    crop_size: 321
     mirror: true
   }
   include: { phase: TRAIN }
 }
+
+# BEG (0) Direct path to classifier
 layers {
-  name: "data"
-  type: IMAGE_SEG_DATA
-  top: "data"
-  top: "label"
-  image_data_param {
-    root_folder: "${DATA_ROOT}"
-    source: "voc12/list/${TEST_SET}.txt"
-    batch_size: 1
+  bottom: "data"
+  top: "data_conv"
+  name: "data_conv"
+  type: CONVOLUTION
+  blobs_lr: 1.0
+  blobs_lr: 2.0
+  weight_decay: 1
+  weight_decay: 0
+  convolution_param {
+    num_output: 128
+    kernel_size: 3
+    stride: 8
+    pad: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.001
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
   }
-  transform_param {
-    mean_value: 104.008
-    mean_value: 116.669
-    mean_value: 122.675
-    crop_size: 514 #  = 64 * 8 + 2
-    mirror: false
-  }
-  include: { phase: TEST }
 }
+layers {
+  bottom: "data_conv"
+  top: "data_conv"
+  name: "relu_data_conv"
+  type: RELU
+}
+layers {
+  bottom: "data_conv"
+  top: "data_conv"
+  name: "drop_data_conv"
+  type: DROPOUT
+  dropout_param {
+    dropout_ratio: 0.5
+  }
+}
+layers {
+  bottom: "data_conv"
+  top: "data_fc"
+  name: "data_fc"
+  type: CONVOLUTION
+  blobs_lr: 1.0
+  blobs_lr: 2.0
+  weight_decay: 1
+  weight_decay: 0
+  convolution_param {
+    num_output: 128
+    kernel_size: 1
+    stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.001
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layers {
+  bottom: "data_fc"
+  top: "data_fc"
+  name: "relu_data_fc"
+  type: RELU
+}
+layers {
+  bottom: "data_fc"
+  top: "data_fc"
+  name: "drop_data_fc"
+  type: DROPOUT
+  dropout_param {
+    dropout_ratio: 0.5
+  }
+}
+layers {
+  bottom: "data_fc"
+  top: "data_ms"
+  name: "data_ms"
+  type: CONVOLUTION
+  blobs_lr: 1.0
+  blobs_lr: 2.0
+  weight_decay: 1
+  weight_decay: 0
+  convolution_param {
+    num_output: ${NUM_LABELS}
+    kernel_size: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+# END (0) Direct path to classifier
 
 ### NETWORK ###
 
@@ -63,8 +149,8 @@ layers {
   top: "conv1_1"
   name: "conv1_1"
   type: CONVOLUTION
-  blobs_lr: 1
-  blobs_lr: 2
+  blobs_lr: 0
+  blobs_lr: 0
   weight_decay: 1
   weight_decay: 0
   convolution_param {
@@ -84,8 +170,8 @@ layers {
   top: "conv1_2"
   name: "conv1_2"
   type: CONVOLUTION
-  blobs_lr: 1
-  blobs_lr: 2
+  blobs_lr: 0
+  blobs_lr: 0
   weight_decay: 1
   weight_decay: 0
   convolution_param {
@@ -107,18 +193,119 @@ layers {
   type: POOLING
   pooling_param {
     pool: MAX
-    kernel_size: 2
+    kernel_size: 3
     stride: 2
     pad: 1
   }
 }
+# BEG (1) Direct path to classifier
+layers {
+  bottom: "pool1"
+  top: "pool1_conv"
+  name: "pool1_conv"
+  type: CONVOLUTION
+  blobs_lr: 1.0
+  blobs_lr: 2.0
+  weight_decay: 1
+  weight_decay: 0
+  convolution_param {
+    num_output: 128
+    kernel_size: 3
+    stride: 4
+    pad: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.001
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layers {
+  bottom: "pool1_conv"
+  top: "pool1_conv"
+  name: "relu_pool1_conv"
+  type: RELU
+}
+layers {
+  bottom: "pool1_conv"
+  top: "pool1_conv"
+  name: "drop_pool1_conv"
+  type: DROPOUT
+  dropout_param {
+    dropout_ratio: 0.5
+  }
+}
+layers {
+  bottom: "pool1_conv"
+  top: "pool1_fc"
+  name: "pool1_fc"
+  type: CONVOLUTION
+  blobs_lr: 1.0
+  blobs_lr: 2.0
+  weight_decay: 1
+  weight_decay: 0
+  convolution_param {
+    num_output: 128
+    kernel_size: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.001
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layers {
+  bottom: "pool1_fc"
+  top: "pool1_fc"
+  name: "relu_pool1_fc"
+  type: RELU
+}
+layers {
+  bottom: "pool1_fc"
+  top: "pool1_fc"
+  name: "drop_pool1_fc"
+  type: DROPOUT
+  dropout_param {
+    dropout_ratio: 0.5
+  }
+}
+layers {
+  bottom: "pool1_fc"
+  top: "pool1_ms"
+  name: "pool1_ms"
+  type: CONVOLUTION
+  blobs_lr: 1.0
+  blobs_lr: 2.0
+  weight_decay: 1
+  weight_decay: 0
+  convolution_param {
+    num_output: ${NUM_LABELS}
+    kernel_size: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+# END (1) Direct path to classifier
+
 layers {
   bottom: "pool1"
   top: "conv2_1"
   name: "conv2_1"
   type: CONVOLUTION
-  blobs_lr: 1
-  blobs_lr: 2
+  blobs_lr: 0
+  blobs_lr: 0
   weight_decay: 1
   weight_decay: 0
   convolution_param {
@@ -138,8 +325,8 @@ layers {
   top: "conv2_2"
   name: "conv2_2"
   type: CONVOLUTION
-  blobs_lr: 1
-  blobs_lr: 2
+  blobs_lr: 0
+  blobs_lr: 0
   weight_decay: 1
   weight_decay: 0
   convolution_param {
@@ -161,18 +348,119 @@ layers {
   type: POOLING
   pooling_param {
     pool: MAX
-    kernel_size: 2
+    kernel_size: 3
     stride: 2
     pad: 1
   }
 }
+# BEG (2) Direct path to classifier
+layers {
+  bottom: "pool2"
+  top: "pool2_conv"
+  name: "pool2_conv"
+  type: CONVOLUTION
+  blobs_lr: 1.0
+  blobs_lr: 2.0
+  weight_decay: 1
+  weight_decay: 0
+  convolution_param {
+    num_output: 128
+    kernel_size: 3
+    stride: 2
+    pad: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.001
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layers {
+  bottom: "pool2_conv"
+  top: "pool2_conv"
+  name: "relu_pool2_conv"
+  type: RELU
+}
+layers {
+  bottom: "pool2_conv"
+  top: "pool2_conv"
+  name: "drop_pool2_conv"
+  type: DROPOUT
+  dropout_param {
+    dropout_ratio: 0.5
+  }
+}
+layers {
+  bottom: "pool2_conv"
+  top: "pool2_fc"
+  name: "pool2_fc"
+  type: CONVOLUTION
+  blobs_lr: 1.0
+  blobs_lr: 2.0
+  weight_decay: 1
+  weight_decay: 0
+  convolution_param {
+    num_output: 128
+    kernel_size: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.001
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layers {
+  bottom: "pool2_fc"
+  top: "pool2_fc"
+  name: "relu_pool2_fc"
+  type: RELU
+}
+layers {
+  bottom: "pool2_fc"
+  top: "pool2_fc"
+  name: "drop_pool2_fc"
+  type: DROPOUT
+  dropout_param {
+    dropout_ratio: 0.5
+  }
+}
+layers {
+  bottom: "pool2_fc"
+  top: "pool2_ms"
+  name: "pool2_ms"
+  type: CONVOLUTION
+  blobs_lr: 1.0
+  blobs_lr: 2.0
+  weight_decay: 1
+  weight_decay: 0
+  convolution_param {
+    num_output: ${NUM_LABELS}
+    kernel_size: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+# END (2) Direct path to classifier
+
 layers {
   bottom: "pool2"
   top: "conv3_1"
   name: "conv3_1"
   type: CONVOLUTION
-  blobs_lr: 1
-  blobs_lr: 2
+  blobs_lr: 0
+  blobs_lr: 0
   weight_decay: 1
   weight_decay: 0
   convolution_param {
@@ -192,8 +480,8 @@ layers {
   top: "conv3_2"
   name: "conv3_2"
   type: CONVOLUTION
-  blobs_lr: 1
-  blobs_lr: 2
+  blobs_lr: 0
+  blobs_lr: 0
   weight_decay: 1
   weight_decay: 0
   convolution_param {
@@ -213,8 +501,8 @@ layers {
   top: "conv3_3"
   name: "conv3_3"
   type: CONVOLUTION
-  blobs_lr: 1
-  blobs_lr: 2
+  blobs_lr: 0
+  blobs_lr: 0
   weight_decay: 1
   weight_decay: 0
   convolution_param {
@@ -236,18 +524,112 @@ layers {
   type: POOLING
   pooling_param {
     pool: MAX
-    kernel_size: 2
+    kernel_size: 3
     stride: 2
     pad: 1
   }
 }
+# BEG (3) Direct path to classifier
+layers {
+  bottom: "pool3"
+  top: "pool3_conv"
+  name: "pool3_conv"
+  type: CONVOLUTION
+  blobs_lr: 1.0
+  blobs_lr: 2.0
+  weight_decay: 1
+  weight_decay: 0
+  convolution_param {
+    num_output: 128
+    kernel_size: 3
+    stride: 1
+    pad: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.001
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layers {
+  bottom: "pool3_conv"
+  top: "pool3_conv"
+  name: "relu_pool3_conv"
+  type: RELU
+}
+layers {
+  bottom: "pool3_conv"
+  top: "pool3_conv"
+  name: "drop_pool3_conv"
+  type: DROPOUT
+  dropout_param {
+    dropout_ratio: 0.5
+  }
+}
+layers {
+  bottom: "pool3_conv"
+  top: "pool3_fc"
+  name: "pool3_fc"
+  type: CONVOLUTION
+  blobs_lr: 1.0
+  blobs_lr: 2.0
+  weight_decay: 1
+  weight_decay: 0
+  convolution_param {
+    num_output: 128
+    kernel_size: 1
+    stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.001
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layers {
+  bottom: "pool3_fc"
+  top: "pool3_fc"
+  name: "relu_pool3_fc"
+  type: RELU
+}
+layers {
+  bottom: "pool3_fc"
+  top: "pool3_fc"
+  name: "drop_pool3_fc"
+  type: DROPOUT
+  dropout_param {
+    dropout_ratio: 0.5
+  }
+}
+layers {
+  bottom: "pool3_fc"
+  top: "pool3_ms"
+  name: "pool3_ms"
+  type: CONVOLUTION
+  blobs_lr: 1.0
+  blobs_lr: 2.0
+  weight_decay: 1
+  weight_decay: 0
+  convolution_param {
+    num_output: ${NUM_LABELS}
+    kernel_size: 1
+  }
+}
+# END (3) Direct path to classifier
+
 layers {
   bottom: "pool3"
   top: "conv4_1"
   name: "conv4_1"
   type: CONVOLUTION
-  blobs_lr: 1
-  blobs_lr: 2
+  blobs_lr: 0
+  blobs_lr: 0
   weight_decay: 1
   weight_decay: 0
   convolution_param {
@@ -267,8 +649,8 @@ layers {
   top: "conv4_2"
   name: "conv4_2"
   type: CONVOLUTION
-  blobs_lr: 1
-  blobs_lr: 2
+  blobs_lr: 0
+  blobs_lr: 0
   weight_decay: 1
   weight_decay: 0
   convolution_param {
@@ -288,8 +670,8 @@ layers {
   top: "conv4_3"
   name: "conv4_3"
   type: CONVOLUTION
-  blobs_lr: 1
-  blobs_lr: 2
+  blobs_lr: 0
+  blobs_lr: 0
   weight_decay: 1
   weight_decay: 0
   convolution_param {
@@ -311,19 +693,120 @@ layers {
   type: POOLING
   pooling_param {
     pool: MAX
-    kernel_size: 2
-    #pad: 1
-    #stride: 2
+    kernel_size: 3
+    pad: 1
     stride: 1
   }
 }
+# BEG (4) Direct path to classifier
+layers {
+  bottom: "pool4"
+  top: "pool4_conv"
+  name: "pool4_conv"
+  type: CONVOLUTION
+  blobs_lr: 1.0
+  blobs_lr: 2.0
+  weight_decay: 1
+  weight_decay: 0
+  convolution_param {
+    num_output: 128
+    kernel_size: 3
+    stride: 1
+    pad: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.001
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layers {
+  bottom: "pool4_conv"
+  top: "pool4_conv"
+  name: "relu_pool4_conv"
+  type: RELU
+}
+layers {
+  bottom: "pool4_conv"
+  top: "pool4_conv"
+  name: "drop_pool4_conv"
+  type: DROPOUT
+  dropout_param {
+    dropout_ratio: 0.5
+  }
+}
+layers {
+  bottom: "pool4_conv"
+  top: "pool4_fc"
+  name: "pool4_fc"
+  type: CONVOLUTION
+  blobs_lr: 1.0
+  blobs_lr: 2.0
+  weight_decay: 1
+  weight_decay: 0
+  convolution_param {
+    num_output: 128
+    kernel_size: 1
+    stride: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.005
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layers {
+  bottom: "pool4_fc"
+  top: "pool4_fc"
+  name: "relu_pool4_fc"
+  type: RELU
+}
+layers {
+  bottom: "pool4_fc"
+  top: "pool4_fc"
+  name: "drop_pool4_fc"
+  type: DROPOUT
+  dropout_param {
+    dropout_ratio: 0.5
+  }
+}
+layers {
+  bottom: "pool4_fc"
+  top: "pool4_ms"
+  name: "pool4_ms"
+  type: CONVOLUTION
+  blobs_lr: 1.0
+  blobs_lr: 2.0
+  weight_decay: 1
+  weight_decay: 0
+  convolution_param {
+    num_output: ${NUM_LABELS}
+    kernel_size: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+# END (4) Direct path to classifier
+
 layers {
   bottom: "pool4"
   top: "conv5_1"
   name: "conv5_1"
   type: CONVOLUTION
-  blobs_lr: 1
-  blobs_lr: 2
+  blobs_lr: 0
+  blobs_lr: 0
   weight_decay: 1
   weight_decay: 0
   convolution_param {
@@ -345,8 +828,8 @@ layers {
   top: "conv5_2"
   name: "conv5_2"
   type: CONVOLUTION
-  blobs_lr: 1
-  blobs_lr: 2
+  blobs_lr: 0
+  blobs_lr: 0
   weight_decay: 1
   weight_decay: 0
   convolution_param {
@@ -368,8 +851,8 @@ layers {
   top: "conv5_3"
   name: "conv5_3"
   type: CONVOLUTION
-  blobs_lr: 1
-  blobs_lr: 2
+  blobs_lr: 0
+  blobs_lr: 0
   weight_decay: 1
   weight_decay: 0
   convolution_param {
@@ -403,19 +886,32 @@ layers {
 
 layers {
   bottom: "pool5"
+  top: "pool5a"
+  name: "pool5a"
+  type: POOLING
+  pooling_param {
+    pool: AVE
+    kernel_size: 3
+    stride: 1
+    pad: 1
+  }
+}
+
+layers {
+  bottom: "pool5a"
   top: "fc6"
   name: "fc6"
   type: CONVOLUTION
-  strict_dim: false
-  blobs_lr: 1
-  blobs_lr: 2
+#  strict_dim: false
+  blobs_lr: 0
+  blobs_lr: 0
   weight_decay: 1
   weight_decay: 0
   convolution_param {
-    num_output: 4096
-    pad: 6
-    hole: 4
-    kernel_size: 4
+    num_output: 1024
+    pad: 12
+    hole: 12
+    kernel_size: 3
   }
 }
 layers {
@@ -438,13 +934,12 @@ layers {
   top: "fc7"
   name: "fc7"
   type: CONVOLUTION
-  strict_dim: false
-  blobs_lr: 1
-  blobs_lr: 2
+  blobs_lr: 0
+  blobs_lr: 0
   weight_decay: 1
   weight_decay: 0
   convolution_param {
-    num_output: 4096
+    num_output: 1024
     kernel_size: 1
   }
 }
@@ -465,12 +960,11 @@ layers {
 }
 layers {
   bottom: "fc7"
-  top: "fc8_pascal"
-  name: "fc8_pascal"
+  top: "fc8_${EXP}"
+  name: "fc8_${EXP}"
   type: CONVOLUTION
-  strict_dim: false
-  blobs_lr: 10
-  blobs_lr: 20
+  blobs_lr: 0
+  blobs_lr: 0
   weight_decay: 1
   weight_decay: 0
   convolution_param {
@@ -487,6 +981,22 @@ layers {
   }
 }
 
+# Fusion layer
+layers {
+  bottom: "data_ms"
+  bottom: "pool1_ms"
+  bottom: "pool2_ms"
+  bottom: "pool3_ms"
+  bottom: "pool4_ms"
+  bottom: "fc8_${EXP}"
+  top: "fc_fusion"
+  name: "fc_fusion"
+  type: ELTWISE
+  eltwise_param {
+    operation: SUM
+  }
+}
+
 layers {
   bottom: "label"
   top: "label_shrink"
@@ -494,17 +1004,17 @@ layers {
   type: INTERP
   interp_param {
     shrink_factor: 8
-    pad_beg: -1
+    pad_beg: 0
     pad_end: 0
   }
 }
 layers {
   name: "loss"
   type: SOFTMAX_LOSS
-  bottom: "fc8_pascal"
+  bottom: "fc_fusion"
   bottom: "label_shrink"
   softmaxloss_param {
-    #weight_source: "voc12/loss_weight/loss_weight_train.txt"
+    #weight_source: "${EXP}/loss_weight/loss_weight_train.txt"
     ignore_label: 255
   }
   include: { phase: TRAIN }
@@ -512,34 +1022,10 @@ layers {
 layers {
   name: "accuracy"
   type: SEG_ACCURACY
-  bottom: "fc8_pascal"
+  bottom: "fc_fusion"
   bottom: "label_shrink"
   top: "accuracy"
   seg_accuracy_param {
     ignore_label: 255
-  }
-}
-
-# layers {
-#   name: "im_data"
-#   type: IMSHOW
-#   bottom: "data"
-# }
-# layers {
-#   name: "im_scores"
-#   type: IMSHOW
-#   bottom: "fc8_pascal"
-# }
-
-layers {
-  name: "fc8_mat"
-  type: MAT_WRITE
-  bottom: "fc8_pascal"
-  mat_write_param {
-    prefix: "voc12/features/${NET_ID}/${TEST_SET}/fc8/"
-    source: "voc12/list/${TEST_SET}_id.txt"
-    strip: 0
-    period: 1
-  }
-  include: { phase: TEST }
+  } 
 }
