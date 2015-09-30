@@ -55,14 +55,13 @@ new_init.reshape()
 model = './voc12/config/vgg128_noup/deploy.prototxt'
 weights = './voc12/model/vgg128_noup/init.caffemodel'
 net_test = caffe.Net(model, weights)
-print new_init.params['fc8_voc12'][0].data[0]
-print net_test.params['fc8_voc12'][0].data[0]
-print net_test.params['fc8_voc12'][0].data[1]
-# for i in range(21):
-#  	x = new_init.params['fc8_voc12'][0].data[i]
-#  	y = net_test.params['fc8_voc12'][0].data[i]
-#  	print np.array_equal(x,y)
-# 	print i
+ for i in range(21):
+  	x = new_init.params['fc8_voc12'][0].data[i]
+  	y = net_test.params['fc8_voc12'][0].data[i]
+  	print i
+  	print np.array_equal(x,y)
+  	print "\n"
+ 	
 
 
 #for i in range(20,34):
