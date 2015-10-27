@@ -28,5 +28,5 @@ prog_refine_pascal: refine_pascal/dense_inference.cpp refine_pascal/dense_infere
 	$(CC) refine_pascal/dense_inference.cpp -o prog_refine_pascal $(CFLAGS) -L. -lDenseCRF -I./refine_pascal/ -I./util/
 
 prog_refine_pascal_v4: refine_pascal_v4/dense_inference.cpp util/Timer.h libDenseCRF.a
-	$(CC) refine_pascal_v4/dense_inference.cpp -o prog_refine_pascal_v4 $(CFLAGS) -L. -lDenseCRF -lmatio -I./util/
+	$(CC) refine_pascal_v4/dense_inference.cpp -o prog_refine_pascal_v4 $(CFLAGS) -L. -lDenseCRF -lmatio -lhdf5 -I./util/
 

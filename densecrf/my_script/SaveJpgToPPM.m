@@ -2,20 +2,12 @@
 %
 is_server = 1;
 
-dataset = 'coco';  %'coco', 'voc2012'
+dataset = 'voc2010';  %'coco', 'voc2012'
 
-if is_server
-  if strcmp(dataset, 'voc2012')
-    img_folder  = '/rmt/data/pascal/VOCdevkit/VOC2012/JPEGImages'
-    save_folder = '/rmt/data/pascal/VOCdevkit/VOC2012/PPMImages';
-  elseif strcmp(dataset, 'coco')
-    img_folder  = '/rmt/data/coco/JPEGImages';
-    save_folder = '/rmt/data/coco/PPMImages';
-  end
-else
-  img_folder = '../img';
-  save_folder = '../img_ppm';
-end
+img_folder  = '/media/work/VOCdevkit/VOC2010/JPEGImages'
+save_folder = '/media/work/VOCdevkit/VOC2010/PPMImages';
+
+
 
 if ~exist(save_folder, 'dir')
     mkdir(save_folder);
