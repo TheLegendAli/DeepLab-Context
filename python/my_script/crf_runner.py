@@ -42,10 +42,10 @@ def grid_setting(FEATURE_NAME, TEST_SET, LOAD_MAT_FILE):
 
 	if LOAD_MAT_FILE:
 		CRF_BIN= CRF_DIR + '/prog_refine_pascal_v4'
-		FEATURE_DIR= os.environ['EXP'] + '/' + FEATURE_NAME + '/' + os.environ['NET_ID'] + '/' + TEST_SET + '/fc8/mat_numSample' + str(NUM_SAMPLE)
+		FEATURE_DIR= os.environ['EXP'] + '/' + FEATURE_NAME + '/' + os.environ['NET_ID'] + '/' + TEST_SET + '/fc8/mat_numSample_' + str(NUM_SAMPLE)
 	else:
 		CRF_BIN= CRF_DIR + '/prog_refine_pascal'
-		FEATURE_DIR= os.environ['EXP'] + '/' + FEATURE_NAME + '/' + os.environ['NET_ID'] + '/' + TEST_SET + '/fc8/bin/bin_numSample' + str(NUM_SAMPLE)
+		FEATURE_DIR= os.environ['EXP'] + '/' + FEATURE_NAME + '/' + os.environ['NET_ID'] + '/' + TEST_SET + '/fc8/bin/bin_numSample_' + str(NUM_SAMPLE)
 
 	SAVE_DIR = os.environ['EXP'] + '/' + FEATURE_NAME + '/' + os.environ['NET_ID'] + '/' + TEST_SET
 
@@ -70,11 +70,11 @@ def dense_runner(LOAD_MAT_FILE, FEATURE_NAME, TEST_SET, SAVE_DIR, cmd):
 	subprocess.call(cmd, shell=True)
 
 
-def grid_runner(IMG_DIR, CRF_BIN, FEATURE_DIR, SAVE_DIR):
+def grid_runner(IMG_DIR, CRF_BIN, FEATURE_DIR, ORIGINAL_SAVE_DIR):
 	# SPECIFY the GRID SEARCH RANGE
 	range_W=[5, 10]
 	range_XY_STD=[40, 50, 60, 70, 80, 90, 100]
-	range_RGB_ST:D=[3, 4, 5, 6, 7, 8, 9, 10]
+	range_RGB_STD=[3, 4, 5, 6, 7, 8, 9, 10]
 	NUM_SAMPLE=100
 	POS_W = 3
 	POS_X_STD = 3
@@ -92,14 +92,15 @@ def grid_runner(IMG_DIR, CRF_BIN, FEATURE_DIR, SAVE_DIR):
 				Bi_G_STD = r
 				Bi_B_STD = r
 
-				detail_dir = 'fc8/post_densecrf_W' + str(Bi_W) + '_XStd' + str(Bi_X_STD) + '_RStd' + str(Bi_R_STD) + '_PosW' + str(POS_W) + '_PosXStd' + str(POS_X_STD) + '_numSample' + str(NUM_SAMPLE)
-				SAVE_DIR = SAVE_DIR + detail_dir
+				detail_dir = '/fc8/post_densecrf_W' + str(Bi_W) + '_XStd' + str(Bi_X_STD) + '_RStd' + str(Bi_R_STD) + '_PosW' + str(POS_W) + '_PosXStd' + str(POS_X_STD) + '_numSample_' + str(NUM_SAMPLE)
+				SAVE_DIR = ORIGINAL_SAVE_DIR + detail_dir
 				
 				print "SAVE TO " + SAVE_DIR
 
 				if not os.path.exists(SAVE_DIR):
 					os.makedirs(SAVE_DIR)
 
+				FEATURE_DIR = '/media/work/context/voc12/features/vgg128_noup/val/fc8'
 				cmd = str(MAX_ITER) + " -px " + str(POS_X_STD) + " -py " + str(POS_Y_STD) + " -pw " + str(POS_W) + " -bx " + str(Bi_X_STD) + " -by " + str(Bi_Y_STD) + " -br " + str(Bi_R_STD) + " -bg " +  str(Bi_G_STD) +  " -bb " + str(Bi_B_STD) + " -bw " + str(Bi_W)
 				cmd = CRF_BIN + ' -id ' + IMG_DIR + ' -fd ' + FEATURE_DIR + ' -sd ' + SAVE_DIR + " -i " + cmd
 				subprocess.call(cmd, shell=True)
