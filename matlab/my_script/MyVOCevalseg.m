@@ -10,7 +10,7 @@
 %
 % [ACCURACIES,AVACC,CONF,RAWCOUNTS] = VOCEVALSEG(VOCopts,ID) also returns
 % the unnormalised confusion matrix, which contains raw pixel counts.
-function [accuracies,avacc,conf,rawcounts] = MyVOCevalseg(VOCopts,id)
+function [accuracies,avacc,conf,rawcounts] = MyVOCevalseg(VOCopts,id, has_postprocess)
 
 % image test set
 [gtids,t]=textread(sprintf(VOCopts.seg.imgsetpath,VOCopts.testset),'%s %d');
@@ -152,3 +152,29 @@ avacc = sum(accuracies) / real_class_count;
 
 fprintf('-------------------------\n');
 fprintf('Average accuracy: %6.3f%%\n',avacc);
+
+% save confusion matrix as a csv
+% Make a confusion matrix table
+background = {'background'};
+names = [background; VOCopts.classes];
+T = array2table(conf,...              
+'VariableNames',names,...
+'RowNames',names);
+
+
+%set the path for the Confusion Matrix
+currentFolder = pwd;
+currentFolder = currentFolder(1:end-16);
+confusionMatrixFolder = strcat(currentFolder,'ConfusionMatrix');
+if ~exist(confusionMatrixFolder, 'dir')
+    mkdir(confusionMatrixFolder);
+end
+
+
+if has_postprocess
+  filename = strcat(confusionMatrixFolder,'/confusion_matrix_has_crf.csv');
+else
+  filename = strcat(confusionMatrixFolder,'/confusion_matrix_has_no_crf.csv');
+end
+
+writetable(T,filename,'Delimiter',',','WriteRowNames',true);
