@@ -95,7 +95,7 @@ end
 
 % get iou score
 if strcmp(testset, 'val')
-  [accuracies, avacc, conf, rawcounts] = MyVOCevalseg(VOCopts, id);
+  [accuracies, avacc, conf, rawcounts] = MyVOCevalseg(VOCopts, id, has_postprocess);
 else
   fprintf(1, 'This is test set. No evaluation. Just saved as png\n');
 end 
