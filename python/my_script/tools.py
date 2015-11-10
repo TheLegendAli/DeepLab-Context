@@ -70,7 +70,7 @@ def file_editor(filein, train_set='', test_set=''):
 	f.write(newdata)
 	f.close()
 
-def matlab_path_editor(type_):
+def matlab_path_editor(type_=1):
 	test_ = 'val' if type_ == 1 else 'test'
 	features = 'features' if type_ == 1 else 'features2'
 	
@@ -97,6 +97,21 @@ def matlab_path_editor(type_):
 
 	newdata = filedata.replace('{ROOT}', os.getcwd())
 	newdata = newdata.replace('{DATA_ROOT}', os.environ['DATA_ROOT'])
+	newdata = newdata.replace('{YEAR}', os.environ['year'])
+
+	
+
+	f = open(filein,'w')
+	f.write(newdata)
+	f.close()
+
+	filein = os.getcwd()+'/densecrf/my_script/GetDenseCRFResult.m'
+	f = open(filein,'r')
+	filedata = f.read()
+	f.close()
+
+	newdata = filedata.replace('{ROOT}', os.getcwd())
+	newdata = newdata.replace('{YEAR}', os.environ['year'])
 
 	
 
