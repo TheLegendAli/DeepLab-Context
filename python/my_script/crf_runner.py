@@ -107,9 +107,11 @@ def grid_runner(IMG_DIR, CRF_BIN, FEATURE_DIR, ORIGINAL_SAVE_DIR):
 
 
 def matlab_runner():
-	subprocess.call('cd densecrf/my_script', shell=True)
+	original_path = str(os.getcwd())
+	path = original_path + '/densecrf/my_script'
+	os.chdir(path)
 	subprocess.call("matlab -r 'GetDenseCRFResult; exit;'", shell=True)
-	subprocess.call('cd ../..', shell=True)
+	os.chdir(original_path)
 
 def crf_runner(LOAD_MAT_FILE=1, train2=0):
 	# the features  folder save the features computed via the model trained with the train set
@@ -125,8 +127,8 @@ def crf_runner(LOAD_MAT_FILE=1, train2=0):
 		type_ = 1
 		
 
-	SAVE_DIR, cmd = dense_setting(FEATURE_NAME, TEST_SET)
-	dense_runner(LOAD_MAT_FILE, FEATURE_NAME, TEST_SET, SAVE_DIR,cmd)
+	#SAVE_DIR, cmd = dense_setting(FEATURE_NAME, TEST_SET)
+	#dense_runner(LOAD_MAT_FILE, FEATURE_NAME, TEST_SET, SAVE_DIR,cmd)
 
 	matlab_path_editor(type_)
 	matlab_runner()
