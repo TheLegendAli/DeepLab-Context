@@ -29,7 +29,7 @@ map_dir = dir(fullfile(map_folder, '*.bin'));
 fprintf(1,' saving to %s\n', save_root_folder);
 
 if strcmp(dataset, 'voc12')
-  year_path = strcat('/results/', '{YEAR}', '/')
+  year_path = strcat('/results/', '{YEAR}', '/');
   seg_res_dir = [save_root_folder year_path];
 elseif strcmp(dataset, 'coco')
   seg_res_dir = [save_root_folder, '/results/COCO2014/'];

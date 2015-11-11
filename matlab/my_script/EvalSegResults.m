@@ -24,7 +24,8 @@ save_root_folder = fullfile('{ROOT}', dataset, feature_name, model_name, testset
 fprintf(1, 'Saving to %s\n', save_root_folder);
 
 if strcmp(dataset, 'voc12')
-  seg_res_dir = [save_root_folder '/results/VOC2012/'];
+  year_path = strcat('/results/', '{YEAR}', '/');
+  seg_res_dir = [save_root_folder year_path];
   seg_root = VOC_root_folder;
   gt_dir   = fullfile(VOC_root_folder, 'SegmentationClass');
 elseif strcmp(dataset, 'coco')
@@ -40,7 +41,7 @@ if ~exist(save_result_folder, 'dir')
 end
 
 if strcmp(dataset, 'voc12')
-  VOCopts = GetVOCopts(seg_root, seg_res_dir, trainset, testset, 'VOC2012');
+  VOCopts = GetVOCopts(seg_root, seg_res_dir, trainset, testset, '{YEAR}');
 elseif strcmp(dataset, 'coco')
   VOCopts = GetVOCopts(seg_root, seg_res_dir, trainset, testset, '');
 end
