@@ -44,13 +44,9 @@ GRID_SEARCH=0 # To Run ONLY if you dont know what parameters to use for Densecrf
 #####
 
 def env_creater():
-    if RUN_DENSECRF == 1 or GRID_SEARCH ==1:
-        post_process = 1
-    else:
-        post_process = 0
     dic = {'EXP': EXP, 'NET_ID': NET_ID, 'NUM_LABELS': NUM_LABELS, 'DATA_ROOT': DATA_ROOT, 'DEV_ID':DEV_ID, 'OLD_ROOT': OLD_ROOT}
     dic.update({'train_set_SUFFIX': train_set_SUFFIX, 'train_set_STRONG': train_set_STRONG, 'train_set_WEAK_LEN': train_set_WEAK_LEN})
-    dic.update({'year': YEAR, 'POSTPROCESS': post_process})
+    dic.update({'year': YEAR, 'POSTPROCESS': 0})
     tools.environment_variable_creator(dic)
 
 

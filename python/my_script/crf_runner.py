@@ -130,6 +130,7 @@ def crf_runner(LOAD_MAT_FILE=1, train2=0):
 	SAVE_DIR, cmd = dense_setting(FEATURE_NAME, TEST_SET)
 	dense_runner(LOAD_MAT_FILE, FEATURE_NAME, TEST_SET, SAVE_DIR,cmd)
 
+	os.environ['POSTPROCESS'] = str(1)
 	matlab_path_editor(type_)
 	matlab_runner()
 	matlab_result_runner()
@@ -148,6 +149,8 @@ def grid_search(LOAD_MAT_FILE=1, train2=0):
 
 	IMG_DIR, CRF_BIN, FEATURE_DIR, SAVE_DIR = grid_setting(FEATURE_NAME, TEST_SET, LOAD_MAT_FILE)
 	grid_runner(IMG_DIR, CRF_BIN, FEATURE_DIR, SAVE_DIR)
+
+	os.environ['POSTPROCESS'] = str(1)
 	matlab_path_editor(type_)
 	matlab_runner()
 	matlab_result_runner()
