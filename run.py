@@ -30,12 +30,12 @@ train_set_WEAK_LEN=0 #'5000'
 
 # Run
 
-RUN_TRAIN=0 # Training #1 (on train_aug)
+RUN_TRAIN=1 # Training #1 (on train_aug)
 RUN_TEST=0  # Test #1 specification (on val or test)
 RUN_TRAIN2=0 # Training #2 (finetune on trainval_aug)
 RUN_TEST2=0 # Test #2 on official test set
 RUN_SAVE=0 # Translate and save the model
-RUN_DENSECRF=1 # To Run Densecrf
+RUN_DENSECRF=0 # To Run Densecrf
 GRID_SEARCH=0 # To Run ONLY if you dont know what parameters to use for Densecrf
 
 

@@ -1,4 +1,5 @@
 import os
+import subprocess
 
 def model_finder(path, type_=1):
 	mtime = lambda f: os.stat(os.path.join(path, f)).st_mtime
@@ -119,4 +120,11 @@ def matlab_path_editor(type_=1):
 	f = open(filein,'w')
 	f.write(newdata)
 	f.close()
+
+def matlab_result_runner():
+	original_path = str(os.getcwd())
+	path = original_path + '/matlab/my_script'
+	os.chdir(path)
+	subprocess.call("matlab -r 'EvalSegResults; exit;'", shell=True)
+	os.chdir(original_path)
 

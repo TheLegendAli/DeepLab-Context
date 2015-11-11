@@ -1,7 +1,7 @@
 import os
 import subprocess
 import shutil
-from tools import model_finder, file_editor, matlab_path_editor
+from tools import model_finder, file_editor, matlab_path_editor, matlab_result_runner
 
 
 def dense_setting(FEATURE_NAME, TEST_SET):
@@ -127,11 +127,12 @@ def crf_runner(LOAD_MAT_FILE=1, train2=0):
 		type_ = 1
 		
 
-	#SAVE_DIR, cmd = dense_setting(FEATURE_NAME, TEST_SET)
-	#dense_runner(LOAD_MAT_FILE, FEATURE_NAME, TEST_SET, SAVE_DIR,cmd)
+	SAVE_DIR, cmd = dense_setting(FEATURE_NAME, TEST_SET)
+	dense_runner(LOAD_MAT_FILE, FEATURE_NAME, TEST_SET, SAVE_DIR,cmd)
 
 	matlab_path_editor(type_)
 	matlab_runner()
+	matlab_result_runner()
 
 
 def grid_search(LOAD_MAT_FILE=1, train2=0):
@@ -149,4 +150,5 @@ def grid_search(LOAD_MAT_FILE=1, train2=0):
 	grid_runner(IMG_DIR, CRF_BIN, FEATURE_DIR, SAVE_DIR)
 	matlab_path_editor(type_)
 	matlab_runner()
+	matlab_result_runner()
 

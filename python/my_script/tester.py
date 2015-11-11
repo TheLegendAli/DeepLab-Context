@@ -1,7 +1,7 @@
 import os
 import subprocess
 import shutil
-from tools import model_finder, file_editor, matlab_path_editor
+from tools import model_finder, file_editor, matlab_path_editor, matlab_result_runner
 
 def test_variables(type_):
     set_ = ['val'] if type_==1 else ['val', 'test']
@@ -47,3 +47,4 @@ def tester(type_=1):
         test_iter = test_txt_maker(test_set)
         model = test_prototext(type_, caffe_, features, test_set)
         test_runner(model, test_set, test_iter,type_)
+    matlab_result_runner()
