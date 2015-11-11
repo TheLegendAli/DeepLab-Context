@@ -85,7 +85,7 @@ def matlab_path_editor(type_=1):
 	newdata = newdata.replace('{EXP}', os.environ['EXP'])
 	newdata = newdata.replace('{TEST}', test_)
 	newdata = newdata.replace('{FEATURE}', features)
-	newdata = newdata.replace(''{POSTPROCESS}, os.environ['POSTPROCESS'])
+	newdata = newdata.replace('{POSTPROCESS}', os.environ['POSTPROCESS'])
 
 	f = open(filein,'w')
 	f.write(newdata)
