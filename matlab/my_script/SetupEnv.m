@@ -11,8 +11,8 @@ crf_load_mat    = 0;   % the densecrf code load MAT files directly (no call Save
                        % used ONLY by DownSampleFeature.m
 learn_crf       = 0;   % NOT USED. Set to 0
 
-is_mat          = 1;   % the results to be evaluated are saved as mat (1) or png (0)
-has_postprocess = 0;   % has done densecrf post processing (1) or not (0)
+is_mat          = 0;   % the results to be evaluated are saved as mat (1) or png (0)
+has_postprocess = {POSTPROCESS};   % has done densecrf post processing (1) or not (0)
 is_argmax       = 0;   % the output has been taken argmax already (e.g., coco dataset). 
                        % assume the argmax takes C-convention (i.e., start from 0)
 
