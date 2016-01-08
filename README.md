@@ -49,6 +49,7 @@ The best model among the released ones yields 73.6% on PASCAL VOC 2012 test set.
 ```
 sudo pip install wget
 ```
+2. Change DATA_ROOT to point to the PASCAL images
 
 ### Experimental set-up
 
