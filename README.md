@@ -44,6 +44,12 @@ We have released several trained models and corresponding prototxt files at [her
 
 The best model among the released ones yields 73.6% on PASCAL VOC 2012 test set.
 
+### Python wrapper requirements
+1. Install wget library for python
+```
+sudo pip install wget
+```
+
 ### Experimental set-up
 
 1. The scripts we used for our experiments:

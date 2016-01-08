@@ -1,5 +1,7 @@
 import os
 import subprocess
+import wget
+import shutil
 
 def model_finder(path, type_=1):
 	mtime = lambda f: os.stat(os.path.join(path, f)).st_mtime
@@ -8,6 +10,12 @@ def model_finder(path, type_=1):
 		if type_==1:
 			if fil[0:11] == 'train_iter_' and fil[-11:]=='.caffemodel':
 				return path + '/' + fil
+			else:
+				# TODO: need to change the url based on the type of experiment
+				url = 'http://ccvl.stat.ucla.edu/ccvl/init_models/vgg16_20M.caffemodel'
+				print 'Downloading init caffemodel from ' + url
+				filename = wget.download(url)
+				shutil.move(filename, path + '/init.caffemodel')
 		else:
 			if fil[0:12] == 'train2_iter_' and fil[-11:]=='.caffemodel':
 				return path + '/' + fil
