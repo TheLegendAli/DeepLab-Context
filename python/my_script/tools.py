@@ -15,7 +15,9 @@ def model_finder(path, type_=1):
 				url = 'http://ccvl.stat.ucla.edu/ccvl/init_models/vgg16_20M.caffemodel'
 				print 'Downloading init caffemodel from ' + url
 				filename = wget.download(url)
-				shutil.move(filename, path + '/init.caffemodel')
+				init = path + '/init.caffemodel'
+				shutil.move(filename, init)
+				return init
 		else:
 			if fil[0:12] == 'train2_iter_' and fil[-11:]=='.caffemodel':
 				return path + '/' + fil
