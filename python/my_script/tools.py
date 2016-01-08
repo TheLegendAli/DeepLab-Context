@@ -6,8 +6,8 @@ import glob
 
 def model_finder(path, type_=1):
 	mtime = lambda f: os.stat(os.path.join(path, f)).st_mtime
-	files= reversed(list(sorted(glob.glob(path+'/*.caffemodel'), key=mtime)))
-	if len(files) >=1:
+	files = list(sorted(glob.glob(path+'/*.caffemodel'), key=mtime))
+	if len(files) >= 1:
 		file_ = files[-1]
 	else:
 		# TODO: need to change the url based on the type of experiment
