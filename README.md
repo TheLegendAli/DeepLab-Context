@@ -45,20 +45,20 @@ We have released several trained models and corresponding prototxt files at [her
 The best model among the released ones yields 73.6% on PASCAL VOC 2012 test set.
 
 ### Python wrapper requirements
+
 1. Install wget library for python
 ```
 sudo pip install wget
 ```
 2. Change DATA_ROOT to point to the PASCAL images
 
-### Experimental set-up
-
-1. The scripts we used for our experiments:
-    1. [run_pascal.sh](http://www.cs.ucla.edu/~lcchen/deeplab-public/run_pascal.sh): the script for training/testing on the PASCAL VOC 2012 dataset. __Note__ You also need to download this [file](http://www.cs.ucla.edu/~lcchen/deeplab-public/sub.sed)
-    2. [run_densecrf.sh](http://www.cs.ucla.edu/~lcchen/deeplab-public/run_densecrf.sh) and [run_densecrf_grid_search.sh](http://www.cs.ucla.edu/~lcchen/deeplab-public/run_densecrf_grid_search.sh): the scripts we used for post-processing the DCNN computed results by DenseCRF.
-2. The image list files used in our experiments:
-    * The [list folder](http://www.cs.ucla.edu/~lcchen/deeplab-public/list) stores the list files for the PASCAL VOC 2012 dataset. You can download the zipped file [here](http://www.cs.ucla.edu/~lcchen/deeplab-public/list.zip) (i.e., all the lists).
 3. To use the mat_read_layer and mat_write_layer, please download and install [matio](http://sourceforge.net/projects/matio/files/matio/1.5.2/).
+
+### Running the code
+
+```
+python run.py
+```
 
 ### FAQ
 
