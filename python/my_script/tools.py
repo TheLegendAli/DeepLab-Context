@@ -3,6 +3,7 @@ import subprocess
 import wget
 import shutil
 import glob
+from distutils.dir_util import copy_tree
 
 def model_finder(path, type_=1):
 	mtime = lambda f: os.stat(os.path.join(path, f)).st_mtime
@@ -34,6 +35,28 @@ def saver():#doesnt really save
 def environment_variable_creator(dic):
 	for key in dic.keys():
 		os.environ[key] = str(dic[key])
+
+def initializer():
+	mkdir()
+	
+	current_path = os.getcwd()
+
+	try:
+		config_path = current_path + '/config/' + os.environ['MODEL']
+		copy_tree(config_path, os.environ['CAFFE_DIR'])
+	except:
+		print "\n you entered an invalid model \n"
+
+	model_path = current_path + '/init'
+	copy_tree(model_path, os.environ['MODEL_DIR'])
+
+	try:
+		list_path = current_path + '/list/' + os.environ['YEAR']
+		copy_tree(list_path, os.environ['LIST_DIR'])
+	except:
+		print "\n you entered an invalid year. \n"
+
+
 
 def mkdir():
 	CAFFE_DIR='./'

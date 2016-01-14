@@ -7,13 +7,17 @@ from crf_runner import crf_runner, grid_search
 import tools
 
 # MODIFY PATH for YOUR SETTING
-EXP='voc12' #dataset
+EXP='voc' #dataset
 NET_ID='vgg128_noup' #model name
 NUM_LABELS=21
 YEAR = 'VOC2012'
+EXP= EXP + YEAR[-2:]
+
 DATA_ROOT='/media/ali/VOCdevkit/VOC2012'
 #DATA_ROOT=subprocess.Popen('cd .. && pwd', stdout=subprocess.PIPE, shell=True).communicate()[0][:-1] + '/VOCdevkit/' + YEAR
 OLD_ROOT=''#only change if you are changing the path to images
+
+MODEL='LFOV'
 DEV_ID=0 #gpu id
 LOAD_MAT_FILE = 1
        
@@ -46,7 +50,7 @@ GRID_SEARCH=0 # To Run ONLY if you dont know what parameters to use for Densecrf
 def env_creater():
     dic = {'EXP': EXP, 'NET_ID': NET_ID, 'NUM_LABELS': NUM_LABELS, 'DATA_ROOT': DATA_ROOT, 'DEV_ID':DEV_ID, 'OLD_ROOT': OLD_ROOT}
     dic.update({'train_set_SUFFIX': train_set_SUFFIX, 'train_set_STRONG': train_set_STRONG, 'train_set_WEAK_LEN': train_set_WEAK_LEN})
-    dic.update({'year': YEAR, 'POSTPROCESS': 0})
+    dic.update({'year': YEAR, 'POSTPROCESS': 0, 'MODEL': MODEL})
     tools.environment_variable_creator(dic)
 
 

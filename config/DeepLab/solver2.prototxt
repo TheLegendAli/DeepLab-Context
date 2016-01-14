@@ -1,0 +1,15 @@
+train_net: "voc12/config/${NET_ID}/train_${TRAIN_SET}.prototxt"
+
+lr_policy: "step"
+gamma: 0.1
+stepsize: 3000
+base_lr: 0.01
+
+display: 10
+max_iter: 12000
+momentum: 0.9
+weight_decay: 0.0005
+
+snapshot: 2000
+snapshot_prefix: "voc12/model/${NET_ID}/train2"
+solver_mode: GPU
