@@ -50,6 +50,5 @@ def trainer(type_=1):
     train, init, solver, train_set = train_variables(type_)
     train_text_maker(train_set)
     model = train_prototxt_maker(train, init, solver, train_set)
-    print model
     print 'Training' + str(type_) + ' net ' + os.environ['EXP'] + '/' + os.environ['NET_ID']
     train_runner(solver, train_set, model)
