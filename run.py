@@ -10,9 +10,9 @@ import tools
 EXP='voc12' #dataset
 NET_ID='vgg128_noup' #model name
 NUM_LABELS=21
-YEAR = 'VOC2010'
-#DATA_ROOT='/VOCdevkit/VOC2012'
-DATA_ROOT=subprocess.Popen('cd .. && pwd', stdout=subprocess.PIPE, shell=True).communicate()[0][:-1] + '/VOCdevkit/' + YEAR 
+YEAR = 'VOC2012'
+DATA_ROOT='/media/ali/VOCdevkit/VOC2012'
+#DATA_ROOT=subprocess.Popen('cd .. && pwd', stdout=subprocess.PIPE, shell=True).communicate()[0][:-1] + '/VOCdevkit/' + YEAR
 OLD_ROOT=''#only change if you are changing the path to images
 DEV_ID=0 #gpu id
 LOAD_MAT_FILE = 1
