@@ -12,7 +12,9 @@ def model_finder(path, type_=1):
 		file_ = files[-1]
 	else:
 		# TODO: need to change the url based on the type of experiment
-		url = 'http://ccvl.stat.ucla.edu/ccvl/init_models/vgg16_20M.caffemodel'
+		model_url = os.environ['MODEL'] + "-url"
+		url = os.environ[model_url]
+		#url = 'http://ccvl.stat.ucla.edu/ccvl/init_models/vgg16_20M.caffemodel'
 		print 'Downloading init caffemodel from ' + url
 		filename = wget.download(url)
 		file_ = path + '/init.caffemodel'
@@ -38,7 +40,8 @@ def environment_variable_creator(dic):
 
 def initializer():
 	mkdir()
-	
+	get_urls()
+
 	current_path = os.getcwd()
 
 	try:
@@ -74,8 +77,6 @@ def mkdir():
 	    os.makedirs(LOG_DIR)
 	if not os.path.exists(LIST_DIR):
             os.makedirs(LIST_DIR)
-
-
 
 	os.environ['GLOG_log_dir'] = LOG_DIR
 	dic = {'CAFFE_DIR': CAFFE_DIR, 'CAFFE_BIN': CAFFE_BIN, 'CONFIG_DIR': CONFIG_DIR, 'MODEL_DIR': MODEL_DIR, 'LOG_DIR': LOG_DIR, 'LIST_DIR': LIST_DIR}
@@ -165,3 +166,14 @@ def matlab_result_runner():
 	subprocess.call("matlab -r 'EvalSegResults; exit;'", shell=True)
 	os.chdir(original_path)
 
+def get_urls():
+	urls = {}
+	urls['DeepLab-url'] = 'http://ccvl.stat.ucla.edu/ccvl/init_models/vgg16_128.caffemodel'
+	urls['DeepLab-COCO-LargeFOV-url'] = ''
+	urls['DeepLab-LargeFOV-url'] = 'http://ccvl.stat.ucla.edu/ccvl/init_models/vgg16_20M.caffemodel'
+	urls['DeepLab-MSc-url'] = ''
+	urls['DeepLab-MSc-COCO-LargeFOV-url'] = ''
+	urls['DeepLab-MSc-LargeFOV-url'] = 'https://dl.dropboxusercontent.com/u/2497281/DeepLab/DeepLab-LFOV.caffemodel'
+	urls['DeepLab-Weak-EM-Adapt-url'] = ''
+
+	environment_variable_creator(urls)
