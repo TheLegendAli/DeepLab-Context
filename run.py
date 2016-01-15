@@ -17,7 +17,7 @@ DATA_ROOT='/media/ali/VOCdevkit/VOC2012'
 #DATA_ROOT=subprocess.Popen('cd .. && pwd', stdout=subprocess.PIPE, shell=True).communicate()[0][:-1] + '/VOCdevkit/' + YEAR
 OLD_ROOT=''#only change if you are changing the path to images
 
-MODEL='LFOV'
+MODEL='DeepLab-LargeFOV'
 DEV_ID=0 #gpu id
 LOAD_MAT_FILE = 1
        
@@ -55,7 +55,7 @@ def env_creater():
 
 
 def run(RUN_TRAIN, RUN_TEST, RUN_TRAIN2, RUN_TEST2, RUN_SAVE):
-    tools.mkdir()
+    tools.initializer()
     if RUN_TRAIN : trainer()
     if RUN_TEST : tester()
     if RUN_TRAIN2 : trainer(type_=2)

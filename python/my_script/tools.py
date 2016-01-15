@@ -43,7 +43,7 @@ def initializer():
 
 	try:
 		config_path = current_path + '/config/' + os.environ['MODEL']
-		copy_tree(config_path, os.environ['CAFFE_DIR'])
+		copy_tree(config_path, os.environ['CONFIG_DIR'])
 	except:
 		print "\n you entered an invalid model \n"
 
@@ -51,7 +51,7 @@ def initializer():
 	copy_tree(model_path, os.environ['MODEL_DIR'])
 
 	try:
-		list_path = current_path + '/list/' + os.environ['YEAR']
+		list_path = current_path + '/list/' + os.environ['YEAR'][-4:]
 		copy_tree(list_path, os.environ['LIST_DIR'])
 	except:
 		print "\n you entered an invalid year. \n"
@@ -72,6 +72,10 @@ def mkdir():
 	    os.makedirs(MODEL_DIR), 
 	if not os.path.exists(LOG_DIR):
 	    os.makedirs(LOG_DIR)
+	if not os.path.exists(LIST_DIR):
+            os.makedirs(LIST_DIR)
+
+
 
 	os.environ['GLOG_log_dir'] = LOG_DIR
 	dic = {'CAFFE_DIR': CAFFE_DIR, 'CAFFE_BIN': CAFFE_BIN, 'CONFIG_DIR': CONFIG_DIR, 'MODEL_DIR': MODEL_DIR, 'LOG_DIR': LOG_DIR, 'LIST_DIR': LIST_DIR}
