@@ -4,6 +4,7 @@ import shutil
 from tools import model_finder, file_editor
 
 def train_variables(type_):
+    print os.environ['MODEL']
     train = 'train' if type_==1 else 'trainval'
     init = '/init_' + os.environ['MODEL'] + '.caffemodel' if type_==1 else '/init2_' + os.environ['MODEL'] + '.caffemodel'
     solver = 'solver' if type_==1 else 'solver2'
@@ -42,7 +43,7 @@ def train_runner(solver, train_set, model):
     ' --solver=' + os.environ['CONFIG_DIR'] + '/' + solver + '_' + train_set + '.prototxt' \
     + ' --weights=' + model + ' --gpu=' + os.environ['DEV_ID'] #change solver
     print 'Running ' + cmd
-    subprocess.call(cmd, shell=True)
+#    subprocess.call(cmd, shell=True)
     
 
 
