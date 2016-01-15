@@ -17,7 +17,7 @@ def model_finder(path, type_=1):
 		#url = 'http://ccvl.stat.ucla.edu/ccvl/init_models/vgg16_20M.caffemodel'
 		print 'Downloading init caffemodel from ' + url
 		filename = wget.download(url)
-		file_ = path + '/init.caffemodel'
+		file_ = path + '/init_' + os.environ['MODEL'] + '.caffemodel'
 		shutil.move(filename, file_)
 
 	return file_
@@ -54,7 +54,7 @@ def initializer():
 	copy_tree(model_path, os.environ['MODEL_DIR'])
 
 	try:
-		list_path = current_path + '/list/' + os.environ['YEAR'][-4:]
+		list_path = current_path + '/list/' + os.environ['year'][-4:]
 		copy_tree(list_path, os.environ['LIST_DIR'])
 	except:
 		print "\n you entered an invalid year. \n"
