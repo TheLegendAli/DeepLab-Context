@@ -6,25 +6,25 @@ import glob
 from distutils.dir_util import copy_tree
 
 def model_finder(path, type_=1):
-	# TODO: Provide support for continued training
-	# Commenting "support for continued training" since it currently breaks.
-#	mtime = lambda f: os.stat(f).st_mtime
-#	files = list(sorted(glob.glob(path+'/*.caffemodel'), key=mtime))
-#	if len(files) >= 1:
-#		file_ = files[-1]
-#	else:
-	model_url = os.environ['MODEL'] + "-url"
-	url = os.environ[model_url]
-	print 'Downloading init caffemodel from ' + url
-	filename = wget.download(url)
-	file_ = path + '/init_' + os.environ['MODEL'] + '.caffemodel'
-	shutil.move(filename, file_)
+	mtime = lambda f: os.stat(f).st_mtime
+	files = list(sorted(glob.glob(path+'/' + os.environ['MODEL'] + '_*.caffemodel'), key=mtime))
+	if len(files) >= 1:
+		file_ = files[-1]
+	else:
+		model_url = os.environ['MODEL'] + "-url"
+		url = os.environ[model_url]
+		print 'Downloading init caffemodel from ' + url
+		filename = wget.download(url)
+		file_ = path + '/init_' + os.environ['MODEL'] + '.caffemodel'
+		shutil.move(filename, file_)
 
 	return file_
 
 
 def saver():#doesnt really save
-    model=os.environ['EXP'] + '/model/' + os.environ['NET_ID'] + '/test2.caffemodel'
+    # TODO: Check if the follwoing line works after dynamic prefixing the name.
+    # TODO: The model names should be  < os.environ['MODEL']_train*.caffemodel >
+    model=os.environ['EXP'] + '/model/' + os.environ['NET_ID'] + '/test2.caffemodel'  # TODO: Check if this works after dynamic prefixing the name
     if not os.path.isfile(model): model=model_finder(os.environ['EXP']+'/model/'+os.environ['NET_ID'])
     model_deploy=os.environ['EXP'] + '/model/' + os.environ['NET_ID'] + '/deploy.caffemodel'
 
