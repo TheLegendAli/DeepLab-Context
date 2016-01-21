@@ -11,7 +11,6 @@ def model_finder(path, type_=1):
 	if len(files) >= 1:
 		file_ = files[-1]
 	else:
-		print "\n\n\n\n NOOOOOOOOO  \n\n\n\n\n"
 		model_url = os.environ['MODEL'] + "-url"
 		url = os.environ[model_url]
 		print 'Downloading init caffemodel from ' + url
@@ -99,7 +98,7 @@ def file_editor(filein, train_set='', test_set=''):
 	newdata = newdata.replace('${EXP}', os.environ['EXP'])
 	newdata = newdata.replace('${TEST_SET}', test_set)
 	newdata = newdata.replace('${NUM_LABELS}', os.environ['NUM_LABELS'])
-	inewdata = newdata.replace('${MODEL}', os.environ['MODEL'])
+	newdata = newdata.replace('${MODEL}', os.environ['MODEL'])
 	if test_set != '':
 		newdata = newdata.replace('${FEATURE_DIR}', os.environ['FEATURE_DIR'])
 
