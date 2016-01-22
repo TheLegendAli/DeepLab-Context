@@ -857,6 +857,6 @@ layers {
   top: "accuracy"
   seg_accuracy_param {
     ignore_label: 255
-    reset: false
+    #reset: false
   } 
 }

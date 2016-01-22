@@ -43,7 +43,7 @@ def train_runner(solver, train_set, model):
     ' --solver=' + os.environ['CONFIG_DIR'] + '/' + solver + '_' + train_set + '.prototxt' \
     + ' --weights=' + model + ' --gpu=' + os.environ['DEV_ID'] #change solver
     print 'Running ' + cmd
-#    subprocess.call(cmd, shell=True)
+    subprocess.call(cmd, shell=True)
     
 
 

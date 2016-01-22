@@ -1,7 +1,7 @@
 train_net: "${EXP}/config/${NET_ID}/train_${TRAIN_SET}.prototxt"
 
 lr_policy: "step"
-gamma: 0.1
+gamma: 0.31622776601683794
 stepsize: 2000
 base_lr: 0.001
 
