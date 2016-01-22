@@ -138,6 +138,7 @@ def matlab_path_editor(type_=1):
 
 	newdata = filedata.replace('{ROOT}', os.getcwd())
 	newdata = newdata.replace('{DATA_ROOT}', os.environ['DATA_ROOT'])
+	newdata = newdata.replace('{EXP}', os.environ['EXP'])
 	newdata = newdata.replace('{YEAR}', os.environ['year'])
 
 	
