@@ -1,6 +1,8 @@
 % compute the densecrf result (.bin) to png
 %
-directory_path = fullfile('/media/work/new_test', 'matlab', 'my_script');
+root_path = pwd()
+root_path = root_path(1:end-19)
+directory_path = fullfile(root_path, 'matlab', 'my_script');
 addpath(directory_path);
 SetupEnv;
 
@@ -11,13 +13,13 @@ SetupEnv;
 if learn_crf
   post_folder = sprintf('post_densecrf_W%d_XStd%d_RStd%d_PosW%d_PosXStd%d_ModelType%d_Epoch%d', bi_w, bi_x_std, bi_r_std, pos_w, pos_x_std, model_type, epoch);
 
-  map_folder = fullfile('/media/work/new_test', dataset, 'densecrf', feature_name, model_name, testset, feature_type, post_folder); 
+  map_folder = fullfileroot_path, dataset, 'densecrf', feature_name, model_name, testset, feature_type, post_folder); 
 
-  save_root_folder = fullfile('/media/work/new_test', dataset, feature_name, model_name, testset, feature_type, post_folder); ;
+  save_root_folder = fullfile(root_path, dataset, feature_name, model_name, testset, feature_type, post_folder); ;
 else
   post_folder = sprintf('post_densecrf_W%d_XStd%d_RStd%d_PosW%d_PosXStd%d', bi_w, bi_x_std, bi_r_std, pos_w, pos_x_std);
 
-  map_folder = fullfile('/media/work/new_test', dataset, feature_name, model_name, testset, feature_type, post_folder); 
+  map_folder = fullfile(root_path, dataset, feature_name, model_name, testset, feature_type, post_folder); 
 
   save_root_folder = map_folder;
 end
