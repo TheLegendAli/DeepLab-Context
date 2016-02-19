@@ -2,7 +2,7 @@
 %
 
 clear all; close all;
-addpath('/media/work/new_test/matlab/my_script');
+addpath('{DIR}');
 load('pascal_seg_colormap.mat');
 
 is_server       = 1;
