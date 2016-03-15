@@ -42,10 +42,10 @@ def grid_setting(FEATURE_NAME, TEST_SET, LOAD_MAT_FILE):
 
 	if LOAD_MAT_FILE:
 		CRF_BIN= CRF_DIR + '/prog_refine_pascal_v4'
-		FEATURE_DIR= os.environ['EXP'] + '/' + FEATURE_NAME + '/' + os.environ['NET_ID'] + '/' + TEST_SET + '/fc8/mat_numSample_' + str(NUM_SAMPLE)
+		FEATURE_DIR= os.environ['EXP'] + '/' + FEATURE_NAME + '/' + os.environ['NET_ID'] + '/' + TEST_SET + '/fc8'#/mat_numSample_' + str(NUM_SAMPLE)
 	else:
 		CRF_BIN= CRF_DIR + '/prog_refine_pascal'
-		FEATURE_DIR= os.environ['EXP'] + '/' + FEATURE_NAME + '/' + os.environ['NET_ID'] + '/' + TEST_SET + '/fc8/bin/bin_numSample_' + str(NUM_SAMPLE)
+		FEATURE_DIR= os.environ['EXP'] + '/' + FEATURE_NAME + '/' + os.environ['NET_ID'] + '/' + TEST_SET + '/fc8'#/bin/bin_numSample_' + str(NUM_SAMPLE)
 
 	SAVE_DIR = os.environ['EXP'] + '/' + FEATURE_NAME + '/' + os.environ['NET_ID'] + '/' + TEST_SET
 
@@ -100,7 +100,7 @@ def grid_runner(IMG_DIR, CRF_BIN, FEATURE_DIR, ORIGINAL_SAVE_DIR):
 				if not os.path.exists(SAVE_DIR):
 					os.makedirs(SAVE_DIR)
 
-				FEATURE_DIR = '/media/work/context/voc12/features/vgg128_noup/val/fc8'
+				#FEATURE_DIR = '/media/work/context/voc12/features/vgg128_noup/val/fc8'
 				cmd = str(MAX_ITER) + " -px " + str(POS_X_STD) + " -py " + str(POS_Y_STD) + " -pw " + str(POS_W) + " -bx " + str(Bi_X_STD) + " -by " + str(Bi_Y_STD) + " -br " + str(Bi_R_STD) + " -bg " +  str(Bi_G_STD) +  " -bb " + str(Bi_B_STD) + " -bw " + str(Bi_W)
 				cmd = CRF_BIN + ' -id ' + IMG_DIR + ' -fd ' + FEATURE_DIR + ' -sd ' + SAVE_DIR + " -i " + cmd
 				subprocess.call(cmd, shell=True)
@@ -143,9 +143,11 @@ def grid_search(LOAD_MAT_FILE=1, train2=0):
 	if train2==1:
 		FEATURE_NAME='features2' #features, features2
 		TEST_SET = 'test'
+		type_ = 2
 	else:
 		FEATURE_NAME='features' #features, features2
 		TEST_SET = 'val'
+		type_ = 1
 
 	IMG_DIR, CRF_BIN, FEATURE_DIR, SAVE_DIR = grid_setting(FEATURE_NAME, TEST_SET, LOAD_MAT_FILE)
 	grid_runner(IMG_DIR, CRF_BIN, FEATURE_DIR, SAVE_DIR)
