@@ -7,16 +7,6 @@ SetupEnv;
 VOC_root_folder = '{DATA_ROOT}';
 
 
-if has_postprocess
-  if learn_crf
-    post_folder = sprintf('post_densecrf_W%d_XStd%d_RStd%d_PosW%d_PosXStd%d_ModelType%d_Epoch%d', bi_w, bi_x_std, bi_r_std, pos_w, pos_x_std, model_type, epoch); 
-  else
-    post_folder = sprintf('post_densecrf_W%d_XStd%d_RStd%d_PosW%d_PosXStd%d', bi_w, bi_x_std, bi_r_std, pos_w, pos_x_std); 
-  end
-else
-  post_folder = 'post_none';
-end
-
 output_mat_folder = fullfile('{ROOT}', dataset, feature_name, model_name, testset, feature_type);
 
 save_root_folder = fullfile('{ROOT}', dataset, feature_name, model_name, testset, feature_type, post_folder);

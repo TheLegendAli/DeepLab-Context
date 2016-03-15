@@ -162,11 +162,22 @@ def matlab_path_editor(type_=1):
 	f.write(newdata)
 	f.close()
 
+	filein = os.getcwd()+'/matlab/my_script/EvalRun.m'
+	f = open(filein,'r')
+	filedata = f.read()
+	f.close()
+
+	newdata = filedata.replace('{DATA_ROOT}', os.environ['DATA_ROOT'])
+	
+	f = open(filein,'w')
+	f.write(newdata)
+	f.close()
+
 def matlab_result_runner():
 	original_path = str(os.getcwd())
 	path = original_path + '/matlab/my_script'
 	os.chdir(path)
-	subprocess.call("matlab -r 'EvalSegResults; exit;'", shell=True)
+	subprocess.call("matlab -r 'EvalRun; exit;'", shell=True)
 	os.chdir(original_path)
 
 def get_urls():
