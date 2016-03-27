@@ -1,4 +1,6 @@
-SetupEnv;
+%SetupEnv;
+
+function EvalSegResults(post_folder, feature_name, model_name, testset, feature_type, dataset, id, trainset, is_mat, is_argmax, has_postprocess)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % You do not need to chage values below
@@ -83,6 +85,10 @@ if is_mat
     imwrite(result, colormap, fullfile(save_result_folder, [img_fn, '.png']));
   end
 end
+
+if has_postprocess == 2
+    has_postprocess = 1;
+end 
 
 % get iou score
 if strcmp(testset, 'val')
