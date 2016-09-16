@@ -4,7 +4,7 @@ SetupEnv;
 % You do not need to chage values below
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-VOC_root_folder = '{DATA_ROOT}';
+VOC_root_folder = '/media/work/VOCdevkit/VOC2010/33_context/gray_scale';
 
 if has_postprocess == 2
    range_W=[5, 10]
@@ -46,7 +46,8 @@ elseif has_postprocess == 1
   else
     post_folder = sprintf('post_densecrf_W%d_XStd%d_RStd%d_PosW%d_PosXStd%d', bi_w, bi_x_std, bi_r_std, pos_w, pos_x_std); 
   end
-  EvalSegResults;
+  EvalSegResults(post_folder, feature_name, model_name, testset, feature_type, dataset, id, trainset, is_mat, is_argmax, has_postprocess);
 else
   post_folder = 'post_none';
+	EvalSegResults(post_folder, feature_name, model_name, testset, feature_type, dataset, id, trainset, is_mat, is_argmax, has_postprocess);
 end

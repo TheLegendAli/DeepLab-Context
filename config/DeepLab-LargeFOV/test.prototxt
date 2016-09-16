@@ -457,10 +457,22 @@ layers {
 #  include: { phase: TEST }
 #}
 
+#layers {
+#  bottom: "label"
+#  name: "silence"
+#  type: SILENCE
+#  include: { phase: TEST }
+#}
+
 layers {
+  name: "accuracy"
+  type: SEG_ACCURACY
+  bottom: "fc8_interp"
   bottom: "label"
-  name: "silence"
-  type: SILENCE
-  include: { phase: TEST }
+  top: "accuracy"
+  seg_accuracy_param {
+    ignore_label: 255
+    #reset: false
+  } 
 }
 
